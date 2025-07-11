@@ -9,13 +9,28 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["./*"],
+      "@common/*": ["common/*"],
+      "@config/*": ["config/*"],
+      "@database/*": ["database/*"],
+      "@modules/*": ["modules/*"],
+      "@utils/*": ["utils/*"],
+      "@auth/*": ["modules/auth/*"],
+      "@users/*": ["modules/users/*"],
+      "@parcels/*": ["modules/parcels/*"],
+      "@deliveries/*": ["modules/deliveries/*"],
+      "@payments/*": ["modules/payments/*"],
+      "@notifications/*": ["modules/notifications/*"],
+      "@tracking/*": ["modules/tracking/*"],
+    }
   }
 }

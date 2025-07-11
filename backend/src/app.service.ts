@@ -7,7 +7,6 @@ export class AppService {
 
   async getDatabaseStatus() {
     try {
-      // Simple query to test connection
       await this.prisma.$queryRaw`SELECT 1`;
       return {
         status: 'Connected',

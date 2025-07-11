@@ -31,6 +31,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   lastLogin DateTime?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
 
   // Relationships
   sentParcels        Parcel[]         @relation("SenderParcels")
