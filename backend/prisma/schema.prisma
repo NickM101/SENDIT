@@ -1,0 +1,222 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  phone       String
+  password    String
+  roles       Role[] 
+  dateOfBirth DateTime?
+  address     String?
+  isActive    Boolean  @default(true)
+  avatarUrl   String?
+
+  // Company relationship
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+
+  // Profile settings
+  emailNotifications Boolean @default(true)
+  smsNotifications   Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime?
+
+  // Relationships
+  sentParcels        Parcel[]         @relation("SenderParcels")
+  receivedParcels    Parcel[]         @relation("RecipientParcels")
+  trackingHistory    TrackingHistory[]
+  createdParcels     Parcel[]         @relation("ParcelCreatedBy")
+  updatedParcels     Parcel[]         @relation("ParcelUpdatedBy")
+
+  @@map("users")
+}
+
+model Company {
+  id     String @id @default(cuid())
+  name   String
+  users  User[]
+}
+
+model Address {
+  id        String @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  country   String
+
+  parcelsSender    Parcel[] @relation("SenderAddress")
+  parcelsRecipient Parcel[] @relation("RecipientAddress")
+}
+
+model Dimensions {
+  id     String @id @default(cuid())
+  length Float
+  width  Float
+  height Float
+  unit   String
+
+  parcels Parcel[]
+}
+
+model Parcel {
+  id                 String       @id @default(cuid())
+  trackingNumber     String       @unique
+  senderId           String
+  recipientId        String?
+  basePrice          Float
+  additionalFees     Float?       @default(0)
+  totalPrice         Float
+
+  // Dimensions and addresses
+  dimensionsId       String?
+  senderAddressId    String
+  recipientAddressId String
+
+  packageType        PackageType
+  estimatedValue     Float?
+  description        String?
+
+  // Delivery
+  deliveryType       DeliveryType @default(STANDARD)
+  pickupDate         DateTime?
+  deliveryDate       DateTime?
+  estimatedDelivery  DateTime?
+  actualDelivery     DateTime?
+
+  // Special handling
+  fragile            Boolean @default(false)
+  perishable         Boolean @default(false)
+  hazardousMaterial  Boolean @default(false)
+  highValue          Boolean @default(false)
+
+  // Instructions and notes
+  pickupInstructions   String?
+  deliveryInstructions String?
+  specialHandling      String?
+
+  // Insurance and signature
+  insuranceCoverage  InsuranceCoverage @default(NO_INSURANCE)
+  signatureRequired  Boolean           @default(false)
+
+  // Notifications
+  emailNotifications Boolean @default(true)
+  smsNotifications   Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Audit (optional)
+  createdBy  String?
+  updatedBy  String?
+
+  // Relationships
+  sender            User              @relation("SenderParcels", fields: [senderId], references: [id])
+  recipient         User?             @relation("RecipientParcels", fields: [recipientId], references: [id])
+  createdByUser     User?             @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser     User?             @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
+  trackingHistory   TrackingHistory[]
+  deliveryAttempts  DeliveryAttempt[]
+  dimensions        Dimensions?       @relation(fields: [dimensionsId], references: [id])
+  senderAddress     Address           @relation("SenderAddress", fields: [senderAddressId], references: [id])
+  recipientAddress  Address           @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
+
+  @@map("parcels")
+}
+
+model TrackingHistory {
+  id          String       @id @default(cuid())
+  parcelId    String
+  status      ParcelStatus
+  location    String?
+  description String?
+  timestamp   DateTime     @default(now())
+  updatedBy   String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  parcel          Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  updatedByUser   User?  @relation(fields: [updatedBy], references: [id])
+
+  @@map("tracking_history")
+}
+
+model DeliveryAttempt {
+  id          String    @id @default(cuid())
+  parcelId    String
+  attemptDate DateTime  @default(now())
+  status      AttemptStatus
+  reason      String?
+  nextAttempt DateTime?
+
+  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_attempts")
+}
+
+enum Role {
+  USER
+  ADMIN
+  PREMIUM_USER
+}
+
+enum ParcelStatus {
+  PROCESSING
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  DELAYED
+  RETURNED
+  CANCELLED
+}
+
+enum PackageType {
+  STANDARD_BOX
+  DOCUMENT
+  CLOTHING
+  ELECTRONICS
+  FRAGILE
+  LIQUID
+  PERISHABLE
+}
+
+enum DeliveryType {
+  STANDARD
+  EXPRESS
+  SAME_DAY
+  OVERNIGHT
+}
+
+enum InsuranceCoverage {
+  NO_INSURANCE
+  BASIC_COVERAGE
+  PREMIUM_COVERAGE
+  CUSTOM_COVERAGE
+}
+
+enum AttemptStatus {
+  SUCCESSFUL
+  FAILED_NO_ONE_HOME
+  FAILED_INCORRECT_ADDRESS
+  FAILED_REFUSED
+  FAILED_OTHER
+}
