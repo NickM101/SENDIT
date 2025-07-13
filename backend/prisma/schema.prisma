@@ -18,6 +18,8 @@ model User {
   address     String?
   isActive    Boolean  @default(true)
   avatarUrl   String?
+  role        Role     @default(USER)
+  deletedAt   DateTime?
 
   // Company relationship
   companyId   String?
@@ -123,7 +125,7 @@ model Parcel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Audit (optional)
+  // Audit
   createdBy  String?
   updatedBy  String?
 
@@ -137,6 +139,7 @@ model Parcel {
   dimensions        Dimensions?       @relation(fields: [dimensionsId], references: [id])
   senderAddress     Address           @relation("SenderAddress", fields: [senderAddressId], references: [id])
   recipientAddress  Address           @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
+  payments          Payment[]
 
   @@map("parcels")
 }
@@ -150,11 +153,9 @@ model TrackingHistory {
   timestamp   DateTime     @default(now())
   updatedBy   String?
 
-  // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relationships
   parcel          Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
   updatedByUser   User?  @relation(fields: [updatedBy], references: [id])
 
@@ -221,4 +222,27 @@ enum AttemptStatus {
   FAILED_INCORRECT_ADDRESS
   FAILED_REFUSED
   FAILED_OTHER
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  stripePaymentIntentId String        @unique
+  amount                Float
+  currency              String
+  status                String // Corresponds to Stripe PaymentIntent status (e.g., 'succeeded', 'requires_payment_method')
+  
+  parcelId              String?
+  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
 }

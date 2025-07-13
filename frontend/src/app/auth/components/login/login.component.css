@@ -1,0 +1,79 @@
+/* File: src/app/auth/components/login/login.component.css */
+/* Custom styles for login component */
+
+.login-container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.form-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.input-focus:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.password-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Error shake animation */
+@keyframes shake {
+  0%, 20%, 40%, 60%, 80% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Focus states */
+input:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgb(17 24 39);
+  border-color: rgb(17 24 39);
+}
+
+/* Validation styles */
+.invalid-input {
+  border-color: rgb(239 68 68);
+  background-color: rgb(254 242 242);
+}
+
+.valid-input {
+  border-color: rgb(34 197 94);
+  background-color: rgb(240 253 244);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .form-container {
+    padding: 1.5rem;
+  }
+}

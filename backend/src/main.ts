@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getSecurityConfig } from './config/security.config';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -34,10 +35,23 @@ async function bootstrap() {
     }),
   );
 
+  // Swagger configuration
+  const config = new DocumentBuilder()
+    .setTitle('SendIT API')
+    .setDescription('API documentation for the SendIT courier service application.')
+    .setVersion('1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'access-token',
+    )
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
 
-  console.log(`🚀 SwiftWheels API is running on: http://localhost:${port}`);
+  console.log(`🚀 SendIT API is running on: http://localhost:${port}`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
 }
 
