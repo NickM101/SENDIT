@@ -21,7 +21,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css'],
   imports: [CommonModule, RouterModule, ReactiveFormsModule]
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {

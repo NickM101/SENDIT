@@ -27,9 +27,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ example: 'http://example.com/new_avatar.jpg', description: `URL to user's avatar image`, required: false })
   avatarUrl?: string;
 
-  @ApiProperty({ example: 'clx0d0d0d0d0d0d0d0d0d0d0', description: `ID of the company the user belongs to`, required: false })
-  companyId?: string;
-
   @ApiProperty({ example: false, description: `Whether to send email notifications`, required: false })
   emailNotifications?: boolean;
 

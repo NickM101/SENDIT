@@ -8,60 +8,73 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
+  id          String    @id @default(cuid())
+  email       String    @unique
   name        String
   phone       String
   password    String
-  roles       Role[] 
+  roles       Role[]
   dateOfBirth DateTime?
   address     String?
-  isActive    Boolean  @default(true)
+  isActive    Boolean   @default(true)
   avatarUrl   String?
-  role        Role     @default(USER)
+  role        Role      @default(USER)
   deletedAt   DateTime?
-
-  // Company relationship
-  companyId   String?
-  company     Company? @relation(fields: [companyId], references: [id])
 
   // Profile settings
   emailNotifications Boolean @default(true)
   smsNotifications   Boolean @default(false)
 
   // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLogin DateTime?
-  resetPasswordToken String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  lastLogin            DateTime?
+  resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
   // Relationships
-  sentParcels        Parcel[]         @relation("SenderParcels")
-  receivedParcels    Parcel[]         @relation("RecipientParcels")
-  trackingHistory    TrackingHistory[]
-  createdParcels     Parcel[]         @relation("ParcelCreatedBy")
-  updatedParcels     Parcel[]         @relation("ParcelUpdatedBy")
+  sentParcels            Parcel[]                 @relation("SenderParcels")
+  receivedParcels        Parcel[]                 @relation("RecipientParcels")
+  trackingHistory        TrackingHistory[]
+  createdParcels         Parcel[]                 @relation("ParcelCreatedBy")
+  updatedParcels         Parcel[]                 @relation("ParcelUpdatedBy")
+  refreshToken           RefreshToken[]
+  emailVerificationToken EmailVerificationToken[]
 
   @@map("users")
 }
 
-model Company {
-  id     String @id @default(cuid())
-  name   String
-  users  User[]
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
 }
 
 model Address {
-  id        String @id @default(cuid())
-  name      String
-  email     String
-  phone     String
-  street    String
-  city      String
-  state     String
-  zipCode   String
-  country   String
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  phone   String
+  street  String
+  city    String
+  state   String
+  zipCode String
+  country String
 
   parcelsSender    Parcel[] @relation("SenderAddress")
   parcelsRecipient Parcel[] @relation("RecipientAddress")
@@ -78,35 +91,35 @@ model Dimensions {
 }
 
 model Parcel {
-  id                 String       @id @default(cuid())
-  trackingNumber     String       @unique
-  senderId           String
-  recipientId        String?
-  basePrice          Float
-  additionalFees     Float?       @default(0)
-  totalPrice         Float
+  id             String  @id @default(cuid())
+  trackingNumber String  @unique
+  senderId       String
+  recipientId    String?
+  basePrice      Float
+  additionalFees Float?  @default(0)
+  totalPrice     Float
 
   // Dimensions and addresses
   dimensionsId       String?
   senderAddressId    String
   recipientAddressId String
 
-  packageType        PackageType
-  estimatedValue     Float?
-  description        String?
+  packageType    PackageType
+  estimatedValue Float?
+  description    String?
 
   // Delivery
-  deliveryType       DeliveryType @default(STANDARD)
-  pickupDate         DateTime?
-  deliveryDate       DateTime?
-  estimatedDelivery  DateTime?
-  actualDelivery     DateTime?
+  deliveryType      DeliveryType @default(STANDARD)
+  pickupDate        DateTime?
+  deliveryDate      DateTime?
+  estimatedDelivery DateTime?
+  actualDelivery    DateTime?
 
   // Special handling
-  fragile            Boolean @default(false)
-  perishable         Boolean @default(false)
-  hazardousMaterial  Boolean @default(false)
-  highValue          Boolean @default(false)
+  fragile           Boolean @default(false)
+  perishable        Boolean @default(false)
+  hazardousMaterial Boolean @default(false)
+  highValue         Boolean @default(false)
 
   // Instructions and notes
   pickupInstructions   String?
@@ -114,8 +127,8 @@ model Parcel {
   specialHandling      String?
 
   // Insurance and signature
-  insuranceCoverage  InsuranceCoverage @default(NO_INSURANCE)
-  signatureRequired  Boolean           @default(false)
+  insuranceCoverage InsuranceCoverage @default(NO_INSURANCE)
+  signatureRequired Boolean           @default(false)
 
   // Notifications
   emailNotifications Boolean @default(true)
@@ -126,20 +139,20 @@ model Parcel {
   updatedAt DateTime @updatedAt
 
   // Audit
-  createdBy  String?
-  updatedBy  String?
+  createdBy String?
+  updatedBy String?
 
   // Relationships
-  sender            User              @relation("SenderParcels", fields: [senderId], references: [id])
-  recipient         User?             @relation("RecipientParcels", fields: [recipientId], references: [id])
-  createdByUser     User?             @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser     User?             @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
-  trackingHistory   TrackingHistory[]
-  deliveryAttempts  DeliveryAttempt[]
-  dimensions        Dimensions?       @relation(fields: [dimensionsId], references: [id])
-  senderAddress     Address           @relation("SenderAddress", fields: [senderAddressId], references: [id])
-  recipientAddress  Address           @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
-  payments          Payment[]
+  sender           User              @relation("SenderParcels", fields: [senderId], references: [id])
+  recipient        User?             @relation("RecipientParcels", fields: [recipientId], references: [id])
+  createdByUser    User?             @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser    User?             @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
+  trackingHistory  TrackingHistory[]
+  deliveryAttempts DeliveryAttempt[]
+  dimensions       Dimensions?       @relation(fields: [dimensionsId], references: [id])
+  senderAddress    Address           @relation("SenderAddress", fields: [senderAddressId], references: [id])
+  recipientAddress Address           @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
+  payments         Payment[]
 
   @@map("parcels")
 }
@@ -156,16 +169,16 @@ model TrackingHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  parcel          Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
-  updatedByUser   User?  @relation(fields: [updatedBy], references: [id])
+  parcel        Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  updatedByUser User?  @relation(fields: [updatedBy], references: [id])
 
   @@map("tracking_history")
 }
 
 model DeliveryAttempt {
-  id          String    @id @default(cuid())
+  id          String        @id @default(cuid())
   parcelId    String
-  attemptDate DateTime  @default(now())
+  attemptDate DateTime      @default(now())
   status      AttemptStatus
   reason      String?
   nextAttempt DateTime?
@@ -225,17 +238,17 @@ enum AttemptStatus {
 }
 
 model Payment {
-  id                    String        @id @default(cuid())
-  stripePaymentIntentId String        @unique
+  id                    String @id @default(cuid())
+  stripePaymentIntentId String @unique
   amount                Float
   currency              String
   status                String // Corresponds to Stripe PaymentIntent status (e.g., 'succeeded', 'requires_payment_method')
-  
-  parcelId              String?
-  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
 
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  parcelId String?
+  parcel   Parcel? @relation(fields: [parcelId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("payments")
 }

@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { getSecurityConfig } from './config/security.config';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AuthExceptionsFilter } from './common/filters/auth-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,8 @@ async function bootstrap() {
 
   // Global filters
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
+  app.useGlobalFilters(new AuthExceptionsFilter());
+
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useGlobalPipes(

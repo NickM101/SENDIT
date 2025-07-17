@@ -3,7 +3,7 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
@@ -17,11 +17,11 @@ import { AppRoutingModule } from './app.routes';
   declarations: [],
   imports: [
     BrowserModule,
-    HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule
   ],
   providers: [
+    provideHttpClient(withFetch()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

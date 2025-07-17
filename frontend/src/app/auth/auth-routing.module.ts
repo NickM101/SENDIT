@@ -8,57 +8,63 @@ import { RegisterComponent } from './components/register/register.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EmailVerificationComponent } from './components/email-verification/email-verification.component';
-import { GuestGuard } from './services/auth.guard';
+import { AuthLayoutComponent } from '../layouts/auth-layout/auth-layout.component'; // Import the new layout component
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-    // canActivate: [GuestGuard],
-    data: {
-      title: 'Login - SendIT',
-      description: 'Sign in to your SendIT account',
-    },
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    // canActivate: [GuestGuard],
-    data: {
-      title: 'Create Account - SendIT',
-      description: 'Join SendIT and start shipping with confidence',
-    },
-  },
-  {
-    path: 'forgot-password',
-    component: ForgotPasswordComponent,
-    // canActivate: [GuestGuard],
-    data: {
-      title: 'Reset Password - SendIT',
-      description: 'Reset your SendIT account password',
-    },
-  },
-  {
-    path: 'reset-password',
-    component: ResetPasswordComponent,
-    // canActivate: [GuestGuard],
-    data: {
-      title: 'Create New Password - SendIT',
-      description: 'Create a new password for your SendIT account',
-    },
-  },
-  {
-    path: 'verify-email',
-    component: EmailVerificationComponent,
-    data: {
-      title: 'Email Verification - SendIT',
-      description: 'Verify your email address to complete registration',
-    },
-  },
-  {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    component: AuthLayoutComponent, // Use AuthLayoutComponent as the parent
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+        // canActivate: [GuestGuard],
+        data: {
+          title: 'Login - SendIT',
+          description: 'Sign in to your SendIT account',
+        },
+      },
+      {
+        path: 'register',
+        component: RegisterComponent,
+        // canActivate: [GuestGuard],
+        data: {
+          title: 'Create Account - SendIT',
+          description: 'Join SendIT and start shipping with confidence',
+        },
+      },
+      {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent,
+        // canActivate: [GuestGuard],
+        data: {
+          title: 'Reset Password - SendIT',
+          description: 'Reset your SendIT account password',
+        },
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        // canActivate: [GuestGuard],
+        data: {
+          title: 'Create New Password - SendIT',
+          description: 'Create a new password for your SendIT account',
+        },
+      },
+      {
+        path: 'verify-email',
+        component: EmailVerificationComponent,
+        data: {
+          title: 'Email Verification - SendIT',
+          description: 'Verify your email address to complete registration',
+        },
+      },
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '**',

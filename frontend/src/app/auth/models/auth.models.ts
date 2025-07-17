@@ -29,6 +29,7 @@ export interface RegisterRequest {
   email: string;
   phone: string;
   password: string;
+  dateOfBirth: string;
   confirmPassword: string;
   agreeToTerms: boolean;
 }

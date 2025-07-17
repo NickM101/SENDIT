@@ -1,150 +1,99 @@
-<!-- File: src/app/auth/components/login/login.component.html -->
-<!-- Login form template for SendIT application -->
-
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<!-- src/app/auth/components/login/login.component.html -->
+<div class="p-8 mx-auto max-w-4xl">
     <!-- Header -->
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="flex justify-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z">
-                        </path>
-                    </svg>
-                </div>
-                <span class="text-xl font-bold text-gray-900">SendIT</span>
+    <div class="text-center">
+        <div class="flex justify-center items-center space-x-2 mb-6">
+            <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z">
+                    </path>
+                </svg>
             </div>
+            <span class="text-2xl font-bold text-gray-900">SendIT</span>
         </div>
-
-        <div class="mt-6 text-center">
-            <h2 class="text-3xl font-bold text-gray-900">Welcome Back</h2>
-            <p class="mt-2 text-sm text-gray-600">Sign in to your SendIT account</p>
-        </div>
+        <h2 class="text-3xl font-bold text-gray-900">Welcome Back</h2>
+        <p class="mt-2 text-sm text-gray-600">Sign in to your SendIT account</p>
     </div>
 
     <!-- Login Form -->
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-
-                <!-- Error Alert -->
-                <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-md p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-red-800">{{ error }}</p>
-                        </div>
-                    </div>
+    <div class="mt-8">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <div class="mt-1">
+                    <input id="email" name="email" type="email" autocomplete="email" formControlName="email"
+                        placeholder="Enter your email"
+                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm" />
+                    <p *ngIf="hasError('email')" class="mt-2 text-sm text-red-600">{{ getErrorMessage('email') }}</p>
                 </div>
+            </div>
 
-                <!-- Email Field -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email Address
-                    </label>
-                    <div class="mt-1">
-                        <input id="email" name="email" type="email" autocomplete="email" formControlName="email"
-                            placeholder="Enter your email"
-                            [class]="'appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 sm:text-sm ' + (hasError('email') ? 'border-red-300' : 'border-gray-300')" />
-                        <p *ngIf="hasError('email')" class="mt-2 text-sm text-red-600">
-                            {{ getErrorMessage('email') }}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Password Field -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
-                        Password
-                    </label>
-                    <div class="mt-1 relative">
-                        <input id="password" name="password" [type]="showPassword ? 'text' : 'password'"
-                            autocomplete="current-password" formControlName="password" placeholder="Enter your password"
-                            [class]="'appearance-none block w-full px-3 py-2 pr-10 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 sm:text-sm ' + (hasError('password') ? 'border-red-300' : 'border-gray-300')" />
-                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                            (click)="togglePasswordVisibility()">
-                            <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                </path>
-                            </svg>
-                            <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21">
-                                </path>
-                            </svg>
-                        </button>
-                        <p *ngIf="hasError('password')" class="mt-2 text-sm text-red-600">
-                            {{ getErrorMessage('password') }}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Remember Me & Forgot Password -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" formControlName="rememberMe"
-                            class="h-4 w-4 text-gray-900 focus:ring-gray-900 border-gray-300 rounded" />
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                            Remember me
-                        </label>
-                    </div>
-
-                    <div class="text-sm">
-                        <button type="button" (click)="goToForgotPassword()"
-                            class="font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                            Forgot password?
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div>
-                    <button type="submit" [disabled]="isLoading"
-                        [class]="'group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-200 ' + (isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800')">
-                        <span *ngIf="isLoading" class="absolute left-0 inset-y-0 flex items-center pl-3">
-                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                        {{ isLoading ? 'Signing In...' : 'Sign In' }}
+            <!-- Password Field -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <div class="mt-1 relative">
+                    <input id="password" name="password" [type]="showPassword ? 'text' : 'password'"
+                        autocomplete="current-password" formControlName="password" placeholder="Enter your password"
+                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm" />
+                    <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        (click)="togglePasswordVisibility()">
+                        <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                            </path>
+                        </svg>
+                        <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21">
+                            </path>
+                        </svg>
                     </button>
-                </div>
-
-                <!-- Sign Up Link -->
-                <div class="text-center">
-                    <p class="text-sm text-gray-600">
-                        Don't have an account?
-                        <button type="button" (click)="goToRegister()"
-                            class="font-medium text-gray-900 hover:text-gray-700 transition-colors duration-200">
-                            Sign up
-                        </button>
+                    <p *ngIf="hasError('password')" class="mt-2 text-sm text-red-600">{{ getErrorMessage('password') }}
                     </p>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" formControlName="rememberMe"
+                        class="h-4 w-4 text-gray-900 focus:ring-gray-900 border-gray-300 rounded" />
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">Remember me</label>
+                </div>
+                <div class="text-sm">
+                    <button type="button" (click)="goToForgotPassword()"
+                        class="font-medium text-gray-600 hover:text-gray-900">Forgot password?</button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">Sign
+                    In</button>
+            </div>
+
+            <!-- Sign Up Link -->
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account?
+                    <button type="button" (click)="goToRegister()"
+                        class="font-medium text-gray-900 hover:text-gray-700">Sign up</button>
+                </p>
+            </div>
+        </form>
     </div>
 
     <!-- Footer -->
-    <div class="mt-8 text-center">
-        <p class="text-xs text-gray-500">© 2025 SendIT. All rights reserved.</p>
-        <div class="mt-2 flex justify-center space-x-4 text-xs text-gray-500">
+    <div class="mt-8 text-center text-sm text-gray-500">
+        <p>© 2025 SendIT. All rights reserved.</p>
+        <div class="mt-2 flex justify-center space-x-4">
             <a href="#" class="hover:text-gray-700">Privacy Policy</a>
             <a href="#" class="hover:text-gray-700">Terms of Service</a>
             <a href="#" class="hover:text-gray-700">Support</a>

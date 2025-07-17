@@ -1,0 +1,67 @@
+<div class="bg-white overflow-hidden shadow rounded-lg hover-lift stats-card">
+    <div class="p-5">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div [class]="'w-8 h-8 rounded-md flex items-center justify-center ' + iconBgColor">
+                    <!-- Package Icon -->
+                    <svg *ngIf="data.icon === 'package'" [class]="'w-5 h-5 ' + data.iconColor" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <!-- Send Icon -->
+                    <svg *ngIf="data.icon === 'send'" [class]="'w-5 h-5 ' + data.iconColor" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    <!-- Clock Icon -->
+                    <svg *ngIf="data.icon === 'clock'" [class]="'w-5 h-5 ' + data.iconColor" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <!-- Dollar Icon -->
+                    <svg *ngIf="data.icon === 'dollar'" [class]="'w-5 h-5 ' + data.iconColor" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                        </path>
+                    </svg>
+                    <!-- Users Icon -->
+                    <svg *ngIf="data.icon === 'users'" [class]="'w-5 h-5 ' + data.iconColor" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">{{ data.title }}</dt>
+                    <dd class="flex items-baseline">
+                        <div class="text-2xl font-semibold text-gray-900">
+                            {{ data.prefix }}{{ formatValue(data.value) }}{{ data.suffix }}
+                        </div>
+                        <div *ngIf="data.growth !== undefined"
+                            [class]="'ml-2 flex items-baseline text-sm font-semibold growth-indicator ' + getGrowthColorClass(data.growth)">
+                            <svg [class]="'self-center flex-shrink-0 h-5 w-5 ' + getGrowthColorClass(data.growth)"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path *ngIf="data.growth >= 0" fill-rule="evenodd"
+                                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 6.414 6.707 9.707a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd"></path>
+                                <path *ngIf="data.growth < 0" fill-rule="evenodd"
+                                    d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">{{ data.growth >= 0 ? 'Increased' : 'Decreased' }} by</span>
+                            {{ Math.abs(data.growth) }}%
+                        </div>
+                    </dd>
+                    <dd *ngIf="data.growthLabel" class="text-sm text-gray-500">{{ data.growthLabel }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

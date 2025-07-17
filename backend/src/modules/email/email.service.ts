@@ -29,7 +29,7 @@ export class EmailService {
   ) {
     const templatePath = path.resolve(
       __dirname,
-      '../templates',
+      'templates',
       `${template}.ejs`,
     );
     const html = await (ejs as any).renderFile(templatePath, data);

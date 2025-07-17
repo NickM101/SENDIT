@@ -2,23 +2,24 @@
 // Login component for SendIT application
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../models/auth.models';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
-  isLoading = false;
-  error = '';
   returnUrl = '';
   showPassword = false;
   private destroy$ = new Subject<void>();
@@ -27,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.loginForm = this.createLoginForm();
   }
@@ -36,9 +37,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     // Get return url from route parameters or default to dashboard
     this.returnUrl =
       this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-
-    // Clear any existing errors
-    this.error = '';
   }
 
   ngOnDestroy(): void {
@@ -66,13 +64,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoading = true;
-    this.error = '';
-
     const loginData: LoginRequest = {
       email: this.loginForm.value.email.trim().toLowerCase(),
       password: this.loginForm.value.password,
-      rememberMe: this.loginForm.value.rememberMe,
     };
 
     this.authService
@@ -80,13 +74,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.isLoading = false;
           // Navigate to return URL or dashboard
           this.router.navigate([this.returnUrl]);
         },
         error: (error) => {
-          this.isLoading = false;
-          this.error = error.message || 'Login failed. Please try again.';
+          // Errors are now handled by AuthService and toastService
         },
       });
   }

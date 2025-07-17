@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl,
   ReactiveFormsModule,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -21,13 +22,10 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   registerForm: FormGroup;
-  isLoading = false;
-  error = '';
   showPassword = false;
   showConfirmPassword = false;
   passwordRequirements: PasswordRequirements = {
@@ -37,6 +35,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     hasNumber: false,
     hasSpecialChar: false,
   };
+  isLoading = false;
+
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -48,7 +49,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.error = '';
     this.setupPasswordValidation();
   }
 
@@ -74,6 +74,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         ],
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, this.phoneValidator]],
+        dateOfBirth: ['', [this.ageValidator]],
         password: ['', [Validators.required, this.passwordValidator]],
         confirmPassword: ['', [Validators.required]],
         agreeToTerms: [false, [Validators.requiredTrue]],
@@ -94,6 +95,24 @@ export class RegisterComponent implements OnInit, OnDestroy {
       .subscribe((password) => {
         this.updatePasswordRequirements(password || '');
       });
+  }
+
+  ageValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+
+    const today = new Date();
+    const birthDate = new Date(control.value);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= 18 ? null : { underage: true };
   }
 
   /**
@@ -189,14 +208,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.markFormGroupTouched();
       return;
     }
-
-    this.isLoading = true;
-    this.error = '';
+      const phoneData = this.registerForm.get('phone')?.value;
 
     const registerData: RegisterRequest = {
       name: this.registerForm.value.name.trim(),
       email: this.registerForm.value.email.trim().toLowerCase(),
       phone: this.registerForm.value.phone.trim(),
+      dateOfBirth: this.registerForm.value.dateOfBirth,
       password: this.registerForm.value.password,
       confirmPassword: this.registerForm.value.confirmPassword,
       agreeToTerms: this.registerForm.value.agreeToTerms,
@@ -207,14 +225,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.isLoading = false;
           // Navigate to email verification or dashboard
           this.router.navigate(['/auth/verify-email']);
         },
         error: (error) => {
-          this.isLoading = false;
-          this.error =
-            error.message || 'Registration failed. Please try again.';
+          // Errors are now handled by AuthService and NotificationService
         },
       });
   }

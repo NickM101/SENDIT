@@ -4,26 +4,21 @@ import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full',
-  },
-  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
     data: {
       preload: true,
     },
   },
-  // {
-  //   path: '/dashboard',
-  //   loadChildren: () =>
-  //     import('./features/dashboard/dashboard.module').then((m) => m.DashboardModule),
-  //   canActivate: [AuthGuard],
-  //   data: {
-  //     title: 'Dashboard - SendIT',
-  //   },
-  // },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+    // canActivate: [AuthGuard],
+    data: {
+      title: 'Dashboard - SendIT',
+    },
+  },
   // {
   //   path: '/parcels',
   //   loadChildren: () =>
