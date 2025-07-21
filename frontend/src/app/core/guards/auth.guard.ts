@@ -58,10 +58,8 @@ export class AuthGuard {
     switch (requiredRole) {
       case 'ADMIN':
         return currentUser.role === 'ADMIN';
-      case 'PREMIUM_USER':
-        return (
-          currentUser.role === 'PREMIUM_USER' || currentUser.role === 'ADMIN'
-        );
+      case 'USER':
+        return currentUser.role === 'USER';
       default:
         return true;
     }

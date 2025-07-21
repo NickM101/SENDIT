@@ -22,7 +22,6 @@ import { PrismaService } from '@app/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
 
-
 interface AuthRequest extends Request {
   user: UserWithoutPassword;
 }
@@ -103,7 +102,7 @@ export class AuthController {
       access_token: this.jwtService.sign({
         sub: user.id,
         email: user.email,
-        role: user.roles,
+        role: user.role,
       }),
       refresh_token: newRt,
     };

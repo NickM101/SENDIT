@@ -9,17 +9,17 @@ datasource db {
 
 model User {
   id          String    @id @default(cuid())
-  email       String    @unique
+  email       String    @unique // Must be a valid email format (e.g., user@example.com)
   name        String
-  phone       String
+  phone       String    // Must match phone number format (e.g., +1234567890)
   password    String
-  roles       Role[]
   dateOfBirth DateTime?
   address     String?
   isActive    Boolean   @default(true)
   avatarUrl   String?
   role        Role      @default(USER)
-  deletedAt   DateTime?
+  deletedAt   DateTime? // Soft delete
+  welcomeEmailSent Boolean @default(false) // Track if welcome email was sent
 
   // Profile settings
   emailNotifications Boolean @default(true)
@@ -40,7 +40,13 @@ model User {
   updatedParcels         Parcel[]                 @relation("ParcelUpdatedBy")
   refreshToken           RefreshToken[]
   emailVerificationToken EmailVerificationToken[]
+  notifications          Notification[]
+  addressesCreated       Address[]                @relation("AddressCreatedBy")
+  addressesUpdated       Address[]                @relation("AddressUpdatedBy")
+  dimensionsCreated      Dimensions[]             @relation("DimensionsCreatedBy")
+  dimensionsUpdated      Dimensions[]             @relation("DimensionsUpdatedBy")
 
+  @@index([email]) // Index for faster email lookups
   @@map("users")
 }
 
@@ -66,94 +72,109 @@ model EmailVerificationToken {
 }
 
 model Address {
-  id      String @id @default(cuid())
-  name    String
-  email   String
-  phone   String
-  street  String
-  city    String
-  state   String
-  zipCode String
-  country String
+  id          String   @id @default(cuid())
+  name        String
+  email       String   // Used for non-registered recipients
+  phone       String   // Used for non-registered recipients
+  street      String
+  city        String
+  state       String
+  zipCode     String
+  country     String
+  latitude    Float?   // For Google Maps marker
+  longitude   Float?   // For Google Maps marker
+  deletedAt   DateTime? // Soft delete
+  createdBy   String?  // Admin or user who created the address
+  updatedBy   String?  // Admin or user who last updated the address
 
   parcelsSender    Parcel[] @relation("SenderAddress")
   parcelsRecipient Parcel[] @relation("RecipientAddress")
+  createdByUser    User?    @relation("AddressCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser    User?    @relation("AddressUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@unique([email, phone]) // Ensure unique email/phone for non-registered recipients
+  @@map("addresses")
 }
 
 model Dimensions {
-  id     String @id @default(cuid())
-  length Float
-  width  Float
-  height Float
-  unit   String
+  id        String    @id @default(cuid())
+  length    Float
+  width     Float
+  height    Float
+  unit      String
+  deletedAt DateTime? // Soft delete
+  createdBy String?   // Admin or user who created the dimensions
+  updatedBy String?   // Admin or user who last updated the dimensions
 
-  parcels Parcel[]
+  parcels        Parcel[] @relation
+  createdByUser  User?    @relation("DimensionsCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser  User?    @relation("DimensionsUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@map("dimensions")
 }
 
 model Parcel {
-  id             String  @id @default(cuid())
-  trackingNumber String  @unique
+  id             String       @id @default(cuid())
+  trackingNumber String       @unique
   senderId       String
-  recipientId    String?
+  recipientId    String?      // Optional for non-registered recipients
   basePrice      Float
-  additionalFees Float?  @default(0)
+  additionalFees Float?       @default(0)
   totalPrice     Float
+  weight         Float?       // Weight for pricing
+  weightUnit     String?      // e.g., "kg", "lb"
+  deletedAt      DateTime?    // Soft delete
 
-  // Dimensions and addresses
   dimensionsId       String?
   senderAddressId    String
   recipientAddressId String
 
-  packageType    PackageType
-  estimatedValue Float?
-  description    String?
+  packageType        PackageType
+  estimatedValue     Float?
+  description        String?
 
-  // Delivery
-  deliveryType      DeliveryType @default(STANDARD)
-  pickupDate        DateTime?
-  deliveryDate      DateTime?
-  estimatedDelivery DateTime?
-  actualDelivery    DateTime?
+  deliveryType       DeliveryType     @default(STANDARD)
+  pickupDate         DateTime?
+  deliveryDate       DateTime?
+  estimatedDelivery  DateTime?
+  actualDelivery     DateTime?
 
-  // Special handling
-  fragile           Boolean @default(false)
-  perishable        Boolean @default(false)
-  hazardousMaterial Boolean @default(false)
-  highValue         Boolean @default(false)
+  status             ParcelStatus     @default(PROCESSING)
 
-  // Instructions and notes
+  fragile            Boolean          @default(false)
+  perishable         Boolean          @default(false)
+  hazardousMaterial  Boolean          @default(false)
+  highValue          Boolean          @default(false)
+
   pickupInstructions   String?
   deliveryInstructions String?
   specialHandling      String?
 
-  // Insurance and signature
-  insuranceCoverage InsuranceCoverage @default(NO_INSURANCE)
-  signatureRequired Boolean           @default(false)
+  insuranceCoverage  InsuranceCoverage @default(NO_INSURANCE)
+  signatureRequired  Boolean           @default(false)
 
-  // Notifications
-  emailNotifications Boolean @default(true)
-  smsNotifications   Boolean @default(false)
+  emailNotifications Boolean          @default(true)
+  smsNotifications   Boolean          @default(false)
 
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  createdBy          String?          // Admin who created the parcel
+  updatedBy          String?          // Admin who last updated the parcel
 
-  // Audit
-  createdBy String?
-  updatedBy String?
+  sender             User             @relation("SenderParcels", fields: [senderId], references: [id])
+  recipient          User?            @relation("RecipientParcels", fields: [recipientId], references: [id])
+  createdByUser      User?            @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser      User?            @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
+  trackingHistory    TrackingHistory[]
+  deliveryAttempts   DeliveryAttempt[]
+  dimensions         Dimensions?      @relation(fields: [dimensionsId], references: [id])
+  senderAddress      Address          @relation("SenderAddress", fields: [senderAddressId], references: [id])
+  recipientAddress   Address          @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
+  payments           Payment[]
+  notifications      Notification[]
 
-  // Relationships
-  sender           User              @relation("SenderParcels", fields: [senderId], references: [id])
-  recipient        User?             @relation("RecipientParcels", fields: [recipientId], references: [id])
-  createdByUser    User?             @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser    User?             @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
-  trackingHistory  TrackingHistory[]
-  deliveryAttempts DeliveryAttempt[]
-  dimensions       Dimensions?       @relation(fields: [dimensionsId], references: [id])
-  senderAddress    Address           @relation("SenderAddress", fields: [senderAddressId], references: [id])
-  recipientAddress Address           @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
-  payments         Payment[]
-
+  @@index([trackingNumber]) // Index for search
+  @@index([status])         // Index for filtering
   @@map("parcels")
 }
 
@@ -165,12 +186,11 @@ model TrackingHistory {
   description String?
   timestamp   DateTime     @default(now())
   updatedBy   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  parcel        Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
-  updatedByUser User?  @relation(fields: [updatedBy], references: [id])
+  parcel        Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  updatedByUser User?    @relation(fields: [updatedBy], references: [id])
 
   @@map("tracking_history")
 }
@@ -183,9 +203,41 @@ model DeliveryAttempt {
   reason      String?
   nextAttempt DateTime?
 
-  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  parcel      Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
 
   @@map("delivery_attempts")
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  parcelId    String?
+  userId      String?
+  type        NotificationType   // EMAIL or SMS
+  status      NotificationStatus // SENT, FAILED, PENDING
+  message     String?            // Notification content or error message
+  sentAt      DateTime?
+  queuedAt    DateTime?          // When notification was queued
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  parcel      Parcel?            @relation(fields: [parcelId], references: [id])
+  user        User?              @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  stripePaymentIntentId String        @unique
+  amount                Float
+  currency              String
+  status                PaymentStatus // Use enum for consistency
+  parcelId              String?
+  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@map("payments")
 }
 
 enum Role {
@@ -237,25 +289,20 @@ enum AttemptStatus {
   FAILED_OTHER
 }
 
-model Payment {
-  id                    String @id @default(cuid())
-  stripePaymentIntentId String @unique
-  amount                Float
-  currency              String
-  status                String // Corresponds to Stripe PaymentIntent status (e.g., 'succeeded', 'requires_payment_method')
-
-  parcelId String?
-  parcel   Parcel? @relation(fields: [parcelId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("payments")
-}
-
 enum PaymentStatus {
   PENDING
   PAID
   FAILED
   REFUNDED
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
 }

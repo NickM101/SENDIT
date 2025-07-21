@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { ToastComponent } from './toast.component';
-import { Toast } from '../../../core/services/toast.service';
-import { ToastService } from '../../../core/services/toast.service';
+import { Toast, ToastService } from '../../../core/services/toast.service';
+
 @Component({
   selector: 'app-toast-container',
   standalone: true,

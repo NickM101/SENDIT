@@ -7,7 +7,6 @@ import { environment } from '../../../environments/environment';
 import {
   User,
   LoginRequest,
-  LoginResponse,
   RegisterRequest,
   RegisterResponse,
   ForgotPasswordRequest,
@@ -17,6 +16,7 @@ import {
   EmailVerificationRequest,
   EmailVerificationResponse,
   ApiResponse,
+  UserRole,
 } from '../models/auth.models';
 import { ToastService } from '../../core/services/toast.service';
 @Injectable({
@@ -38,6 +38,7 @@ export class AuthService {
     const user = localStorage.getItem('current_user');
     if (token && user) {
       this.tokenSubject.next(token);
+      console.log('Current User:', user);
       this.currentUserSubject.next(JSON.parse(user));
     }
   }
@@ -54,30 +55,30 @@ export class AuthService {
     return !!this.tokenValue && !!this.currentUserValue;
   }
 
+  public hasRole(role: UserRole): boolean {
+    const user = this.currentUserSubject.value;
+    return user?.role === role || false;
+  }
+
   public get isAdmin(): boolean {
-    return this.currentUserValue?.role === 'ADMIN';
+    return this.hasRole(UserRole.ADMIN);
   }
 
   public get getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem('auth_token');
   }
 
   public get getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  public hasRole(role: string): boolean {
-    const user = this.currentUserSubject.value;
-    return user?.role === role || false;
-  }
-
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  login(credentials: LoginRequest): Observable<User> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/login`, credentials)
+      .post<ApiResponse<User>>(`${this.apiUrl}/login`, credentials)
       .pipe(
         map((response) => {
           if (response.success && response.data) {
-            this.setAuthData(response.data.token, response.data.user);
+            this.setAuthData(response.data?.access_token, response.data);
             this.toastService.success('Login successful');
             return response.data;
           }
@@ -212,6 +213,24 @@ export class AuthService {
     localStorage.setItem('current_user', JSON.stringify(user));
     this.tokenSubject.next(token);
     this.currentUserSubject.next(user);
+
+    // Navigate based on user role
+    this.navigateByRole(user.role);
+  }
+
+  private navigateByRole(role: UserRole): void {
+    switch (role) {
+      case UserRole.ADMIN:
+        this.router.navigate(['/dashboard']);
+        break;
+      case UserRole.USER:
+      case UserRole.PREMIUM_USER:
+        this.router.navigate(['/landing-page']);
+        break;
+      default:
+        this.router.navigate(['/landing-page']);
+        break;
+    }
   }
 
   private updateCurrentUser(user: User): void {

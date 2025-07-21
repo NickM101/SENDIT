@@ -74,8 +74,13 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          // Navigate to return URL or dashboard
-          this.router.navigate([this.returnUrl]);
+          // Navigate based on user role or return URL
+          const userRole = this.authService.currentUserValue?.role;
+          if (userRole === 'ADMIN') {
+            this.router.navigate(['/admin-dashboard']);
+          } else {
+            this.router.navigate(['/user-dashboard']);
+          }
         },
         error: (error) => {
           // Errors are now handled by AuthService and toastService

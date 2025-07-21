@@ -189,4 +189,18 @@ export class UsersService {
     // Consider using softDelete instead for most cases.
     return this.prisma.user.delete({ where: { id } });
   }
+
+  async getUserStats() {
+    const totalUsers = await this.prisma.user.count();
+    const activeUsers = await this.prisma.user.count({ where: { isActive: true } });
+    const inactiveUsers = await this.prisma.user.count({ where: { isActive: false } });
+    const adminUsers = await this.prisma.user.count({ where: { role: 'ADMIN' } });
+
+    return {
+      totalUsers,
+      activeUsers,
+      inactiveUsers,
+      adminUsers,
+    };
+  }
 }

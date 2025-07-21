@@ -1,8 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 
 export const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () =>
+      import('./layouts/landing-page/landing-page.module').then(
+        (m) => m.LandingPageModule
+      ),
+    data: {
+      title: 'Landing Page - SendIT',
+      description: 'Welcome to SendIT, your reliable parcel delivery service',
+    },
+  },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
@@ -11,13 +23,58 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'dashboard',
-    loadChildren: () =>
-      import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-    // canActivate: [AuthGuard],
-    data: {
-      title: 'Dashboard - SendIT',
-    },
+    path: '',
+    component: DashboardLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'user-dashboard',
+        loadChildren: () =>
+          import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+        data: {
+          title: 'User Dashboard - SendIT',
+          roles: ['USER', 'ADMIN'],
+        },
+      },
+      {
+        path: 'admin-dashboard',
+        loadChildren: () =>
+          import('./admin/admin.module').then((m) => m.AdminDashboardModule),
+        data: {
+          title: 'Admin Dashboard - SendIT',
+          roles: ['ADMIN'],
+        },
+      },
+
+      // Add other routes that should use the dashboard layout here
+      // For example, if you uncomment the parcel and profile routes, they should go here
+      // {
+      //   path: 'parcels',
+      //   loadChildren: () =>
+      //     import('./features/parcels/parcels.module').then((m) => m.ParcelsModule),
+      //   data: {
+      //     title: 'My Parcels - SendIT',
+      //     roles: ['USER', 'ADMIN'],
+      //   },
+      // },
+      // {
+      //   path: 'profile',
+      //   loadChildren: () =>
+      //     import('./features/profile/profile.module').then((m) => m.ProfileModule),
+      //   data: {
+      //     title: 'Profile - SendIT',
+      //     roles: ['USER', 'ADMIN'],
+      //   },
+      // },
+      // {
+      //   path: 'track',
+      //   loadChildren: () =>
+      //     import('./features/tracking/tracking.module').then((m) => m.TrackingModule),
+      //   data: {
+      //     title: 'Track Parcel - SendIT',
+      //   },
+      // },
+    ],
   },
   // {
   //   path: '/parcels',
@@ -60,7 +117,6 @@ export const routes: Routes = [
     redirectTo: '/auth/login',
   },
 ];
-
 
 @NgModule({
   imports: [

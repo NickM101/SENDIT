@@ -1,0 +1,285 @@
+<!-- Main container with a light background -->
+<div class="bg-white font-sans text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-6 h-6 text-indigo-600">
+                            <path d="M5 12h14" />
+                            <path d="m12 5 7 7-7 7" />
+                        </svg>
+                        <span class="font-bold text-xl text-gray-900">SendIT</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#"
+                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Services</a>
+                    <a href="#"
+                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Tracking</a>
+                    <a href="#"
+                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Pricing</a>
+                    <a href="#"
+                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">About</a>
+                    <a href="#"
+                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Contact</a>
+                </nav>
+
+                <!-- Auth section: Dynamically shows Sign In/Get Quote or User Dropdown -->
+                <div class="flex items-center space-x-4">
+                    <!-- Unauthenticated State -->
+                    <div *ngIf="!isAuthenticated" class="flex items-center space-x-4">
+                        <button (click)="signIn()"
+                            class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Sign
+                            In</button>
+                        <a href="#"
+                            class="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
+                            Get Quote
+                        </a>
+                    </div>
+
+                    <!-- Authenticated State (shadcn/ui style dropdown) -->
+                    <div *ngIf="isAuthenticated" class="relative">
+                        <button (click)="toggleDropdown()"
+                            class="flex items-center space-x-3 text-left rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <img [src]="user.avatarUrl" alt="User avatar" class="w-9 h-9 rounded-full bg-gray-200">
+                            <div class="hidden sm:flex flex-col">
+                                <span class="text-sm font-medium text-gray-900">{{ user.name }}</span>
+                                <span class="text-xs text-gray-500">{{ user.email }}</span>
+                            </div>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div *ngIf="isDropdownOpen"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <button (click)="signOut()"
+                                class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight">
+                            Fast & Reliable Courier Service
+                        </h1>
+                        <p class="mt-6 text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
+                            Get instant quotes based on weight categories and deliver your parcels to any destination
+                            with confidence.
+                        </p>
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <a href="#"
+                                class="inline-block px-8 py-3 text-base font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
+                                Get Quote Now
+                            </a>
+                            <a href="#"
+                                class="inline-block px-8 py-3 text-base font-semibold text-gray-800 bg-white rounded-lg shadow-md hover:bg-gray-100 ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
+                                Track Package
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-gray-200 rounded-lg h-64 lg:h-80">
+                        <p class="text-gray-500">Delivery Truck Illustration</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Get Instant Quote Section -->
+        <section class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Get Instant Quote</h2>
+                    <p class="mt-4 text-lg text-gray-600">Calculate shipping cost based on weight and destination.</p>
+                </div>
+                <div class="mt-12 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                    <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="from" class="block text-sm font-medium text-gray-700">From</label>
+                            <input type="text" id="from" placeholder="Pickup location"
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="to" class="block text-sm font-medium text-gray-700">To</label>
+                            <input type="text" id="to" placeholder="Delivery destination"
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="weight-category" class="block text-sm font-medium text-gray-700">Weight
+                                Category</label>
+                            <select id="weight-category"
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option>Light (0-5kg)</option>
+                                <option>Medium (5-15kg)</option>
+                                <option>Heavy (15-30kg)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="service-type" class="block text-sm font-medium text-gray-700">Service
+                                Type</label>
+                            <select id="service-type"
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option>Standard Delivery</option>
+                                <option>Express Delivery</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="package-type" class="block text-sm font-medium text-gray-700">Package
+                                Type</label>
+                            <select id="package-type"
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option>Document</option>
+                                <option>Parcel</option>
+                                <option>Fragile</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2 text-center">
+                            <button type="submit"
+                                class="w-full sm:w-auto mt-4 px-8 py-3 text-base font-semibold text-white bg-gray-900 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
+                                Calculate Quote
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weight Categories & Pricing Section -->
+        <section class="bg-gray-50 py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Weight Categories & Pricing
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">Transparent pricing based on package weight.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Pricing cards will be generated by *ngFor -->
+                    <div *ngFor="let tier of pricingTiers"
+                        class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center flex flex-col items-center">
+                        <div [innerHTML]="tier.icon"></div>
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900">{{ tier.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ tier.weight }}</p>
+                        <p class="mt-4">
+                            <span class="text-4xl font-bold text-gray-900">${{ tier.price }}</span>
+                        </p>
+                        <p class="text-sm text-gray-500">{{ tier.pricePeriod }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us Section -->
+        <section class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose SendIT?</h2>
+                    <p class="mt-4 text-lg text-gray-600">Reliable courier service with unmatched benefits.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <!-- Feature cards will be generated by *ngFor -->
+                    <div *ngFor="let feature of features" class="flex flex-col items-center p-6">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-gray-900 mb-6">
+                            <div [innerHTML]="feature.icon"></div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900">{{ feature.title }}</h3>
+                        <p class="mt-2 text-base text-gray-600">{{ feature.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Track Your Package Section -->
+        <section class="bg-gray-50 py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Track Your Package</h2>
+                    <p class="mt-4 text-lg text-gray-600">Enter your tracking number to get real-time updates.</p>
+                    <form class="mt-8 flex flex-col sm:flex-row gap-3">
+                        <label for="tracking-number" class="sr-only">Tracking Number</label>
+                        <input type="text" id="tracking-number" placeholder="Enter tracking number"
+                            class="flex-grow w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <button type="submit"
+                            class="px-6 py-3 text-base font-semibold text-white bg-gray-900 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
+                            Track Package
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo and Description -->
+                <div class="md:col-span-1">
+                    <a href="#" class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-6 h-6 text-indigo-400">
+                            <path d="M5 12h14" />
+                            <path d="m12 5 7 7-7 7" />
+                        </svg>
+                        <span class="font-bold text-xl text-white">SendIT</span>
+                    </a>
+                    <p class="mt-4 text-sm text-gray-400">Fast and reliable courier service for all your delivery needs.
+                    </p>
+                </div>
+                <!-- Links -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8 md:col-span-3">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Services</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Standard Delivery</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Express Delivery</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Same Day Delivery</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">International Shipping</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Support</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Track Package</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Help Center</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Contact Us</a></li>
+                            <li><a href="#" class="text-base text-gray-400 hover:text-white">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Contact</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li class="flex items-center"><span class="mr-2">📞</span> +1 (555) 123-4567</li>
+                            <li class="flex items-center"><span class="mr-2">✉️</span> support&#64;sendit.com</li>
+                            <li class="flex items-start"><span class="mr-2 mt-1">📍</span> 123 Delivery St, City</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+                <p>&copy; 2025 SendIT. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</div>

@@ -1,4 +1,3 @@
-// src/app/shared/toast/toast.component.ts
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -9,11 +8,10 @@ import {
   animate,
 } from '@angular/animations';
 import { Toast } from '../../../core/services/toast.service';
-
 @Component({
   selector: 'app-toast',
-  imports: [CommonModule],
   templateUrl: './toast.component.html',
+  imports: [CommonModule],
   animations: [
     trigger('slideIn', [
       state('in', style({ transform: 'translateX(0)' })),

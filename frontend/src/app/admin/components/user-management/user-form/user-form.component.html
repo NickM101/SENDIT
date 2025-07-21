@@ -1,0 +1,73 @@
+<div class="user-form-container">
+  <div class="card">
+    <div class="card-header">
+      <h5>{{ isEditMode ? 'Edit User' : 'Add New User' }}</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" id="name" formControlName="name" class="form-control" [ngClass]="{'is-invalid': userForm.get('name')?.invalid && userForm.get('name')?.touched}">
+          <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="invalid-feedback">
+            Name is required.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" formControlName="email" class="form-control" [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched}">
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="invalid-feedback">
+            <span *ngIf="userForm.get('email')?.errors?.['required']">Email is required.</span>
+            <span *ngIf="userForm.get('email')?.errors?.['email']">Please enter a valid email.</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone</label>
+          <input type="text" id="phone" formControlName="phone" class="form-control" [ngClass]="{'is-invalid': userForm.get('phone')?.invalid && userForm.get('phone')?.touched}">
+          <div *ngIf="userForm.get('phone')?.invalid && userForm.get('phone')?.touched" class="invalid-feedback">
+            Phone is required.
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="!isEditMode">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" formControlName="password" class="form-control" [ngClass]="{'is-invalid': userForm.get('password')?.invalid && userForm.get('password')?.touched}">
+          <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="invalid-feedback">
+            <span *ngIf="userForm.get('password')?.errors?.['required']">Password is required.</span>
+            <span *ngIf="userForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters.</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="roles" class="form-label">Roles</label>
+          <select multiple id="roles" formControlName="roles" class="form-control" [ngClass]="{'is-invalid': userForm.get('roles')?.invalid && userForm.get('roles')?.touched}">
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+            <option value="PREMIUM_USER">Premium User</option>
+          </select>
+          <div *ngIf="userForm.get('roles')?.invalid && userForm.get('roles')?.touched" class="invalid-feedback">
+            At least one role is required.
+          </div>
+        </div>
+
+        <div class="form-check mb-3">
+          <input type="checkbox" id="isActive" formControlName="isActive" class="form-check-input">
+          <label class="form-check-label" for="isActive">Is Active</label>
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger mt-3">
+          {{ error }}
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button type="button" class="btn btn-secondary me-2" (click)="onCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid || loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ isEditMode ? 'Update User' : 'Create User' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

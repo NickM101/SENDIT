@@ -22,7 +22,6 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { JwtAuthGuard } from '@app/modules/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@app/modules/auth/guards/roles.guard';
 import { Public } from '@app/common/decorators/public.decorator';
 import { Roles } from '@app/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
@@ -36,6 +35,7 @@ import {
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Users')
@@ -47,15 +47,24 @@ export class UsersController {
   @Public()
   @Post()
   @ApiOperation({ summary: `Create a new user account` })
-  @ApiResponse({ status: HttpStatus.CREATED, description: `User created successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid input.` })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: `User created successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid input.`,
+  })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get('me')
   @ApiOperation({ summary: `Get current user's profile` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User profile retrieved successfully.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User profile retrieved successfully.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
   getProfile(@Request() req) {
     return this.usersService.findOne(req.user.userId);
@@ -63,8 +72,14 @@ export class UsersController {
 
   @Patch('change-password')
   @ApiOperation({ summary: `Change current user's password` })
-  @ApiResponse({ status: HttpStatus.OK, description: `Password changed successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid old password or input.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `Password changed successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid old password or input.`,
+  })
   async changePassword(
     @Request() req,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -75,8 +90,14 @@ export class UsersController {
 
   @Patch('profile')
   @ApiOperation({ summary: `Update current user's profile information` })
-  @ApiResponse({ status: HttpStatus.OK, description: `Profile updated successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid input or email already in use.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `Profile updated successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid input or email already in use.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
   async updateProfile(
     @Request() req,
@@ -99,8 +120,14 @@ export class UsersController {
       },
     },
   })
-  @ApiResponse({ status: HttpStatus.OK, description: `Profile picture updated successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid file or user not found.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `Profile picture updated successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid file or user not found.`,
+  })
   @UseInterceptors(FileInterceptor('file'))
   async updateProfilePicture(
     @Request() req,
@@ -117,13 +144,46 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Get('admin')
   @ApiOperation({ summary: `Get all users (Admin only)` })
-  @ApiQuery({ name: 'search', required: false, type: String, description: `Search by email, name, or phone` })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: `Page number`, example: 1 })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: `Items per page`, example: 10 })
-  @ApiQuery({ name: 'role', required: false, enum: Role, description: `Filter by user role` })
-  @ApiQuery({ name: 'isActive', required: false, type: Boolean, description: `Filter by active status` })
-  @ApiResponse({ status: HttpStatus.OK, description: `List of users retrieved successfully.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: `Search by email, name, or phone`,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: `Page number`,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: `Items per page`,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    enum: Role,
+    description: `Filter by user role`,
+  })
+  @ApiQuery({
+    name: 'isActive',
+    required: false,
+    type: Boolean,
+    description: `Filter by active status`,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `List of users retrieved successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   findAll(@Query() query: UserQueryDto) {
     return this.usersService.findAll(query);
   }
@@ -133,9 +193,15 @@ export class UsersController {
   @Get('admin/:id')
   @ApiOperation({ summary: `Get a user by ID (Admin only)` })
   @ApiParam({ name: 'id', description: `ID of the user to retrieve` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User retrieved successfully.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User retrieved successfully.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   findOneAdmin(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
@@ -145,10 +211,19 @@ export class UsersController {
   @Patch('admin/:id')
   @ApiOperation({ summary: `Update a user's information by ID (Admin only)` })
   @ApiParam({ name: 'id', description: `ID of the user to update` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User updated successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid input or email already in use.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User updated successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid input or email already in use.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   updateByAdmin(
     @Param('id') id: string,
     @Body() updateUserByAdminDto: UpdateUserByAdminDto,
@@ -161,10 +236,19 @@ export class UsersController {
   @Delete('admin/soft-delete/:id')
   @ApiOperation({ summary: `Soft delete a user by ID (Admin only)` })
   @ApiParam({ name: 'id', description: `ID of the user to soft delete` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User soft deleted successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `User already soft-deleted.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User soft deleted successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `User already soft-deleted.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   softDelete(@Param('id') id: string) {
     return this.usersService.softDelete(id);
   }
@@ -174,19 +258,36 @@ export class UsersController {
   @Patch('admin/restore/:id')
   @ApiOperation({ summary: `Restore a soft-deleted user by ID (Admin only)` })
   @ApiParam({ name: 'id', description: `ID of the user to restore` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User restored successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `User not soft-deleted.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User restored successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `User not soft-deleted.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   restore(@Param('id') id: string) {
     return this.usersService.restore(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: `Update a user's information by ID (limited fields for non-admin)` })
+  @ApiOperation({
+    summary: `Update a user's information by ID (limited fields for non-admin)`,
+  })
   @ApiParam({ name: 'id', description: `ID of the user to update` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User updated successfully.` })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: `Invalid input or email already in use.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User updated successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `Invalid input or email already in use.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
@@ -195,12 +296,36 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @Delete(':id')
-  @ApiOperation({ summary: `Hard delete a user by ID (Admin only, use with caution)` })
+  @ApiOperation({
+    summary: `Hard delete a user by ID (Admin only, use with caution)`,
+  })
   @ApiParam({ name: 'id', description: `ID of the user to hard delete` })
-  @ApiResponse({ status: HttpStatus.OK, description: `User hard deleted successfully.` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User hard deleted successfully.`,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `User not found.` })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: `Forbidden resource.` })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get('admin/stats')
+  @ApiOperation({ summary: `Get user statistics (Admin only)` })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `User statistics retrieved successfully.`,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: `Forbidden resource.`,
+  })
+  getUserStats() {
+    return this.usersService.getUserStats();
   }
 }

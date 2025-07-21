@@ -1,0 +1,93 @@
+<div [ngClass]="{'w-64': !isCollapsed, 'w-20': isCollapsed}"
+     class="flex flex-col h-full bg-gray-900 text-white transition-all duration-300 ease-in-out shadow-lg">
+  <!-- Logo and Toggle Button -->
+  <div class="flex items-center p-4 border-b border-gray-700">
+    <img src="assets/logo.png" alt="Logo" class="h-8 mr-3" *ngIf="!isCollapsed">
+    <h1 class="text-xl font-bold" *ngIf="!isCollapsed">SendIT</h1>
+    <button (click)="onToggleCollapsed()" class="ml-auto p-2 rounded-full hover:bg-gray-700 focus:outline-none">
+      <lucide-icon [name]="isCollapsed ? 'chevron-right' : 'chevron-left'" class="w-5 h-5"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 px-2 py-4 overflow-y-auto">
+    <ul>
+      <ng-container *ngFor="let item of filterNavigation(navigation)">
+        <li class="mb-2">
+          <ng-container *ngIf="!item.children; else hasChildren">
+            <a [routerLink]="item.link" routerLinkActive="bg-gray-700 text-blue-400"
+               class="flex items-center p-2 rounded-md hover:bg-gray-700 group">
+              <lucide-icon [name]="item.icon" class="w-5 h-5 mr-3"></lucide-icon>
+              <span *ngIf="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
+              <span *ngIf="isCollapsed"
+                    class="absolute left-full ml-4 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                {{ item.title }}
+              </span>
+            </a>
+          </ng-container>
+          <ng-template #hasChildren>
+            <div class="relative">
+              <button (click)="item.expanded = !item.expanded"
+                      class="flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-700 group">
+                <div class="flex items-center">
+                  <lucide-icon [name]="item.icon" class="w-5 h-5 mr-3"></lucide-icon>
+                  <span *ngIf="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
+                  <span *ngIf="isCollapsed"
+                        class="absolute left-full ml-4 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    {{ item.title }}
+                  </span>
+                </div>
+                <lucide-icon *ngIf="!isCollapsed" [name]="item.expanded ? 'chevron-down' : 'chevron-right'"
+                             class="w-4 h-4 transition-transform duration-200"></lucide-icon>
+              </button>
+              <ul *ngIf="item.expanded && !isCollapsed" class="ml-8 mt-1">
+                <li *ngFor="let child of item.children" class="mb-1">
+                  <a [routerLink]="child.link" routerLinkActive="bg-gray-700 text-blue-400"
+                     class="flex items-center p-2 rounded-md hover:bg-gray-700 group">
+                    <lucide-icon [name]="child.icon" class="w-4 h-4 mr-3"></lucide-icon>
+                    <span class="text-sm">{{ child.title }}</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </ng-template>
+        </li>
+      </ng-container>
+    </ul>
+  </nav>
+
+  <!-- Profile Section -->
+  <div class="relative p-4 border-t border-gray-700">
+    <button (click)="toggleProfileMenu()"
+            class="flex items-center w-full p-2 rounded-md hover:bg-gray-700 focus:outline-none">
+      <lucide-icon name="circle-user" class="w-6 h-6 mr-3"></lucide-icon>
+      <div *ngIf="!isCollapsed" class="flex-1 text-left">
+        <p class="text-sm font-medium">{{ currentUser?.name || 'Guest' }}</p>
+        <p class="text-xs text-gray-400">{{ currentUser?.email || 'guest@example.com' }}</p>
+      </div>
+      <lucide-icon *ngIf="!isCollapsed" [name]="showProfileMenu ? 'chevron-down' : 'chevron-right'"
+                   class="w-4 h-4 ml-auto"></lucide-icon>
+      <span *ngIf="isCollapsed"
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        Profile
+      </span>
+    </button>
+
+    <!-- Profile Dropdown Menu -->
+    <div *ngIf="showProfileMenu"
+         class="absolute bottom-full left-0 w-full bg-gray-800 rounded-md shadow-lg mb-2 z-10">
+      <a routerLink="/profile" class="flex items-center p-2 rounded-t-md hover:bg-gray-700">
+        <lucide-icon name="user" class="w-4 h-4 mr-2"></lucide-icon>
+        <span class="text-sm">Profile</span>
+      </a>
+      <a routerLink="/settings" class="flex items-center p-2 hover:bg-gray-700">
+        <lucide-icon name="settings" class="w-4 h-4 mr-2"></lucide-icon>
+        <span class="text-sm">Settings</span>
+      </a>
+      <button (click)="logout()" class="flex items-center w-full p-2 rounded-b-md hover:bg-gray-700">
+        <lucide-icon name="log-out" class="w-4 h-4 mr-2"></lucide-icon>
+        <span class="text-sm">Logout</span>
+      </button>
+    </div>
+  </div>
+</div>

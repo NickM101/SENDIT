@@ -4,15 +4,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-
+import { DashboardLayoutComponent } from '../layouts/dashboard-layout/dashboard-layout.component';
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
-    data: {
-      title: 'Dashboard - SendIT',
-      description: 'Your SendIT dashboard overview',
-    },
+    component: DashboardLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: DashboardComponent,
+        data: {
+          title: 'Dashboard - SendIT',
+          description: 'Your SendIT dashboard overview',
+        },
+      },
+    ],
   },
 ];
 

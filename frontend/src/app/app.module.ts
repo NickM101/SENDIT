@@ -1,24 +1,23 @@
-// File: src/app/app.module.ts
-// Main application module for SendIT application
-
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-
-// Interceptors
+import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-
-// Environment
-import { AppRoutingModule } from './app.routes';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
   ],
   providers: [
     provideHttpClient(withFetch()),

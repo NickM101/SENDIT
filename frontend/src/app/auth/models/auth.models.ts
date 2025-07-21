@@ -8,20 +8,19 @@ export interface User {
   role: UserRole;
   createdAt: string;
   isActive: boolean;
+  avatarUrl: string | null;
   emailVerified: boolean;
+  access_token: string;
+  dateOfBirth?: string;
+  profilePicture?: string;
+  address?: string;
+  bio?: string;
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
   rememberMe?: boolean;
-}
-
-export interface LoginResponse {
-  user: User;
-  token: string;
-  refreshToken?: string;
-  message: string;
 }
 
 export interface RegisterRequest {
