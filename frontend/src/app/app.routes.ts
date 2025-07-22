@@ -34,24 +34,7 @@ export const routes: Routes = [
     component: DashboardLayoutComponent,
     canActivateChild: [AuthGuard],
     children: [
-      {
-        path: 'user',
-        loadChildren: () =>
-          import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-        data: {
-          title: 'User Dashboard - SendIT',
-          roles: ['USER'],
-        },
-      },
-      {
-        path: 'admin',
-        loadChildren: () =>
-          import('./admin/admin.module').then((m) => m.AdminDashboardModule),
-        data: {
-          title: 'Admin Dashboard - SendIT',
-          roles: ['ADMIN'],
-        },
-      },
+      
     ],
   },
 

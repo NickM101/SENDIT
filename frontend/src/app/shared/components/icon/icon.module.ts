@@ -52,6 +52,10 @@ import {
   ArrowRight,
   Zap,
   Send,
+  Moon,
+  X,
+  BarChart3,
+  Sun,
 
 } from 'lucide-angular';
 
@@ -106,6 +110,10 @@ const lucideIcons = {
   ArrowRight,
   Zap,
   Send,
+  Moon,
+  X,
+  BarChart3,
+  Sun,
 };
 
 @NgModule({

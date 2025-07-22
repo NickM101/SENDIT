@@ -29,7 +29,7 @@ export class AuthService {
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private toastService: ToastService,
+    private toastService: ToastService
   ) {
     const token = localStorage.getItem('auth_token');
     const user = localStorage.getItem('current_user');
@@ -71,15 +71,13 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<User> {
-    return this.apiService
-      .post<User>('/auth/login', credentials)
-      .pipe(
-        tap((user) => {
-          this.setAuthData(user.access_token, user);
-          this.toastService.success('Login successful');
-        }),
-        map((user) => user)
-      );
+    return this.apiService.post<User>('/auth/login', credentials).pipe(
+      tap((user) => {
+        this.setAuthData(user.access_token, user);
+        this.toastService.success('Login successful');
+      }),
+      map((user) => user)
+    );
   }
 
   register(userData: RegisterRequest): Observable<RegisterResponse> {
@@ -124,7 +122,10 @@ export class AuthService {
     verificationData: EmailVerificationRequest
   ): Observable<EmailVerificationResponse> {
     return this.apiService
-      .post<EmailVerificationResponse>(`/auth/verify-email/${verificationData.token}`, {})
+      .post<EmailVerificationResponse>(
+        `/auth/verify-email/${verificationData.token}`,
+        {}
+      )
       .pipe(
         tap((response) => {
           if (response.user) {
@@ -138,7 +139,10 @@ export class AuthService {
 
   resendVerificationEmail(): Observable<{ success: boolean; message: string }> {
     return this.apiService
-      .post<{ success: boolean; message: string }>('/auth/resend-verification', {})
+      .post<{ success: boolean; message: string }>(
+        '/auth/resend-verification',
+        {}
+      )
       .pipe(
         tap((response) => {
           if (response.success) {
@@ -189,7 +193,7 @@ export class AuthService {
         this.router.navigate(['/dashboard/admin']);
         break;
       case UserRole.USER:
-      case UserRole.PREMIUM_USER:
+      case UserRole.COURIER:
         this.router.navigate(['/dashboard/user']);
         break;
       default:
@@ -202,6 +206,4 @@ export class AuthService {
     localStorage.setItem('current_user', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
-
-  
 }

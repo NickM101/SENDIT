@@ -38,7 +38,7 @@ export const SidebarConfigs: Record<UserRole | 'GUEST', SidebarItem[]> = {
       route: '/profile',
     },
   ],
-  PREMIUM_USER: [
+  COURIER: [
     {
       label: 'Dashboard',
       icon: 'home',

@@ -1,93 +1,142 @@
-<div [ngClass]="{'w-64': !isCollapsed, 'w-20': isCollapsed}"
-     class="flex flex-col h-full bg-gray-900 text-white transition-all duration-300 ease-in-out shadow-lg">
-  <!-- Logo and Toggle Button -->
-  <div class="flex items-center p-4 border-b border-gray-700">
-    <img src="assets/logo.png" alt="Logo" class="h-8 mr-3" *ngIf="!isCollapsed">
-    <h1 class="text-xl font-bold" *ngIf="!isCollapsed">SendIT</h1>
-    <button (click)="onToggleCollapsed()" class="ml-auto p-2 rounded-full hover:bg-gray-700 focus:outline-none">
-      <lucide-icon [name]="isCollapsed ? 'chevron-right' : 'chevron-left'" class="w-5 h-5"></lucide-icon>
-    </button>
+<!-- Enhanced Sidebar Component Template -->
+<div [ngClass]="{'w-64': !isCollapsed, 'w-16': isCollapsed}"
+  class="flex flex-col h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out">
+
+  <!-- Header Section -->
+  <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 min-h-[64px]">
+    <div class="flex items-center space-x-3" *ngIf="!isCollapsed">
+      <div class="w-8 h-8 bg-slate-900 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+        <lucide-icon name="truck" class="w-5 h-5 text-white"></lucide-icon>
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">SendIT</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Courier Service</p>
+      </div>
+    </div>
+
+    <!-- Collapsed Logo -->
+    <div class="w-8 h-8 bg-slate-900 dark:bg-gray-600 rounded-lg flex items-center justify-center mx-auto"
+      *ngIf="isCollapsed">
+      <lucide-icon name="truck" class="w-5 h-5 text-white"></lucide-icon>
+    </div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="flex-1 px-2 py-4 overflow-y-auto">
-    <ul>
-      <ng-container *ngFor="let item of filterNavigation(navigation)">
-        <li class="mb-2">
-          <ng-container *ngIf="!item.children; else hasChildren">
-            <a [routerLink]="item.link" routerLinkActive="bg-gray-700 text-blue-400"
-               class="flex items-center p-2 rounded-md hover:bg-gray-700 group">
-              <lucide-icon [name]="item.icon" class="w-5 h-5 mr-3"></lucide-icon>
-              <span *ngIf="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
-              <span *ngIf="isCollapsed"
-                    class="absolute left-full ml-4 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                {{ item.title }}
-              </span>
-            </a>
-          </ng-container>
-          <ng-template #hasChildren>
-            <div class="relative">
-              <button (click)="item.expanded = !item.expanded"
-                      class="flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-700 group">
-                <div class="flex items-center">
-                  <lucide-icon [name]="item.icon" class="w-5 h-5 mr-3"></lucide-icon>
-                  <span *ngIf="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
-                  <span *ngIf="isCollapsed"
-                        class="absolute left-full ml-4 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    {{ item.title }}
-                  </span>
-                </div>
-                <lucide-icon *ngIf="!isCollapsed" [name]="item.expanded ? 'chevron-down' : 'chevron-right'"
-                             class="w-4 h-4 transition-transform duration-200"></lucide-icon>
-              </button>
-              <ul *ngIf="item.expanded && !isCollapsed" class="ml-8 mt-1">
-                <li *ngFor="let child of item.children" class="mb-1">
-                  <a [routerLink]="child.link" routerLinkActive="bg-gray-700 text-blue-400"
-                     class="flex items-center p-2 rounded-md hover:bg-gray-700 group">
-                    <lucide-icon [name]="child.icon" class="w-4 h-4 mr-3"></lucide-icon>
-                    <span class="text-sm">{{ child.title }}</span>
-                  </a>
-                </li>
-              </ul>
+  <!-- Navigation Menu -->
+  <nav class="flex-1 p-2 space-y-1 overflow-y-auto">
+    <ng-container *ngFor="let item of filterNavigation(navigation); trackBy: trackByFn">
+
+      <!-- Single Menu Item (No Children) -->
+      <ng-container *ngIf="!item.children; else hasChildren">
+        <a [routerLink]="item.link"
+          routerLinkActive="bg-slate-900 dark:bg-gray-700 text-white hover:bg-slate-800 dark:hover:bg-gray-600"
+          #rla="routerLinkActive"
+          class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-150 ease-in-out relative"
+          [attr.data-tooltip]="isCollapsed ? item.title : null">
+
+          <lucide-icon [name]="item.icon" class="w-5 h-5 flex-shrink-0"
+            [ngClass]="{'mr-3': !isCollapsed}"></lucide-icon>
+
+          <span *ngIf="!isCollapsed" class="truncate">{{ item.title }}</span>
+
+          <!-- Tooltip for collapsed state -->
+          <div *ngIf="isCollapsed"
+            class="fixed left-20 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap z-[60] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            {{ item.title }}
+            <div
+              class="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-gray-900 dark:bg-gray-700 rotate-45">
             </div>
-          </ng-template>
-        </li>
+          </div>
+        </a>
       </ng-container>
-    </ul>
+
+      <!-- Menu Item with Children -->
+      <ng-template #hasChildren>
+        <div class="space-y-1">
+          <!-- Parent Item -->
+          <button (click)="toggleSubmenu(item)"
+            class="group w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-150 ease-in-out relative"
+            [class.bg-gray-50]="item.expanded && !isCollapsed" [attr.data-tooltip]="isCollapsed ? item.title : null">
+
+            <div class="flex items-center">
+              <lucide-icon [name]="item.icon" class="w-5 h-5 flex-shrink-0"
+                [ngClass]="{'mr-3': !isCollapsed}"></lucide-icon>
+              <span *ngIf="!isCollapsed" class="truncate">{{ item.title }}</span>
+            </div>
+
+            <!-- Chevron for expansion -->
+            <lucide-icon *ngIf="!isCollapsed" name="chevron-down"
+              class="w-4 h-4 text-gray-400 dark:text-gray-300 transition-transform duration-200"
+              [class.rotate-180]="item.expanded">
+            </lucide-icon>
+
+            <!-- Tooltip for collapsed state -->
+            <div *ngIf="isCollapsed"
+              class="fixed left-20 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap z-[60] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              {{ item.title }}
+              <div
+                class="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-gray-900 dark:bg-gray-700 rotate-45">
+              </div>
+            </div>
+          </button>
+
+          <!-- Submenu Items -->
+          <div *ngIf="item.expanded && !isCollapsed" class="pl-6 space-y-1 transition-all duration-300 ease-in-out">
+            <a *ngFor="let child of filterNavigation(item.children || []); trackBy: trackByFn" [routerLink]="child.link"
+              routerLinkActive="bg-slate-900 dark:bg-gray-700 text-white hover:bg-slate-800 dark:hover:bg-gray-600"
+              class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-150 ease-in-out">
+
+              <lucide-icon [name]="child.icon" class="w-4 h-4 mr-3 flex-shrink-0">
+              </lucide-icon>
+              <span class="truncate">{{ child.title }}</span>
+            </a>
+          </div>
+        </div>
+      </ng-template>
+
+    </ng-container>
   </nav>
 
-  <!-- Profile Section -->
-  <div class="relative p-4 border-t border-gray-700">
-    <button (click)="toggleProfileMenu()"
-            class="flex items-center w-full p-2 rounded-md hover:bg-gray-700 focus:outline-none">
-      <lucide-icon name="circle-user" class="w-6 h-6 mr-3"></lucide-icon>
-      <div *ngIf="!isCollapsed" class="flex-1 text-left">
-        <p class="text-sm font-medium">{{ currentUser?.name || 'Guest' }}</p>
-        <p class="text-xs text-gray-400">{{ currentUser?.email || 'guest@example.com' }}</p>
-      </div>
-      <lucide-icon *ngIf="!isCollapsed" [name]="showProfileMenu ? 'chevron-down' : 'chevron-right'"
-                   class="w-4 h-4 ml-auto"></lucide-icon>
-      <span *ngIf="isCollapsed"
-            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        Profile
-      </span>
-    </button>
+  <!-- User Profile Section -->
+  <div class="border-t border-gray-100 dark:border-gray-700">
+    <div class="relative">
+      <!-- Profile Button -->
+      <button (click)="openProfileModal()"
+        class="group w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-150 ease-in-out relative"
+        [attr.data-tooltip]="isCollapsed ? (currentUser?.name || 'Profile') : null">
 
-    <!-- Profile Dropdown Menu -->
-    <div *ngIf="showProfileMenu"
-         class="absolute bottom-full left-0 w-full bg-gray-800 rounded-md shadow-lg mb-2 z-10">
-      <a routerLink="/profile" class="flex items-center p-2 rounded-t-md hover:bg-gray-700">
-        <lucide-icon name="user" class="w-4 h-4 mr-2"></lucide-icon>
-        <span class="text-sm">Profile</span>
-      </a>
-      <a routerLink="/settings" class="flex items-center p-2 hover:bg-gray-700">
-        <lucide-icon name="settings" class="w-4 h-4 mr-2"></lucide-icon>
-        <span class="text-sm">Settings</span>
-      </a>
-      <button (click)="logout()" class="flex items-center w-full p-2 rounded-b-md hover:bg-gray-700">
-        <lucide-icon name="log-out" class="w-4 h-4 mr-2"></lucide-icon>
-        <span class="text-sm">Logout</span>
+        <!-- Avatar -->
+        <div
+          class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-800 flex items-center justify-center flex-shrink-0"
+          [ngClass]="{'mr-3': !isCollapsed}">
+          <span class="text-sm font-medium text-white">
+            {{ (currentUser?.name || 'U') | slice:0:1 | uppercase }}
+          </span>
+        </div>
+
+        <!-- User Info -->
+        <div *ngIf="!isCollapsed" class="flex-1 min-w-0 text-left">
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+            {{ currentUser?.name || 'Guest User' }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {{ currentUser?.email || 'guest@example.com' }}
+          </p>
+        </div>
+
+        <!-- Modal Icon -->
+        <lucide-icon *ngIf="!isCollapsed" name="more-vertical" class="w-4 h-4 text-gray-400 dark:text-gray-300">
+        </lucide-icon>
+
+        <!-- Tooltip for collapsed state -->
+        <div *ngIf="isCollapsed"
+          class="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          {{ currentUser?.name || 'Profile' }}
+          <div
+            class="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-gray-900 dark:bg-gray-700 rotate-45">
+          </div>
+        </div>
       </button>
+
     </div>
   </div>
 </div>

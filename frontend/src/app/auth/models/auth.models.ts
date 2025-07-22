@@ -81,7 +81,7 @@ export interface ApiResponse<T = any> {
 export enum UserRole {
   USER = 'USER',
   ADMIN = 'ADMIN',
-  PREMIUM_USER = 'PREMIUM_USER',
+  COURIER = 'COURIER',
   GUEST = 'GUEST',
 }
 
