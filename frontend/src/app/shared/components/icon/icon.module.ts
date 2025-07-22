@@ -49,6 +49,10 @@ import {
   Upload,
   Wallet,
   XCircle,
+  ArrowRight,
+  Zap,
+  Send,
+
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -99,6 +103,9 @@ const lucideIcons = {
   Upload,
   Wallet,
   XCircle,
+  ArrowRight,
+  Zap,
+  Send,
 };
 
 @NgModule({

@@ -70,12 +70,14 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
+        role: createUserDto.role || 'USER',
+        isActive: false,
         password: hashedPassword,
       },
     });
 
     const token = await this.generateEmailVerificationToken(user.id);
-    const verificationUrl = `http://localhost:3000/verify-email/${token}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/auth/verify-email/${token}`;
 
     console.log('verification url:', verificationUrl);
 
@@ -134,7 +136,7 @@ export class AuthService {
     });
 
     console.log('reset token:', resetToken);
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${resetToken}`;
     console.log('reset url:', resetUrl);
     await this.sendPasswordResetEmail(user.email, user.name, resetUrl);
   }
@@ -250,7 +252,7 @@ export class AuthService {
       update: { token: hashed, expiresAt: addHours(new Date(), 1) },
       create: { userId, token: hashed, expiresAt: addHours(new Date(), 1) },
     });
-    
+
     return plain;
   }
 
@@ -273,7 +275,7 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: { id: record.userId },
-      data: { isActive: true },
+      data: { isActive: true, welcomeEmailSent: true },
     });
 
     await this.prisma.emailVerificationToken.delete({
@@ -298,6 +300,7 @@ export class AuthService {
       trackingUrl: 'http://example.com/tracking',
       securityUrl: 'http://example.com/security',
       dashboardUrl: 'http://example.com/dashboard',
+      supportUrl: 'http://example.com/support',
     });
   }
 }

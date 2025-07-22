@@ -1,82 +1,78 @@
 import { Injectable } from '@angular/core';
 import {
-  Router,
   ActivatedRouteSnapshot,
+  CanActivate,
+  CanActivateChild,
+  Router,
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
 
-
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard {
+export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
     | boolean
-    | UrlTree {
-    if (this.authService.isAuthenticated) {
-      // Check for role-based access
-      const requiredRole = route.data?.['role'];
-      if (requiredRole && !this.hasRequiredRole(requiredRole)) {
-        this.router.navigate(['/dashboard']);
-        return false;
-      }
-      return true;
-    }
-
-    // Not authenticated, redirect to login
-    this.router.navigate(['/auth/login'], {
-      queryParams: { returnUrl: state.url },
-    });
-    return false;
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    return this.checkAccess(route, state);
   }
 
   canActivateChild(
-    childRoute: ActivatedRouteSnapshot,
+    route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
     | boolean
-    | UrlTree {
-    return this.canActivate(childRoute, state);
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    return this.checkAccess(route, state);
   }
 
-  private hasRequiredRole(requiredRole: string): boolean {
-    const currentUser = this.authService.currentUserValue;
-    if (!currentUser) return false;
+  private checkAccess(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean | UrlTree {
+    const isAuthenticated = this.authService.isAuthenticated;
+    const userRole = this.authService.currentUserValue?.role || 'GUEST';
+    const allowedRoles = route.data['roles'] as string[] | undefined;
 
-    switch (requiredRole) {
-      case 'ADMIN':
-        return currentUser.role === 'ADMIN';
-      case 'USER':
-        return currentUser.role === 'USER';
-      default:
-        return true;
+    console.log(
+      `AuthGuard: isAuthenticated=${isAuthenticated}, userRole=${userRole}`
+    );
+
+    if (!isAuthenticated) {
+      console.warn('User not authenticated. Redirecting to login.');
+      return this.router.createUrlTree(['/auth/login']);
     }
-  }
-}
 
-@Injectable({
-  providedIn: 'root',
-})
-export class GuestGuard {
-  constructor(private authService: AuthService, private router: Router) {}
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
+      console.warn(
+        `Access denied for role "${userRole}". Required roles: ${allowedRoles.join(
+          ', '
+        )}`
+      );
 
-  canActivate(): boolean {
-    if (this.authService.isAuthenticated) {
-      this.router.navigate(['/dashboard']);
-      return false;
+      // Redirect user based on their role
+      if (userRole === 'ADMIN') {
+        return this.router.createUrlTree(['/dashboard/admin']);
+      } else if (userRole === 'USER' || userRole === 'PREMIUM_USER') {
+        return this.router.createUrlTree(['/dashboard/user']);
+      } else {
+        return this.router.createUrlTree(['/auth/login']);
+      }
     }
+
+    // Access granted
     return true;
   }
 }

@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { GuestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
+  // Public landing page
   {
     path: '',
     loadChildren: () =>
@@ -15,29 +17,34 @@ export const routes: Routes = [
       description: 'Welcome to SendIT, your reliable parcel delivery service',
     },
   },
+
+  // Auth pages (login, register, etc.)
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+    canActivate: [GuestGuard],
     data: {
       preload: true,
     },
   },
+
+  // Authenticated user section with layout
   {
-    path: '',
+    path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
     children: [
       {
-        path: 'user-dashboard',
+        path: 'user',
         loadChildren: () =>
           import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
         data: {
           title: 'User Dashboard - SendIT',
-          roles: ['USER', 'ADMIN'],
+          roles: ['USER'],
         },
       },
       {
-        path: 'admin-dashboard',
+        path: 'admin',
         loadChildren: () =>
           import('./admin/admin.module').then((m) => m.AdminDashboardModule),
         data: {
@@ -45,73 +52,10 @@ export const routes: Routes = [
           roles: ['ADMIN'],
         },
       },
-
-      // Add other routes that should use the dashboard layout here
-      // For example, if you uncomment the parcel and profile routes, they should go here
-      // {
-      //   path: 'parcels',
-      //   loadChildren: () =>
-      //     import('./features/parcels/parcels.module').then((m) => m.ParcelsModule),
-      //   data: {
-      //     title: 'My Parcels - SendIT',
-      //     roles: ['USER', 'ADMIN'],
-      //   },
-      // },
-      // {
-      //   path: 'profile',
-      //   loadChildren: () =>
-      //     import('./features/profile/profile.module').then((m) => m.ProfileModule),
-      //   data: {
-      //     title: 'Profile - SendIT',
-      //     roles: ['USER', 'ADMIN'],
-      //   },
-      // },
-      // {
-      //   path: 'track',
-      //   loadChildren: () =>
-      //     import('./features/tracking/tracking.module').then((m) => m.TrackingModule),
-      //   data: {
-      //     title: 'Track Parcel - SendIT',
-      //   },
-      // },
     ],
   },
-  // {
-  //   path: '/parcels',
-  //   loadChildren: () =>
-  //     import('./features/parcels/parcels.module').then((m) => m.ParcelsModule),
-  //   canActivate: [AuthGuard],
-  //   data: {
-  //     title: 'My Parcels - SendIT',
-  //   },
-  // },
-  // {
-  //   path: '/profile',
-  //   loadChildren: () =>
-  //     import('./features/profile/profile.module').then((m) => m.ProfileModule),
-  //   canActivate: [AuthGuard],
-  //   data: {
-  //     title: 'Profile - SendIT',
-  //   },
-  // },
-  // {
-  //   path: '/admin',
-  //   loadChildren: () =>
-  //     import('./features/admin/admin.module').then((m) => m.AdminModule),
-  //   canActivate: [AuthGuard],
-  //   data: {
-  //     roles: ['ADMIN'],
-  //     title: 'Admin Dashboard - SendIT',
-  //   },
-  // },
-  // {
-  //   path: '/track',
-  //   loadChildren: () =>
-  //     import('./features/tracking/tracking.module').then((m) => m.TrackingModule),
-  //   data: {
-  //     title: 'Track Parcel - SendIT',
-  //   },
-  // },
+
+  // Wildcard redirect for unknown routes
   {
     path: '**',
     redirectTo: '/auth/login',
@@ -121,8 +65,8 @@ export const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      enableTracing: false, // Set to true for debugging
-      preloadingStrategy: undefined, // You can add custom preloading strategy
+      enableTracing: false,
+      preloadingStrategy: PreloadAllModules,
       scrollPositionRestoration: 'top',
       urlUpdateStrategy: 'eager',
     }),

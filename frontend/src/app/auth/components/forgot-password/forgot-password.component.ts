@@ -12,7 +12,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.css'],
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class ForgotPasswordComponent implements OnInit, OnDestroy {

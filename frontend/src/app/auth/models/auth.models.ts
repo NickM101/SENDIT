@@ -1,3 +1,4 @@
+import { Get } from '@nestjs/common';
 // File: src/app/auth/models/auth.models.ts
 
 export interface User {
@@ -28,9 +29,7 @@ export interface RegisterRequest {
   email: string;
   phone: string;
   password: string;
-  dateOfBirth: string;
-  confirmPassword: string;
-  agreeToTerms: boolean;
+  dateOfBirth: string | undefined;
 }
 
 export interface RegisterResponse {
@@ -86,6 +85,7 @@ export enum UserRole {
   USER = 'USER',
   ADMIN = 'ADMIN',
   PREMIUM_USER = 'PREMIUM_USER',
+  GUEST = 'GUEST',
 }
 
 export interface PasswordRequirements {

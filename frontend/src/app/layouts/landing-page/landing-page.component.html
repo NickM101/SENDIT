@@ -1,8 +1,8 @@
-<!-- Main container with a light background -->
-<div class="bg-white font-sans text-gray-800">
-
+<!-- Main container with theme support -->
+<div class="bg-white dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200">
+    <header
+        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
@@ -10,61 +10,139 @@
                     <a href="#" class="flex items-center space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-6 h-6 text-indigo-600">
-                            <path d="M5 12h14" />
-                            <path d="m12 5 7 7-7 7" />
+                            class="w-6 h-6 text-indigo-600 dark:text-indigo-400">
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
                         </svg>
-                        <span class="font-bold text-xl text-gray-900">SendIT</span>
+                        <span class="font-bold text-xl text-gray-900 dark:text-white">SendIT</span>
                     </a>
                 </div>
-
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="#"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Services</a>
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-4 h-4">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        <span>Services</span>
+                    </a>
                     <a href="#"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Tracking</a>
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-4 h-4">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Tracking</span>
+                    </a>
                     <a href="#"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Pricing</a>
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-4 h-4">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span>Pricing</span>
+                    </a>
                     <a href="#"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">About</a>
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-4 h-4">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>About</span>
+                    </a>
                     <a href="#"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Contact</a>
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-4 h-4">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Contact</span>
+                    </a>
                 </nav>
-
-                <!-- Auth section: Dynamically shows Sign In/Get Quote or User Dropdown -->
+                <!-- Auth section -->
                 <div class="flex items-center space-x-4">
                     <!-- Unauthenticated State -->
                     <div *ngIf="!isAuthenticated" class="flex items-center space-x-4">
                         <button (click)="signIn()"
-                            class="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">Sign
-                            In</button>
+                            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-4 h-4">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            <span>Sign In</span>
+                        </button>
                         <a href="#"
-                            class="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
-                            Get Quote
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-4 h-4">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                            <span>Get Quote</span>
                         </a>
                     </div>
-
-                    <!-- Authenticated State (shadcn/ui style dropdown) -->
+                    <!-- Authenticated State -->
                     <div *ngIf="isAuthenticated" class="relative">
                         <button (click)="toggleDropdown()"
-                            class="flex items-center space-x-3 text-left rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <img [src]="user.avatarUrl" alt="User avatar" class="w-9 h-9 rounded-full bg-gray-200">
+                            class="flex items-center space-x-3 text-left rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900">
+                            <img [src]="user.avatarUrl" alt="User avatar"
+                                class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700">
                             <div class="hidden sm:flex flex-col">
-                                <span class="text-sm font-medium text-gray-900">{{ user.name }}</span>
-                                <span class="text-xs text-gray-500">{{ user.email }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</span>
                             </div>
                         </button>
-
                         <!-- Dropdown Menu -->
                         <div *ngIf="isDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                            <div class="border-t border-gray-100 my-1"></div>
+                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 py-1 z-50 transition-all duration-200 ease-in-out transform opacity-100 scale-100">
+                            <a href="#"
+                                class=" px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-4 h-4">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#"
+                                class=" px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-4 h-4">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Profile</span>
+                            </a>
+                            <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                             <button (click)="signOut()"
-                                class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Sign Out
+                                class="w-full text-left  px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-4 h-4">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Sign Out</span>
                             </button>
                         </div>
                     </div>
@@ -75,30 +153,52 @@
 
     <main>
         <!-- Hero Section -->
-        <section class="bg-gray-50">
+        <section class="bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="text-center lg:text-left">
-                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight">
-                            Fast & Reliable Courier Service
+                        <h1
+                            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                            Fast & Reliable <span class="text-indigo-600 dark:text-indigo-400">Courier Service</span>
                         </h1>
-                        <p class="mt-6 text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
+                        <p class="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-xl mx-auto lg:mx-0">
                             Get instant quotes based on weight categories and deliver your parcels to any destination
                             with confidence.
                         </p>
                         <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <a href="#"
-                                class="inline-block px-8 py-3 text-base font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
-                                Get Quote Now
+                                class="inline- px-8 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-5 h-5">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                                <span>Get Quote Now</span>
                             </a>
                             <a href="#"
-                                class="inline-block px-8 py-3 text-base font-semibold text-gray-800 bg-white rounded-lg shadow-md hover:bg-gray-100 ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
-                                Track Package
+                                class="inline- px-8 py-3 text-base font-semibold text-gray-800 dark:text-white bg-white dark:bg-gray-800 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 ring-1 ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-5 h-5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>Track Package</span>
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center bg-gray-200 rounded-lg h-64 lg:h-80">
-                        <p class="text-gray-500">Delivery Truck Illustration</p>
+                    <div
+                        class="flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-lg h-64 lg:h-80 overflow-hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-indigo-600 dark:text-indigo-400">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <path d="M3 11h18"></path>
+                            <path d="M3 7h18"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -108,54 +208,147 @@
         <section class="py-16 sm:py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Get Instant Quote</h2>
-                    <p class="mt-4 text-lg text-gray-600">Calculate shipping cost based on weight and destination.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Get Instant
+                        Quote</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Calculate shipping cost based on weight and
+                        destination.</p>
                 </div>
-                <div class="mt-12 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                <div
+                    class="mt-12 max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                     <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="from" class="block text-sm font-medium text-gray-700">From</label>
-                            <input type="text" id="from" placeholder="Pickup location"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <label for="from"
+                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                </div>
+                                <input type="text" id="from" placeholder="Pickup location"
+                                    class=" w-full pl-10 pr-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
+                            </div>
                         </div>
                         <div>
-                            <label for="to" class="block text-sm font-medium text-gray-700">To</label>
-                            <input type="text" id="to" placeholder="Delivery destination"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <label for="to"
+                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                </div>
+                                <input type="text" id="to" placeholder="Delivery destination"
+                                    class=" w-full pl-10 pr-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
+                            </div>
                         </div>
                         <div>
-                            <label for="weight-category" class="block text-sm font-medium text-gray-700">Weight
+                            <label for="weight-category"
+                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Weight
                                 Category</label>
-                            <select id="weight-category"
-                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option>Light (0-5kg)</option>
-                                <option>Medium (5-15kg)</option>
-                                <option>Heavy (15-30kg)</option>
-                            </select>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                        </path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <select id="weight-category"
+                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
+                                    <option>Light (0-5kg)</option>
+                                    <option>Medium (5-15kg)</option>
+                                    <option>Heavy (15-30kg)</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                         <div>
-                            <label for="service-type" class="block text-sm font-medium text-gray-700">Service
+                            <label for="service-type"
+                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service
                                 Type</label>
-                            <select id="service-type"
-                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option>Standard Delivery</option>
-                                <option>Express Delivery</option>
-                            </select>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </div>
+                                <select id="service-type"
+                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
+                                    <option>Standard Delivery</option>
+                                    <option>Express Delivery</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                         <div class="md:col-span-2">
-                            <label for="package-type" class="block text-sm font-medium text-gray-700">Package
+                            <label for="package-type"
+                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Package
                                 Type</label>
-                            <select id="package-type"
-                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option>Document</option>
-                                <option>Parcel</option>
-                                <option>Fragile</option>
-                            </select>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                        </path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <select id="package-type"
+                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
+                                    <option>Document</option>
+                                    <option>Parcel</option>
+                                    <option>Fragile</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="h-4 w-4">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                         <div class="md:col-span-2 text-center">
                             <button type="submit"
-                                class="w-full sm:w-auto mt-4 px-8 py-3 text-base font-semibold text-white bg-gray-900 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
-                                Calculate Quote
+                                class="w-full sm:w-auto mt-4 px-8 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-5 h-5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>Calculate Quote</span>
                             </button>
                         </div>
                     </form>
@@ -164,24 +357,36 @@
         </section>
 
         <!-- Weight Categories & Pricing Section -->
-        <section class="bg-gray-50 py-16 sm:py-20">
+        <section class="bg-gray-50 dark:bg-gray-800/50 py-16 sm:py-20 transition-colors duration-300">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Weight Categories & Pricing
-                    </h2>
-                    <p class="mt-4 text-lg text-gray-600">Transparent pricing based on package weight.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Weight
+                        Categories & Pricing</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Transparent pricing based on package
+                        weight.</p>
                 </div>
                 <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Pricing cards will be generated by *ngFor -->
+                    <!-- Pricing cards -->
                     <div *ngFor="let tier of pricingTiers"
-                        class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center flex flex-col items-center">
-                        <div [innerHTML]="tier.icon"></div>
-                        <h3 class="mt-2 text-lg font-semibold text-gray-900">{{ tier.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ tier.weight }}</p>
+                        class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 text-center flex flex-col items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                        <div
+                            class="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-8 h-8">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                </path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white">{{ tier.name }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tier.weight }}</p>
                         <p class="mt-4">
-                            <span class="text-4xl font-bold text-gray-900">${{ tier.price }}</span>
+                            <span class="text-4xl font-bold text-gray-900 dark:text-white">${{ tier.price }}</span>
                         </p>
-                        <p class="text-sm text-gray-500">{{ tier.pricePeriod }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tier.pricePeriod }}</p>
                     </div>
                 </div>
             </div>
@@ -191,35 +396,59 @@
         <section class="py-16 sm:py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose SendIT?</h2>
-                    <p class="mt-4 text-lg text-gray-600">Reliable courier service with unmatched benefits.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Why Choose
+                        SendIT?</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Reliable courier service with unmatched
+                        benefits.</p>
                 </div>
                 <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <!-- Feature cards will be generated by *ngFor -->
-                    <div *ngFor="let feature of features" class="flex flex-col items-center p-6">
-                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-gray-900 mb-6">
-                            <div [innerHTML]="feature.icon"></div>
+                    <!-- Feature cards -->
+                    <div *ngFor="let feature of features"
+                        class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                        <div
+                            class="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-8 h-8">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900">{{ feature.title }}</h3>
-                        <p class="mt-2 text-base text-gray-600">{{ feature.description }}</p>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ feature.title }}</h3>
+                        <p class="mt-2 text-base text-gray-600 dark:text-gray-300">{{ feature.description }}</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Track Your Package Section -->
-        <section class="bg-gray-50 py-16 sm:py-20">
+        <section class="bg-gray-50 dark:bg-gray-800/50 py-16 sm:py-20 transition-colors duration-300">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-xl mx-auto text-center">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Track Your Package</h2>
-                    <p class="mt-4 text-lg text-gray-600">Enter your tracking number to get real-time updates.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Track Your
+                        Package</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Enter your tracking number to get real-time
+                        updates.</p>
                     <form class="mt-8 flex flex-col sm:flex-row gap-3">
-                        <label for="tracking-number" class="sr-only">Tracking Number</label>
-                        <input type="text" id="tracking-number" placeholder="Enter tracking number"
-                            class="flex-grow w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="h-5 w-5 text-gray-400 dark:text-gray-500">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" id="tracking-number" placeholder="Enter tracking number"
+                                class=" w-full pl-10 pr-3 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
+                        </div>
                         <button type="submit"
-                            class="px-6 py-3 text-base font-semibold text-white bg-gray-900 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all">
-                            Track Package
+                            class="px-6 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Track Package</span>
                         </button>
                     </form>
                 </div>
@@ -237,8 +466,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="w-6 h-6 text-indigo-400">
-                            <path d="M5 12h14" />
-                            <path d="m12 5 7 7-7 7" />
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
                         </svg>
                         <span class="font-bold text-xl text-white">SendIT</span>
                     </a>
@@ -250,28 +479,132 @@
                     <div>
                         <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Services</h3>
                         <ul class="mt-4 space-y-2">
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Standard Delivery</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Express Delivery</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Same Day Delivery</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">International Shipping</a>
-                            </li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                                    </svg>
+                                    <span>Standard Delivery</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                    <span>Express Delivery</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span>Same Day Delivery</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"></path>
+                                    </svg>
+                                    <span>International Shipping</span>
+                                </a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Support</h3>
                         <ul class="mt-4 space-y-2">
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Track Package</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Help Center</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">Contact Us</a></li>
-                            <li><a href="#" class="text-base text-gray-400 hover:text-white">FAQ</a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span>Track Package</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    <span>Help Center</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span>Contact Us</span>
+                                </a></li>
+                            <li><a href="#"
+                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-3.5 h-3.5">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                    </svg>
+                                    <span>FAQ</span>
+                                </a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Contact</h3>
                         <ul class="mt-4 space-y-2">
-                            <li class="flex items-center"><span class="mr-2">📞</span> +1 (555) 123-4567</li>
-                            <li class="flex items-center"><span class="mr-2">✉️</span> support&#64;sendit.com</li>
-                            <li class="flex items-start"><span class="mr-2 mt-1">📍</span> 123 Delivery St, City</li>
+                            <li class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
+                                <span class="mr-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-4 h-4">
+                                        <path
+                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                        </path>
+                                    </svg>
+                                </span>
+                                +1 (555) 123-4567
+                            </li>
+                            <li class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
+                                <span class="mr-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-4 h-4">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                </span>
+                                support&#64;sendit.com
+                            </li>
+                            <li
+                                class="flex items-start text-gray-400 hover:text-white transition-colors duration-200 pt-1">
+                                <span class="mr-2 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="w-4 h-4">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                </span>
+                                123 Delivery St, City
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -281,5 +614,4 @@
             </div>
         </div>
     </footer>
-
 </div>

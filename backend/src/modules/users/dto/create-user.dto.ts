@@ -23,12 +23,12 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: '+1234567890', description: `User's phone number` })
+  @ApiProperty({ example: '+254707757081', description: `User's phone number` })
   @IsPhoneNumber()
   phone: string;
 
   @ApiProperty({
-    example: 'StrongPassword123',
+    example: '1Password!',
     description: `User's password (min 8 characters)`,
   })
   @IsString()
@@ -36,11 +36,12 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({ example: 'USER', description: `User's role`, enum: Role })
+  @IsOptional()
   @IsEnum(Role)
-  role: Role;
+  role?: Role;
 
   @ApiProperty({
-    example: '1990-01-01',
+    example: '1990-01-01T00:00:00.000Z',
     description: `User's date of birth`,
     required: false,
   })
@@ -49,7 +50,7 @@ export class CreateUserDto {
   dateOfBirth?: Date;
 
   @ApiProperty({
-    example: true,
+    example: false,
     description: `Whether the user account is active`,
     required: false,
   })
@@ -58,7 +59,8 @@ export class CreateUserDto {
   isActive?: boolean;
 
   @ApiProperty({
-    example: 'http://example.com/avatar.jpg',
+    example:
+      'https://images.icon-icons.com/3446/PNG/512/account_profile_user_avatar_icon_219236.png',
     description: `URL to user's avatar image`,
     required: false,
   })

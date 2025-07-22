@@ -12,7 +12,8 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 // Services
 import { AuthService } from './services/auth.service';
-import { AuthGuard, GuestGuard } from '../core/guards/auth.guard';
+import { AuthGuard } from '../core/guards/auth.guard';
+import { GuestGuard } from '../core/guards/guest.guard';
 
 @NgModule({
   declarations: [],

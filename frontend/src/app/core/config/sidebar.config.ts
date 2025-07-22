@@ -8,7 +8,24 @@ export interface SidebarItem {
   collapsible?: boolean;
 }
 
-export const SidebarConfigs: Record<UserRole, SidebarItem[]> = {
+export const SidebarConfigs: Record<UserRole | 'GUEST', SidebarItem[]> = {
+  GUEST: [
+    {
+      label: 'Home',
+      icon: 'home',
+      route: '/',
+    },
+    {
+      label: 'Login',
+      icon: 'login',
+      route: '/auth/login',
+    },
+    {
+      label: 'Register',
+      icon: 'person_add',
+      route: '/auth/register',
+    },
+  ],
   USER: [
     {
       label: 'Dashboard',

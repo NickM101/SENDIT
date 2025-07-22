@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import {
   RegisterRequest,
   PasswordRequirements,
+  UserRole,
 } from '../../models/auth.models';
 import { CommonModule } from '@angular/common';
 
@@ -27,7 +28,6 @@ import { CommonModule } from '@angular/common';
 export class RegisterComponent implements OnInit, OnDestroy {
   registerForm: FormGroup;
   showPassword = false;
-  showConfirmPassword = false;
   passwordRequirements: PasswordRequirements = {
     minLength: false,
     hasUppercase: false,
@@ -36,7 +36,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     hasSpecialChar: false,
   };
   isLoading = false;
-
 
   private destroy$ = new Subject<void>();
 
@@ -76,7 +75,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         phone: ['', [Validators.required, this.phoneValidator]],
         dateOfBirth: ['', [this.ageValidator]],
         password: ['', [Validators.required, this.passwordValidator]],
-        confirmPassword: ['', [Validators.required]],
         agreeToTerms: [false, [Validators.requiredTrue]],
       },
       {
@@ -150,10 +148,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     const value = control.value;
     if (!value) return null;
 
-    const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
-    return phoneRegex.test(value) && value.replace(/\D/g, '').length >= 10
-      ? null
-      : { invalidPhone: true };
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 format
+    return phoneRegex.test(value) ? null : { invalidPhone: true };
   }
 
   /**
@@ -208,16 +204,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.markFormGroupTouched();
       return;
     }
-      const phoneData = this.registerForm.get('phone')?.value;
 
     const registerData: RegisterRequest = {
       name: this.registerForm.value.name.trim(),
       email: this.registerForm.value.email.trim().toLowerCase(),
       phone: this.registerForm.value.phone.trim(),
-      dateOfBirth: this.registerForm.value.dateOfBirth,
+      dateOfBirth: this.registerForm.value.dateOfBirth
+        ? new Date(this.registerForm.value.dateOfBirth).toISOString()
+        : undefined,
       password: this.registerForm.value.password,
-      confirmPassword: this.registerForm.value.confirmPassword,
-      agreeToTerms: this.registerForm.value.agreeToTerms,
     };
 
     this.authService
@@ -239,13 +234,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
    */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
-  }
-
-  /**
-   * Toggle confirm password visibility
-   */
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   /**
@@ -321,7 +309,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
       case 'phone':
         if (errors['required']) return 'Phone number is required';
-        if (errors['invalidPhone']) return 'Please enter a valid phone number';
+        if (errors['invalidPhone']) return 'Enter phone number in international format e.g. +2547XXXXXXX';
         break;
 
       case 'password':

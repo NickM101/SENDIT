@@ -12,7 +12,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-email-verification',
   templateUrl: './email-verification.component.html',
-  styleUrls: ['./email-verification.component.css'],
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class EmailVerificationComponent implements OnInit, OnDestroy {
@@ -37,8 +36,8 @@ export class EmailVerificationComponent implements OnInit, OnDestroy {
     this.error = '';
     this.success = false;
 
-    // Get token from query parameters
-    this.token = this.route.snapshot.queryParams['token'] || '';
+    // Get token from route parameters
+  this.token = this.route.snapshot.paramMap.get('token') || '';
 
     // Get user email from current user or localStorage
     const currentUser = this.authService.currentUserValue;

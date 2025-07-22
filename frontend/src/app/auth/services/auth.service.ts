@@ -19,6 +19,7 @@ import {
   UserRole,
 } from '../models/auth.models';
 import { ToastService } from '../../core/services/toast.service';
+import { SidebarService } from '../../layouts/sidebar/sidebar.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -32,14 +33,17 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sidebarService: SidebarService
   ) {
     const token = localStorage.getItem('auth_token');
     const user = localStorage.getItem('current_user');
     if (token && user) {
       this.tokenSubject.next(token);
       console.log('Current User:', user);
-      this.currentUserSubject.next(JSON.parse(user));
+      const parsedUser = JSON.parse(user);
+      this.currentUserSubject.next(parsedUser);
+      this.sidebarService.setRole(parsedUser.role);
     }
   }
 
@@ -149,8 +153,8 @@ export class AuthService {
   ): Observable<EmailVerificationResponse> {
     return this.http
       .post<ApiResponse<EmailVerificationResponse>>(
-        `${this.apiUrl}/verify-email`,
-        verificationData
+        `${this.apiUrl}/verify-email/${verificationData.token}`,
+        {}
       )
       .pipe(
         map((response) => {
@@ -213,19 +217,20 @@ export class AuthService {
     localStorage.setItem('current_user', JSON.stringify(user));
     this.tokenSubject.next(token);
     this.currentUserSubject.next(user);
+    this.sidebarService.setRole(user.role);
 
     // Navigate based on user role
     this.navigateByRole(user.role);
   }
 
-  private navigateByRole(role: UserRole): void {
+  public navigateByRole(role: UserRole): void {
     switch (role) {
       case UserRole.ADMIN:
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard/admin']);
         break;
       case UserRole.USER:
       case UserRole.PREMIUM_USER:
-        this.router.navigate(['/landing-page']);
+        this.router.navigate(['/dashboard/user']);
         break;
       default:
         this.router.navigate(['/landing-page']);

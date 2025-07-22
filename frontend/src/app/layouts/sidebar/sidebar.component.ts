@@ -1,8 +1,9 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SidebarService } from './sidebar.service';
 import { AuthService } from '../../auth/services/auth.service';
+import { UserRole } from '../../auth/models/auth.models';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,7 +11,7 @@ import { AuthService } from '../../auth/services/auth.service';
   imports: [CommonModule, RouterModule],
   standalone: true,
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   items$: any;
   private isMobileMenuOpenSignal = signal(false);
   collapsedSections = signal<Record<string, boolean>>({});
@@ -19,7 +20,15 @@ export class SidebarComponent {
     private sidebarService: SidebarService,
     public authService: AuthService
   ) {
+    // Initial assignment, will be updated by ngOnInit subscription
     this.items$ = this.sidebarService.items$;
+  }
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      const role: UserRole = user ? user.role : UserRole.GUEST;
+      this.sidebarService.setRole(role);
+    });
   }
 
   sidebarClasses = computed(() => {

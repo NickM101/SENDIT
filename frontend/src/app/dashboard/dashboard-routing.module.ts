@@ -8,17 +8,11 @@ import { DashboardLayoutComponent } from '../layouts/dashboard-layout/dashboard-
 const routes: Routes = [
   {
     path: '',
-    component: DashboardLayoutComponent,
-    children: [
-      {
-        path: '',
-        component: DashboardComponent,
-        data: {
-          title: 'Dashboard - SendIT',
-          description: 'Your SendIT dashboard overview',
-        },
-      },
-    ],
+    component: DashboardComponent,
+    data: {
+      title: 'Dashboard - SendIT',
+      description: 'Your SendIT dashboard overview',
+    },
   },
 ];
 
