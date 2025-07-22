@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpEventType, HttpRequest } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -44,23 +44,20 @@ export class ApiService {
   /** GET full response (useful when data structure varies) */
   getRaw<T>(
     endpoint: string,
-    params?: QueryParams,
+    params?: QueryParams
   ): Observable<ApiResponse<T>> {
     const httpParams = this.buildHttpParams(params);
 
     return this.http
       .get<ApiResponse<T>>(`${this.API_URL}${endpoint}`, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         params: httpParams,
       })
       .pipe(catchError(this.handleError));
   }
 
   /** GET request with default mapping to `data` (use when structure is known) */
-  get<T>(
-    endpoint: string,
-    params?: QueryParams,
-  ): Observable<T> {
+  get<T>(endpoint: string, params?: QueryParams): Observable<T> {
     return this.getRaw<T>(endpoint, params).pipe(
       map((res) => {
         if (res.data === null || res.data === undefined) {
@@ -75,18 +72,18 @@ export class ApiService {
   getPaginated<T>(
     endpoint: string,
     itemKey: string,
-    params?: QueryParams,
+    params?: QueryParams
   ): Observable<PaginatedResponse<T>> {
     const httpParams = this.buildHttpParams(params);
 
     console.log('GET Paginated Request:', `${this.API_URL}${endpoint}`, {
-      headers: new HttpHeaders({'Content-Type': 'application/json'}),
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       params: httpParams,
     });
 
     return this.http
       .get<ApiResponse<any>>(`${this.API_URL}${endpoint}`, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         params: httpParams,
       })
       .pipe(
@@ -115,13 +112,10 @@ export class ApiService {
   }
 
   /** POST request */
-  post<T>(
-    endpoint: string,
-    data?: any,
-  ): Observable<T> {
+  post<T>(endpoint: string, data?: any): Observable<T> {
     return this.http
       .post<ApiResponse<T>>(`${this.API_URL}${endpoint}`, data, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       })
       .pipe(
         map((res) => {
@@ -135,13 +129,10 @@ export class ApiService {
   }
 
   /** PUT request */
-  put<T>(
-    endpoint: string,
-    data?: any,
-  ): Observable<T> {
+  put<T>(endpoint: string, data?: any): Observable<T> {
     return this.http
       .put<ApiResponse<T>>(`${this.API_URL}${endpoint}`, data, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       })
       .pipe(
         map((res) => {
@@ -155,13 +146,10 @@ export class ApiService {
   }
 
   /** PATCH request */
-  patch<T>(
-    endpoint: string,
-    data?: any,
-  ): Observable<T> {
+  patch<T>(endpoint: string, data?: any): Observable<T> {
     return this.http
       .patch<ApiResponse<T>>(`${this.API_URL}${endpoint}`, data, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       })
       .pipe(
         map((res) => {
@@ -175,13 +163,10 @@ export class ApiService {
   }
 
   /** DELETE request */
-  delete<T>(
-    endpoint: string,
-    params?: any
-  ): Observable<T> {
+  delete<T>(endpoint: string, params?: any): Observable<T> {
     return this.http
       .delete<ApiResponse<T>>(`${this.API_URL}${endpoint}`, {
-        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         params,
       })
       .pipe(
@@ -195,12 +180,11 @@ export class ApiService {
       );
   }
 
-  /** File upload (single file + optional metadata) */
   uploadFile<T>(
     endpoint: string,
     file: File,
-    additionalData?: any,
-  ): Observable<T> {
+    additionalData?: Record<string, any>
+  ): Observable<{ progress: number; data?: T }> {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -210,25 +194,46 @@ export class ApiService {
       });
     }
 
-    return this.http
-      .post<ApiResponse<T>>(`${this.API_URL}${endpoint}`, formData, {
-      })
-      .pipe(
-        map((res) => {
-          if (res.data === null || res.data === undefined) {
-            throw new Error('API response data is null or undefined');
+    const req = new HttpRequest(
+      'POST',
+      `${this.API_URL}${endpoint}`,
+      formData,
+      {
+        reportProgress: true,
+      }
+    );
+
+    return this.http.request<ApiResponse<T>>(req).pipe(
+      map((event: HttpEvent<ApiResponse<T>>) => {
+        switch (event.type) {
+          case HttpEventType.UploadProgress: {
+            const progress = event.total
+              ? Math.round((100 * event.loaded) / event.total)
+              : 0;
+            return { progress };
           }
-          return res.data;
-        }),
-        catchError(this.handleError)
-      );
+
+          case HttpEventType.Response: {
+            const data = event.body?.data;
+            if (data === null || data === undefined) {
+              throw new Error('API response data is null or undefined');
+            }
+            return { progress: 100, data };
+          }
+
+          default:
+            return { progress: 0 };
+        }
+      }),
+      catchError(this.handleError)
+    );
   }
 
   /** Upload multiple files */
   uploadFiles<T>(
     endpoint: string,
     files: File[],
-    additionalData?: any,
+    additionalData?: any
   ): Observable<T> {
     const formData = new FormData();
 
@@ -243,8 +248,7 @@ export class ApiService {
     }
 
     return this.http
-      .post<ApiResponse<T>>(`${this.API_URL}${endpoint}`, formData, {
-      })
+      .post<ApiResponse<T>>(`${this.API_URL}${endpoint}`, formData, {})
       .pipe(
         map((res) => {
           if (res.data === null || res.data === undefined) {

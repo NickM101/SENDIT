@@ -1,9 +1,11 @@
 import { Component, Input } from '@angular/core';
+import { SharedModule } from '../../shared.module';
 
 @Component({
   selector: 'app-stat-card',
   templateUrl: './stat-card.component.html',
-  styleUrls: ['./stat-card.component.css']
+  styleUrl: './stat-card.component.css',
+  imports: [SharedModule]
 })
 export class StatCardComponent {
   @Input() title: string = '';

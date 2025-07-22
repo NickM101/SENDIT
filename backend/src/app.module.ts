@@ -12,7 +12,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Makes ConfigModule available globally
+      isGlobal: true,
     }),
     PrismaModule,
     AuthModule,

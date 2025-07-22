@@ -1,12 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { User } from '../../../auth/models/auth.models';
 import { ToastService } from '../../../core/services/toast.service';
 import { AdminService } from '../../../admin/services/admin.service';
 import { SharedModule } from '../../../shared/shared.module';
-import { IconModule } from '../../../shared/components/icon/icon.module';
 import { UserFormComponent } from "./user-form/user-form.component";
 import { CeilPipe } from "../../../shared/pipes/ceil.pipe";
-import { StatCardComponent } from "../../../shared/components/stat-card/stat-card.component";
+
+declare global {
+  interface Window {
+    HSStaticMethods: {
+      autoInit: () => void;
+    };
+  }
+}
 
 interface UserStats {
   totalUsers: number;
@@ -19,9 +28,9 @@ interface UserStats {
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: [],
-  imports: [SharedModule, UserFormComponent, CeilPipe, StatCardComponent, IconModule]
+  imports: [SharedModule, UserFormComponent, CeilPipe]
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy {
   users: User[] = [];
   userStats!: UserStats;
   loading = true;
@@ -40,11 +49,22 @@ export class UserManagementComponent implements OnInit {
 
   Math:Math = Math; // Expose Math for use in templates
 
-  constructor(private adminService: AdminService, private toastService: ToastService) { }
+  constructor(private adminService: AdminService, private toastService: ToastService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadUserStats();
     this.loadUsers();
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize Preline UI components after the view has been initialized
+    if (window.HSStaticMethods) {
+      window.HSStaticMethods.autoInit();
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Perform any cleanup if necessary
   }
 
   loadUserStats(): void {
@@ -127,17 +147,8 @@ export class UserManagementComponent implements OnInit {
     this.showUserForm = true;
   }
 
-  editUser(userId: string): void {
-    this.adminService.getUserById(userId).subscribe({
-      next: (user) => {
-        this.selectedUser = user;
-        this.showUserForm = true;
-      },
-      error: (err) => {
-        console.error('Error fetching user for edit:', err);
-        this.error = 'Failed to load user for editing.';
-      }
-    });
+  viewUser(userId: string): void {
+    this.router.navigate(['/admin/users', userId]);
   }
 
   deleteUser(userId: string): void {
@@ -177,11 +188,6 @@ export class UserManagementComponent implements OnInit {
   onFormCancelled(): void {
     this.showUserForm = false;
     this.selectedUser = null;
-  }
-
-  viewUser(userId: string): void {
-    // Implement navigation to user detail page
-    console.log('View user:', userId);
   }
 
   viewUserParcels(userId: string): void {

@@ -1,16 +1,25 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { UserService } from '../../../../core/services/user.service';
 import { User } from '../../../../auth/models/auth.models';
 import { SharedModule } from '../../../../shared/shared.module';
+
+declare global {
+  interface Window {
+    HSStaticMethods: {
+      autoInit: () => void;
+    };
+  }
+}
 
 @Component({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
   styleUrls: [],
-  imports: [SharedModule]
+  imports: [CommonModule, ReactiveFormsModule, SharedModule]
 })
-export class UserFormComponent implements OnInit {
+export class UserFormComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() user: User | null = null;
   @Output() formSubmitted = new EventEmitter<void>();
   @Output() formCancelled = new EventEmitter<void>();
@@ -28,6 +37,17 @@ export class UserFormComponent implements OnInit {
   ngOnInit(): void {
     this.isEditMode = !!this.user;
     this.initializeForm();
+  }
+
+  ngAfterViewInit(): void {
+    // Manually initialize Preline UI components for the modal
+    if (window.HSStaticMethods) {
+      window.HSStaticMethods.autoInit();
+    }
+  }
+
+  ngOnDestroy(): void {
+    // No specific cleanup needed for this simple modal
   }
 
   initializeForm(): void {

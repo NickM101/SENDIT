@@ -20,6 +20,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['ADMIN'], title: 'User Management - SendIT' },
   },
+  {
+    path: 'users/:id',
+    loadComponent: () => import('./components/user-details/user-details').then(m => m.UserDetailsComponent),
+    canActivate: [AuthGuard],
+    data: { roles: ['ADMIN'], title: 'User Details - SendIT' },
+  },
 ];
 
 @NgModule({

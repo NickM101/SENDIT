@@ -188,8 +188,11 @@ export class UsersService {
     id: string,
     file: Express.Multer.File,
   ): Promise<string> {
-    const user = await this.findOne(id);
     const imageUrl = await this.uploadsService.uploadImage(file);
+
+    if (!imageUrl) {
+      throw new BadRequestException('Invalid file or upload failed.');
+    }
 
     await this.prisma.user.update({
       where: { id },

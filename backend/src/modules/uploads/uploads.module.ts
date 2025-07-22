@@ -5,9 +5,7 @@ import { UploadsController } from './uploads.controller';
 
 @Module({
   imports: [
-    MulterModule.register({
-      dest: './uploads',
-    }),
+    MulterModule.register(),
   ],
   controllers: [UploadsController],
   providers: [UploadsService],

@@ -93,13 +93,14 @@ export class UsersController {
     return this.usersService.updateProfile(req.user.userId, dto);
   }
 
-  @Patch('profile-picture')
+  @Post('profile-picture')
   @ApiOperation({ summary: `Upload or update current user's profile picture` })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
+        id: { type: 'string' },
         file: { type: 'string', format: 'binary' },
       },
     },
@@ -117,7 +118,9 @@ export class UsersController {
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.usersService.updateProfilePicture(req.user.userId, file);
+    console.log(`Updating user with ID: ${req.body.id}`);
+
+    return this.usersService.updateProfilePicture(req.body.id, file);
   }
 
   @Patch(':id')

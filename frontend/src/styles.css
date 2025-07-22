@@ -1,88 +1,214 @@
 /* src/styles.css */
 @import "tailwindcss";
 
-/* @custom-variant dark (&:where(.dark, .dark *)); */
+@import "preline/variants.css";
+@source "../node_modules/preline/dist/*.js";
 
+/* Optional Preline UI Datepicker Plugin */
+@import "preline/src/plugins/datepicker/styles.css";
+
+/* Plugins */
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/aspect-ratio";
+
+@theme {
+  --color-primary-0: #fff;
+  --color-primary-100: #f8f8f8;
+  --color-primary-200: #f9f4ee;
+  --color-primary-300: #f9eee1;
+  --color-primary-400: #f9e7d2;
+  --color-primary-500: #f9dec0;
+  --color-primary-600: #f9d4a9;
+  --color-primary-700: #f8c88e;
+  --color-primary-800: #f7ba6d;
+  --color-primary-900: #f5a93e;
+  --color-primary-1000: #f29400;
+  --color-primary-1100: #ef7d00;
+  --color-primary-1200: #e95f00;
+  --color-primary-1300: #e23700;
+  --color-primary-1400: #d90000;
+  --color-primary-1500: #b80000;
+  --color-primary-1600: #990000;
+  --color-primary-1700: #7d0000;
+  --color-primary-1800: #640400;
+  --color-primary-1900: #4e0800;
+  --color-primary-2000: #3c0800;
+  --color-primary-2100: #2d0800;
+  --color-primary-2200: #210700;
+  --color-primary-2300: #160500;
+  --color-primary-2400: #0e0400;
+  --color-primary-2500: #070300;
+  --color-primary-2600: #040201;
+  --color-primary-2700: #020202;
+  --color-secondary-0: #fff;
+  --color-secondary-100: #f8f8f8;
+  --color-secondary-200: #edede9;
+  --color-secondary-300: #e1e2da;
+  --color-secondary-400: #d6d8cc;
+  --color-secondary-500: #cacdbd;
+  --color-secondary-600: #bfc2af;
+  --color-secondary-700: #b4b8a1;
+  --color-secondary-800: #a9ad93;
+  --color-secondary-900: #9ea385;
+  --color-secondary-1000: #939977;
+  --color-secondary-1100: #898f69;
+  --color-secondary-1200: #7e855b;
+  --color-secondary-1300: #747b4e;
+  --color-secondary-1400: #6a7140;
+  --color-secondary-1500: #61663a;
+  --color-secondary-1600: #575c35;
+  --color-secondary-1700: #4e522f;
+  --color-secondary-1800: #44492a;
+  --color-secondary-1900: #3b3f24;
+  --color-secondary-2000: #33361f;
+  --color-secondary-2100: #2a2d1a;
+  --color-secondary-2200: #222415;
+  --color-secondary-2300: #1a1b10;
+  --color-secondary-2400: #12130b;
+  --color-secondary-2500: #0b0c07;
+  --color-secondary-2600: #050504;
+  --color-secondary-2700: #020202;
+  --color-primary-muted-0: #fff;
+  --color-primary-muted-100: #f8f8f8;
+  --color-primary-muted-200: #f6f4f2;
+  --color-primary-muted-300: #f2efeb;
+  --color-primary-muted-400: #eee8e2;
+  --color-primary-muted-500: #e9e1d7;
+  --color-primary-muted-600: #e2d7cb;
+  --color-primary-muted-700: #dbccbb;
+  --color-primary-muted-800: #d1bfa8;
+  --color-primary-muted-900: #c6af8e;
+  --color-primary-muted-1000: #b4985c;
+  --color-primary-muted-1100: #a58344;
+  --color-primary-muted-1200: #936a31;
+  --color-primary-muted-1300: #7c491c;
+  --color-primary-muted-1400: #480000;
+  --color-primary-muted-1500: #400000;
+  --color-primary-muted-1600: #3a0700;
+  --color-primary-muted-1700: #340e01;
+  --color-primary-muted-1800: #2d1105;
+  --color-primary-muted-1900: #261006;
+  --color-primary-muted-2000: #1e0f06;
+  --color-primary-muted-2100: #180c06;
+  --color-primary-muted-2200: #120a06;
+  --color-primary-muted-2300: #0d0705;
+  --color-primary-muted-2400: #080504;
+  --color-primary-muted-2500: #050403;
+  --color-primary-muted-2600: #030202;
+  --color-primary-muted-2700: #020202;
+  --color-secondary-muted-0: #fff;
+  --color-secondary-muted-100: #f8f8f8;
+  --color-secondary-muted-200: #ededec;
+  --color-secondary-muted-300: #e1e2df;
+  --color-secondary-muted-400: #d6d7d3;
+  --color-secondary-muted-500: #cbccc7;
+  --color-secondary-muted-600: #c0c1bb;
+  --color-secondary-muted-700: #b5b6af;
+  --color-secondary-muted-800: #aaaba3;
+  --color-secondary-muted-900: #9fa198;
+  --color-secondary-muted-1000: #95968c;
+  --color-secondary-muted-1100: #8a8c81;
+  --color-secondary-muted-1200: #808275;
+  --color-secondary-muted-1300: #75776a;
+  --color-secondary-muted-1400: #6b6d5f;
+  --color-secondary-muted-1500: #626356;
+  --color-secondary-muted-1600: #585a4e;
+  --color-secondary-muted-1700: #4e5045;
+  --color-secondary-muted-1800: #45463d;
+  --color-secondary-muted-1900: #3c3d35;
+  --color-secondary-muted-2000: #33342d;
+  --color-secondary-muted-2100: #2b2b26;
+  --color-secondary-muted-2200: #22231e;
+  --color-secondary-muted-2300: #1a1b17;
+  --color-secondary-muted-2400: #121310;
+  --color-secondary-muted-2500: #0b0b0a;
+  --color-secondary-muted-2600: #050505;
+  --color-secondary-muted-2700: #020202;
+  --font-display: "Nanum Myeongjo";
+  --font-body: "Poppins";
+}
+
+@custom-variant hover (&:hover);
 
 /* Custom global styles */
 @layer base {
-  * {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  }
-  
   html {
     transition: background-color 0.3s, color 0.3s;
     scroll-behavior: smooth;
   }
 
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
   @keyframes toast-slide-in {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
+
+  @keyframes toast-slide-out {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .toast-enter {
+    animation: toast-slide-in 0.3s ease-out;
+  }
+
+  .toast-leave {
+    animation: toast-slide-out 0.3s ease-in;
+  }
+
+  /* Custom scrollbar for better UX */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  /* Focus styles for better accessibility */
+  .focus\:ring-2:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  /* Custom button hover effects */
+  .btn-hover-scale:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  /* Toast container positioning */
+  .toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
   }
 }
-
-@keyframes toast-slide-out {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-.toast-enter {
-  animation: toast-slide-in 0.3s ease-out;
-}
-
-.toast-leave {
-  animation: toast-slide-out 0.3s ease-in;
-}
-
-/* Custom scrollbar for better UX */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Focus styles for better accessibility */
-.focus\:ring-2:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
-/* Custom button hover effects */
-.btn-hover-scale:hover {
-  transform: scale(1.02);
-  transition: transform 0.2s ease-in-out;
-}
-
-/* Toast container positioning */
-.toast-container {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 9999;
-  max-width: 400px;
-  width: 100%;
-}
-}
-
