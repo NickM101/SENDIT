@@ -19,7 +19,6 @@ import {
   UserRole,
 } from '../models/auth.models';
 import { ToastService } from '../../core/services/toast.service';
-import { SidebarService } from '../../layouts/sidebar/sidebar.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -34,7 +33,6 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private toastService: ToastService,
-    private sidebarService: SidebarService
   ) {
     const token = localStorage.getItem('auth_token');
     const user = localStorage.getItem('current_user');
@@ -43,7 +41,6 @@ export class AuthService {
       console.log('Current User:', user);
       const parsedUser = JSON.parse(user);
       this.currentUserSubject.next(parsedUser);
-      this.sidebarService.setRole(parsedUser.role);
     }
   }
 
@@ -217,7 +214,6 @@ export class AuthService {
     localStorage.setItem('current_user', JSON.stringify(user));
     this.tokenSubject.next(token);
     this.currentUserSubject.next(user);
-    this.sidebarService.setRole(user.role);
 
     // Navigate based on user role
     this.navigateByRole(user.role);

@@ -9,6 +9,8 @@ import { UserQueryDto } from './dto/user-query.dto';
 import { UploadsService } from '@app/modules/uploads/uploads.service';
 import * as bcrypt from 'bcryptjs'; // Changed to bcryptjs
 import { User, Prisma } from '@prisma/client'; // Added Prisma
+  
+type UserWithoutPassword = Omit<User, 'password'>;
 
 @Injectable()
 export class UsersService {
@@ -61,14 +63,19 @@ export class UsersService {
     };
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({
+  // Define a type that omits the password field
+
+  async findOne(id: string): Promise<UserWithoutPassword> {
+    const user = await this.prisma.user.findFirst({
       where: { id, deletedAt: null },
     });
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found.`);
     }
-    return user;
+
+    const { password, ...userWithoutPassword } = user; // Exclude password from response
+    return userWithoutPassword;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -91,10 +98,16 @@ export class UsersService {
     });
   }
 
-  async updateByAdmin(id: string, updateUserByAdminDto: UpdateUserByAdminDto): Promise<User> {
+  async updateByAdmin(
+    id: string,
+    updateUserByAdminDto: UpdateUserByAdminDto,
+  ): Promise<User> {
     const existingUser = await this.findOne(id);
 
-    if (updateUserByAdminDto.email && updateUserByAdminDto.email !== existingUser.email) {
+    if (
+      updateUserByAdminDto.email &&
+      updateUserByAdminDto.email !== existingUser.email
+    ) {
       const emailExists = await this.findByEmail(updateUserByAdminDto.email);
       if (emailExists) {
         throw new BadRequestException('Email already in use.');
@@ -102,7 +115,10 @@ export class UsersService {
     }
 
     if (updateUserByAdminDto.password) {
-      updateUserByAdminDto.password = await bcrypt.hash(updateUserByAdminDto.password, 10);
+      updateUserByAdminDto.password = await bcrypt.hash(
+        updateUserByAdminDto.password,
+        10,
+      );
     }
 
     return this.prisma.user.update({
@@ -111,8 +127,17 @@ export class UsersService {
     });
   }
 
-  async changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<void> {
-    const user = await this.findOne(id);
+  async changePassword(
+    id: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const user = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found.`);
+    }
 
     const isPasswordValid = await bcrypt.compare(
       changePasswordDto.oldPassword,
@@ -123,7 +148,10 @@ export class UsersService {
       throw new BadRequestException('Invalid old password.');
     }
 
-    const newHashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    const newHashedPassword = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      10,
+    );
 
     await this.prisma.user.update({
       where: { id },
@@ -131,10 +159,16 @@ export class UsersService {
     });
   }
 
-  async updateProfile(id: string, updateProfileDto: UpdateProfileDto): Promise<User> {
+  async updateProfile(
+    id: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<User> {
     const existingUser = await this.findOne(id);
 
-    if (updateProfileDto.email && updateProfileDto.email !== existingUser.email) {
+    if (
+      updateProfileDto.email &&
+      updateProfileDto.email !== existingUser.email
+    ) {
       const emailExists = await this.findByEmail(updateProfileDto.email);
       if (emailExists) {
         throw new BadRequestException('Email already in use.');
@@ -147,7 +181,10 @@ export class UsersService {
     });
   }
 
-  async updateProfilePicture(id: string, file: Express.Multer.File): Promise<string> {
+  async updateProfilePicture(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<string> {
     const user = await this.findOne(id);
     const imageUrl = await this.uploadsService.uploadImage(file);
 
@@ -192,9 +229,15 @@ export class UsersService {
 
   async getUserStats() {
     const totalUsers = await this.prisma.user.count();
-    const activeUsers = await this.prisma.user.count({ where: { isActive: true } });
-    const inactiveUsers = await this.prisma.user.count({ where: { isActive: false } });
-    const adminUsers = await this.prisma.user.count({ where: { role: 'ADMIN' } });
+    const activeUsers = await this.prisma.user.count({
+      where: { isActive: true },
+    });
+    const inactiveUsers = await this.prisma.user.count({
+      where: { isActive: false },
+    });
+    const adminUsers = await this.prisma.user.count({
+      where: { role: 'ADMIN' },
+    });
 
     return {
       totalUsers,
