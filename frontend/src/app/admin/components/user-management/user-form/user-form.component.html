@@ -1,73 +1,96 @@
-<div class="user-form-container">
-  <div class="card">
-    <div class="card-header">
-      <h5>{{ isEditMode ? 'Edit User' : 'Add New User' }}</h5>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+  <div class="relative w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+    <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+      <h3 class="text-2xl font-semibold leading-none tracking-tight">{{ isEditMode ? 'Edit User' : 'Add New User' }}</h3>
+      <p class="text-sm text-muted-foreground">{{ isEditMode ? 'Make changes to user profile here.' : 'Fill in the details to create a new user account.' }}</p>
     </div>
-    <div class="card-body">
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-        <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
-          <input type="text" id="name" formControlName="name" class="form-control" [ngClass]="{'is-invalid': userForm.get('name')?.invalid && userForm.get('name')?.touched}">
-          <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="invalid-feedback">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="mt-4">
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <label for="name" class="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Name</label>
+          <input type="text" id="name" formControlName="name" class="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [ngClass]="{'border-red-500': userForm.get('name')?.invalid && userForm.get('name')?.touched}">
+          <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="col-span-4 text-right text-xs text-red-500">
             Name is required.
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" id="email" formControlName="email" class="form-control" [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched}">
-          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="invalid-feedback">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <label for="email" class="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email</label>
+          <input type="email" id="email" formControlName="email" class="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [ngClass]="{'border-red-500': userForm.get('email')?.invalid && userForm.get('email')?.touched}">
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="col-span-4 text-right text-xs text-red-500">
             <span *ngIf="userForm.get('email')?.errors?.['required']">Email is required.</span>
             <span *ngIf="userForm.get('email')?.errors?.['email']">Please enter a valid email.</span>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="phone" class="form-label">Phone</label>
-          <input type="text" id="phone" formControlName="phone" class="form-control" [ngClass]="{'is-invalid': userForm.get('phone')?.invalid && userForm.get('phone')?.touched}">
-          <div *ngIf="userForm.get('phone')?.invalid && userForm.get('phone')?.touched" class="invalid-feedback">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <label for="phone" class="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Phone</label>
+          <input type="text" id="phone" formControlName="phone" class="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [ngClass]="{'border-red-500': userForm.get('phone')?.invalid && userForm.get('phone')?.touched}">
+          <div *ngIf="userForm.get('phone')?.invalid && userForm.get('phone')?.touched" class="col-span-4 text-right text-xs text-red-500">
             Phone is required.
           </div>
         </div>
 
-        <div class="mb-3" *ngIf="!isEditMode">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" id="password" formControlName="password" class="form-control" [ngClass]="{'is-invalid': userForm.get('password')?.invalid && userForm.get('password')?.touched}">
-          <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="invalid-feedback">
+        <div class="grid grid-cols-4 items-center gap-4" *ngIf="!isEditMode">
+          <label for="password" class="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Password</label>
+          <input type="password" id="password" formControlName="password" class="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [ngClass]="{'border-red-500': userForm.get('password')?.invalid && userForm.get('password')?.touched}">
+          <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="col-span-4 text-right text-xs text-red-500">
             <span *ngIf="userForm.get('password')?.errors?.['required']">Password is required.</span>
             <span *ngIf="userForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters.</span>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="roles" class="form-label">Roles</label>
-          <select multiple id="roles" formControlName="roles" class="form-control" [ngClass]="{'is-invalid': userForm.get('roles')?.invalid && userForm.get('roles')?.touched}">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <label for="role" class="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Role</label>
+          <select id="role" formControlName="role" class="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [ngClass]="{'border-red-500': userForm.get('role')?.invalid && userForm.get('role')?.touched}">
             <option value="USER">User</option>
             <option value="ADMIN">Admin</option>
             <option value="PREMIUM_USER">Premium User</option>
           </select>
-          <div *ngIf="userForm.get('roles')?.invalid && userForm.get('roles')?.touched" class="invalid-feedback">
-            At least one role is required.
+          <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="col-span-4 text-right text-xs text-red-500">
+            Role is required.
           </div>
         </div>
 
-        <div class="form-check mb-3">
-          <input type="checkbox" id="isActive" formControlName="isActive" class="form-check-input">
-          <label class="form-check-label" for="isActive">Is Active</label>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="isActive" formControlName="isActive" class="peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">
+          <label for="isActive" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Is Active</label>
         </div>
+      </div>
 
-        <div *ngIf="error" class="alert alert-danger mt-3">
-          {{ error }}
-        </div>
+      <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline">{{ error }}</span>
+      </div>
 
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-secondary me-2" (click)="onCancel()">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid || loading">
-            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            {{ isEditMode ? 'Update User' : 'Create User' }}
-          </button>
-        </div>
-      </form>
-    </div>
+      <div class="flex justify-end">
+        <button type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 mr-2" (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" [disabled]="userForm.invalid || loading">
+          <svg *ngIf="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isEditMode ? 'Update User' : 'Create User' }}
+        </button>
+      </div>
+    </form>
+    <button class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground" (click)="onCancel()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        class="h-4 w-4"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+      <span class="sr-only">Close</span>
+    </button>
   </div>
 </div>

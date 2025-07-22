@@ -1,6 +1,3 @@
-import { Get } from '@nestjs/common';
-// File: src/app/auth/models/auth.models.ts
-
 export interface User {
   id: string;
   email: string;

@@ -14,6 +14,11 @@ export class AuthExceptionsFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
     res
       .status(401)
-      .json({ statusCode: 401, message: 'Authentication required' });
+      .json({
+        success: false,
+        message: 'Authentication required',
+        data: null,
+        statusCode: 401,
+      });
   }
 }

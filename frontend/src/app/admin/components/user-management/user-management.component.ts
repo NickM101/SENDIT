@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../../auth/models/auth.models';
 import { ToastService } from '../../../core/services/toast.service';
-import { UserService } from '../../../core/services/user.service';
+import { AdminService } from '../../../admin/services/admin.service';
 import { SharedModule } from '../../../shared/shared.module';
+import { IconModule } from '../../../shared/components/icon/icon.module';
 import { UserFormComponent } from "./user-form/user-form.component";
 import { CeilPipe } from "../../../shared/pipes/ceil.pipe";
-
+import { StatCardComponent } from "../../../shared/components/stat-card/stat-card.component";
 
 interface UserStats {
   totalUsers: number;
@@ -17,8 +18,8 @@ interface UserStats {
 @Component({
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'],
-  imports: [SharedModule, UserFormComponent, CeilPipe]
+  styleUrls: [],
+  imports: [SharedModule, UserFormComponent, CeilPipe, StatCardComponent, IconModule]
 })
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
@@ -37,7 +38,9 @@ export class UserManagementComponent implements OnInit {
   showUserForm = false;
   selectedUser: User | null = null;
 
-  constructor(private userService: UserService, private toastService: ToastService) { }
+  Math:Math = Math; // Expose Math for use in templates
+
+  constructor(private adminService: AdminService, private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.loadUserStats();
@@ -45,7 +48,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUserStats(): void {
-    this.userService.getUserStats().subscribe({
+    this.adminService.getUserStats().subscribe({
       next: (stats) => {
         this.userStats = stats;
       },
@@ -60,14 +63,20 @@ export class UserManagementComponent implements OnInit {
     this.loading = true;
     const filters = {
       search: this.searchQuery,
-      role: this.selectedRole,
+      role: this.selectedRole || undefined,
       isActive: this.selectedStatus === 'true' ? true : (this.selectedStatus === 'false' ? false : undefined)
     };
 
-    this.userService.getUsers(this.currentPage, this.itemsPerPage, filters).subscribe({
+    const params = {
+      page: this.currentPage,
+      limit: this.itemsPerPage,
+      ...filters
+    };
+    this.adminService.getUsers(params).subscribe({
       next: (response) => {
-        this.users = response.data;
-        this.totalUsers = response.total;
+        console.log("USERS RESPONSE:", response)
+        this.users = response.items;
+        this.totalUsers = response.pagination?.total || 0;
         this.loading = false;
       },
       error: (err) => {
@@ -84,6 +93,14 @@ export class UserManagementComponent implements OnInit {
     this.loadUsers();
   }
 
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.selectedRole = '';
+    this.selectedStatus = '';
+    this.currentPage = 1;
+    this.loadUsers();
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadUsers();
@@ -91,7 +108,7 @@ export class UserManagementComponent implements OnInit {
 
   toggleUserStatus(user: User): void {
     const newStatus = !user.isActive;
-    this.userService.updateUser(user.id, { isActive: newStatus }).subscribe({
+    this.adminService.updateUser(user.id, { isActive: newStatus }).subscribe({
       next: () => {
         user.isActive = newStatus; // Optimistically update UI
         this.loadUserStats();
@@ -111,7 +128,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   editUser(userId: string): void {
-    this.userService.getUserById(userId).subscribe({
+    this.adminService.getUserById(userId).subscribe({
       next: (user) => {
         this.selectedUser = user;
         this.showUserForm = true;
@@ -125,7 +142,7 @@ export class UserManagementComponent implements OnInit {
 
   deleteUser(userId: string): void {
     if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      this.userService.deleteUser(userId).subscribe({
+      this.adminService.hardDeleteUser(userId).subscribe({
         next: () => {
           this.users = this.users.filter(user => user.id !== userId);
           this.totalUsers--;
@@ -138,6 +155,15 @@ export class UserManagementComponent implements OnInit {
         }
       });
     }
+  }
+
+  getPageNumbers(): number[] {
+    const totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
+    const pageNumbers: number[] = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
   }
 
   onFormSubmitted(): void {

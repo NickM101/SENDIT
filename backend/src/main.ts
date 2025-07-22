@@ -24,7 +24,7 @@ async function bootstrap() {
   app.enableCors(securityConfig.cors);
 
   // Global filters
-  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
+  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost), configService));
   app.useGlobalFilters(new AuthExceptionsFilter());
 
   app.useGlobalInterceptors(new ResponseInterceptor());

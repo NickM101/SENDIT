@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import {
   User,
   LoginRequest,
@@ -15,22 +13,21 @@ import {
   ResetPasswordResponse,
   EmailVerificationRequest,
   EmailVerificationResponse,
-  ApiResponse,
   UserRole,
 } from '../models/auth.models';
 import { ToastService } from '../../core/services/toast.service';
+import { ApiService } from '../../core/services/api.service';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   public token$ = this.tokenSubject.asObservable();
 
   constructor(
-    private http: HttpClient,
+    private apiService: ApiService,
     private router: Router,
     private toastService: ToastService,
   ) {
@@ -74,111 +71,81 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<User> {
-    return this.http
-      .post<ApiResponse<User>>(`${this.apiUrl}/login`, credentials)
+    return this.apiService
+      .post<User>('/auth/login', credentials)
       .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            this.setAuthData(response.data?.access_token, response.data);
-            this.toastService.success('Login successful');
-            return response.data;
-          }
-          throw new Error(response.message || 'Login failed');
+        tap((user) => {
+          this.setAuthData(user.access_token, user);
+          this.toastService.success('Login successful');
         }),
-        catchError((error) => this.handleError(error))
+        map((user) => user)
       );
   }
 
   register(userData: RegisterRequest): Observable<RegisterResponse> {
-    return this.http
-      .post<ApiResponse<RegisterResponse>>(`${this.apiUrl}/register`, userData)
+    return this.apiService
+      .post<RegisterResponse>('/auth/register', userData)
       .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            this.setAuthData(response.data.token, response.data.user);
-            this.toastService.success('Registration successful');
-            return response.data;
-          }
-          throw new Error(response.message || 'Registration failed');
+        tap((response) => {
+          this.setAuthData(response.token, response.user);
+          this.toastService.success('Registration successful');
         }),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
   forgotPassword(
     email: ForgotPasswordRequest
   ): Observable<ForgotPasswordResponse> {
-    return this.http
-      .post<ApiResponse<ForgotPasswordResponse>>(
-        `${this.apiUrl}/forgot-password`,
-        email
-      )
+    return this.apiService
+      .post<ForgotPasswordResponse>('/auth/forgot-password', email)
       .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            this.toastService.success('Password reset email sent');
-            return response.data;
-          }
-          throw new Error(response.message || 'Failed to send reset email');
+        tap(() => {
+          this.toastService.success('Password reset email sent');
         }),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
   resetPassword(
     resetData: ResetPasswordRequest
   ): Observable<ResetPasswordResponse> {
-    return this.http
-      .post<ApiResponse<ResetPasswordResponse>>(
-        `${this.apiUrl}/reset-password`,
-        resetData
-      )
+    return this.apiService
+      .post<ResetPasswordResponse>('/auth/reset-password', resetData)
       .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            this.toastService.success('Password reset successful');
-            return response.data;
-          }
-          throw new Error(response.message || 'Password reset failed');
+        tap(() => {
+          this.toastService.success('Password reset successful');
         }),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
   verifyEmail(
     verificationData: EmailVerificationRequest
   ): Observable<EmailVerificationResponse> {
-    return this.http
-      .post<ApiResponse<EmailVerificationResponse>>(
-        `${this.apiUrl}/verify-email/${verificationData.token}`,
-        {}
-      )
+    return this.apiService
+      .post<EmailVerificationResponse>(`/auth/verify-email/${verificationData.token}`, {})
       .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            if (response.data.user) {
-              this.updateCurrentUser(response.data.user);
-            }
-            this.toastService.success('Email verification successful');
-            return response.data;
+        tap((response) => {
+          if (response.user) {
+            this.updateCurrentUser(response.user);
           }
-          throw new Error(response.message || 'Email verification failed');
+          this.toastService.success('Email verification successful');
         }),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
   resendVerificationEmail(): Observable<{ success: boolean; message: string }> {
-    return this.http
-      .post<ApiResponse>(`${this.apiUrl}/resend-verification`, {})
+    return this.apiService
+      .post<{ success: boolean; message: string }>('/auth/resend-verification', {})
       .pipe(
-        map((response) => {
+        tap((response) => {
           if (response.success) {
             this.toastService.success('Verification email resent');
           }
-          return { success: response.success, message: response.message };
         }),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
@@ -192,20 +159,17 @@ export class AuthService {
 
   refreshToken(): Observable<{ token: string }> {
     const refreshToken = localStorage.getItem('refresh_token');
-    return this.http
-      .post<ApiResponse<{ token: string }>>(`${this.apiUrl}/refresh`, {
+    return this.apiService
+      .post<{ token: string }>('/auth/refresh', {
         refreshToken,
       })
       .pipe(
         tap((response) => {
-          if (response.success && response.data) {
-            const newToken = response.data.token;
-            localStorage.setItem('auth_token', newToken);
-            this.tokenSubject.next(newToken);
-          }
+          const newToken = response.token;
+          localStorage.setItem('auth_token', newToken);
+          this.tokenSubject.next(newToken);
         }),
-        map((response) => response.data!),
-        catchError((error) => this.handleError(error))
+        map((response) => response)
       );
   }
 
@@ -239,27 +203,5 @@ export class AuthService {
     this.currentUserSubject.next(user);
   }
 
-  private handleError(error: any): Observable<never> {
-    let errorMessage = 'An error occurred';
-    if (error.error?.message) {
-      errorMessage = error.error.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    } else if (error.status === 0) {
-      errorMessage = 'Network error. Please check your connection.';
-    } else if (error.status === 401) {
-      errorMessage = 'Invalid credentials';
-    } else if (error.status === 403) {
-      errorMessage = 'Access denied';
-    } else if (error.status === 404) {
-      errorMessage = 'Service not found';
-    } else if (error.status >= 500) {
-      errorMessage = 'Server error. Please try again later.';
-    }
-
-    console.log('Error Message:', errorMessage);
-
-    this.toastService.error(errorMessage);
-    return throwError(() => new Error(errorMessage));
-  }
+  
 }

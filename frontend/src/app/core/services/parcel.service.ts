@@ -1,7 +1,9 @@
 // src/app/core/services/parcel.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
+import { PaginatedResponse, QueryParams } from '../../shared/models/api.model';
 
 export interface Parcel {
   id: string;
@@ -18,48 +20,33 @@ export interface Parcel {
   trackingHistory: any[];
 }
 
-export interface ParcelListResponse {
-  parcels: Parcel[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParcelService {
-  private apiUrl = 'http://localhost:3000/parcels';
-
-  constructor(private http: HttpClient) {}
+  constructor(private apiService: ApiService) {}
 
   createParcel(parcelData: any): Observable<Parcel> {
-    return this.http.post<Parcel>(this.apiUrl, parcelData);
+    return this.apiService.post<Parcel>('/parcels', parcelData);
   }
 
-  getParcels(page = 1, limit = 10, filters: any = {}): Observable<ParcelListResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
-
-    Object.keys(filters).forEach(key => {
-      if (filters[key]) {
-        params = params.set(key, filters[key]);
-      }
-    });
-
-    return this.http.get<ParcelListResponse>(this.apiUrl, { params });
+  getParcels(page = 1, limit = 10, filters: QueryParams = {}): Observable<PaginatedResponse<Parcel>> {
+    const params: QueryParams = {
+      page: page.toString(),
+      limit: limit.toString(),
+      ...filters
+    };
+    return this.apiService.getPaginated<Parcel>('/parcels', 'parcels', params);
   }
 
   getParcelById(id: string): Observable<Parcel> {
-    return this.http.get<Parcel>(`${this.apiUrl}/${id}`);
+    return this.apiService.get<Parcel>(`/parcels/${id}`);
   }
 
   updateParcelStatus(id: string, status: string, location?: string, description?: string): Observable<Parcel> {
-    return this.http.put<Parcel>(`${this.apiUrl}/${id}/status`, {
+    return this.apiService.put<Parcel>(`/parcels/${id}/status`, {
       status,
       location,
       description
@@ -67,7 +54,7 @@ export class ParcelService {
   }
 
   trackParcel(trackingNumber: string): Observable<Parcel> {
-    return this.http.get<Parcel>(`http://localhost:3000/track/${trackingNumber}`);
+    return this.apiService.get<Parcel>(`/track/${trackingNumber}`);
   }
 
   calculatePrice(weight: number, deliveryType: string = 'STANDARD'): number {

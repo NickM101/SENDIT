@@ -7,6 +7,7 @@ import { SharedModule } from '../../../../shared/shared.module';
 @Component({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
+  styleUrls: [],
   imports: [SharedModule]
 })
 export class UserFormComponent implements OnInit {

@@ -1,196 +1,277 @@
-<div class="user-management-container">
-  <div class="row">
-    <div class="col-12">
-      <h2>User Management</h2>
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-          <li class="breadcrumb-item"><a routerLink="/admin">Admin</a></li>
-          <li class="breadcrumb-item active">User Management</li>
+<div class="min-h-screen bg-background text-foreground transition-colors duration-300">
+  <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0 mb-6">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-bold tracking-tight">User Management</h1>
+        <p class="text-sm text-muted-foreground">
+          Manage all registered users and their permissions
+        </p>
+      </div>
+
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+          <li class="inline-flex items-center">
+            <a routerLink="/"
+              class="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              <lucide-icon name="home" class="h-4 w-4 mr-2"></lucide-icon>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <lucide-icon name="chevron-right" class="rtl:rotate-180 w-4 h-4 text-muted-foreground mx-2"></lucide-icon>
+              <a routerLink="/admin"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Admin</a>
+            </div>
+          </li>
+          <li aria-current="page">
+            <div class="flex items-center">
+              <lucide-icon name="chevron-right" class="rtl:rotate-180 w-4 h-4 text-muted-foreground mx-2"></lucide-icon>
+              <span class="text-sm font-medium text-foreground">Users</span>
+            </div>
+          </li>
         </ol>
       </nav>
     </div>
-  </div>
 
-  <ng-container *ngIf="!showUserForm">
-    <!-- User Stats Cards -->
-    <div class="row mb-4" *ngIf="userStats">
-      <div class="col-md-3 mb-3">
-        <div class="stat-card card">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="stat-icon">
-                <i class="fas fa-users"></i>
-              </div>
-              <div class="stat-content">
-                <h3>{{ userStats.totalUsers }}</h3>
-                <p>Total Users</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- Stats Cards -->
+    <ng-container *ngIf="!showUserForm">
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6" *ngIf="userStats">
+        <app-stat-card title="Total Users" [value]="userStats.totalUsers" description="+20.1% from last month"
+          icon="users"
+          class="bg-gradient-to-br from-blue-500/10 to-blue-600/10 dark:from-blue-900/30 dark:to-blue-800/30"></app-stat-card>
+        <app-stat-card title="Active Users" [value]="userStats.activeUsers" description="+180.1% from last month"
+          icon="user-check"
+          class="bg-gradient-to-br from-green-500/10 to-green-600/10 dark:from-green-900/30 dark:to-green-800/30"></app-stat-card>
+        <app-stat-card title="Inactive Users" [value]="userStats.inactiveUsers" description="+19% from last month"
+          icon="user-slash"
+          class="bg-gradient-to-br from-amber-500/10 to-amber-600/10 dark:from-amber-900/30 dark:to-amber-800/30"></app-stat-card>
+        <app-stat-card title="Admin Users" [value]="userStats.adminUsers" description="+201 since last hour"
+          icon="user-shield"
+          class="bg-gradient-to-br from-purple-500/10 to-purple-600/10 dark:from-purple-900/30 dark:to-purple-800/30"></app-stat-card>
       </div>
 
-      <div class="col-md-3 mb-3">
-        <div class="stat-card card">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="stat-icon">
-                <i class="fas fa-user-check"></i>
-              </div>
-              <div class="stat-content">
-                <h3>{{ userStats.activeUsers }}</h3>
-                <p>Active Users</p>
-              </div>
+      <!-- Main Card -->
+      <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+        <div class="flex flex-col space-y-1.5 p-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">User Directory</h3>
+              <p class="text-sm text-muted-foreground">Manage your application users and permissions</p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <div class="stat-card card">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="stat-icon">
-                <i class="fas fa-user-slash"></i>
-              </div>
-              <div class="stat-content">
-                <h3>{{ userStats.inactiveUsers }}</h3>
-                <p>Inactive Users</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <div class="stat-card card">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="stat-icon">
-                <i class="fas fa-user-shield"></i>
-              </div>
-              <div class="stat-content">
-                <h3>{{ userStats.adminUsers }}</h3>
-                <p>Admin Users</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- User List Table -->
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5>All Users</h5>
-            <button class="btn btn-primary btn-sm" (click)="openCreateUserModal()">
-              <i class="fas fa-plus me-2"></i>Add New User
+            <button
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2"
+              (click)="openCreateUserModal()">
+              <lucide-icon name="plus" class="h-4 w-4"></lucide-icon>
+              Add User
             </button>
           </div>
-          <div class="card-body">
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Search by name or email" [(ngModel)]="searchQuery" (input)="applyFilters()">
+        </div>
+
+        <div class="p-6 pt-0">
+          <!-- Filters -->
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+              <div class="relative w-full sm:w-64">
+                <lucide-icon name="search"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></lucide-icon>
+                <input type="text" placeholder="Search users..."
+                  class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  [(ngModel)]="searchQuery" (input)="applyFilters()" />
               </div>
-              <div class="col-md-3">
-                <select class="form-select" [(ngModel)]="selectedRole" (change)="applyFilters()">
+
+              <div class="grid grid-cols-2 sm:flex gap-2">
+                <select
+                  class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full sm:w-[150px]"
+                  [(ngModel)]="selectedRole" (change)="applyFilters()">
                   <option value="">All Roles</option>
                   <option value="USER">User</option>
                   <option value="ADMIN">Admin</option>
                   <option value="PREMIUM_USER">Premium User</option>
                 </select>
-              </div>
-              <div class="col-md-3">
-                <select class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+
+                <select
+                  class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full sm:w-[150px]"
+                  [(ngModel)]="selectedStatus" (change)="applyFilters()">
                   <option value="">All Statuses</option>
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>
                 </select>
+
+                <button
+                  class="inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground gap-2"
+                  (click)="clearFilters()">
+                  <lucide-icon name="x" class="h-4 w-4"></lucide-icon>
+                  <span class="hidden sm:inline">Clear</span>
+                </button>
               </div>
             </div>
+          </div>
 
-            <div *ngIf="loading" class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-              <p>Loading users...</p>
-            </div>
-            <div *ngIf="error" class="alert alert-danger">
-              {{ error }}
-            </div>
-            <div *ngIf="!loading && !error && users.length === 0" class="alert alert-info">
-              No users found.
-            </div>
+          <!-- Loading State -->
+          <div *ngIf="loading" class="flex flex-col items-center justify-center py-12 gap-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+            <p class="text-muted-foreground">Loading users...</p>
+          </div>
 
-            <div class="table-responsive" *ngIf="!loading && !error && users.length > 0">
-              <table class="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Roles</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+          <!-- Error State -->
+          <div *ngIf="error"
+            class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive dark:border-destructive dark:bg-destructive/20 mb-6"
+            role="alert">
+            <div class="flex items-center gap-2">
+              <lucide-icon name="alert-circle" class="h-5 w-5"></lucide-icon>
+              <h4 class="font-medium">Error loading users</h4>
+            </div>
+            <p class="text-sm mt-2">{{ error }}</p>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading && !error && users.length === 0" class="rounded-lg border bg-muted/50 p-8 text-center">
+            <lucide-icon name="users" class="mx-auto h-10 w-10 text-muted-foreground"></lucide-icon>
+            <h4 class="mt-4 font-medium">No users found</h4>
+            <p class="text-sm text-muted-foreground mt-2">Try adjusting your search or filter criteria</p>
+            <button
+              class="mt-4 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2"
+              (click)="clearFilters()">
+              <lucide-icon name="refresh-cw" class="h-4 w-4"></lucide-icon>
+              Reset filters
+            </button>
+          </div>
+
+          <!-- Users Table -->
+          <div *ngIf="!loading && !error && users.length > 0" class="rounded-lg border overflow-hidden">
+            <div class="relative w-full overflow-auto">
+              <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                  <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    <th
+                      class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-[200px]">
+                      Name</th>
+                    <th
+                      class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                      Email</th>
+                    <th
+                      class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                      Phone</th>
+                    <th
+                      class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                      Roles</th>
+                    <th
+                      class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                      Status</th>
+                    <th
+                      class="h-12 px-4 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                      Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr *ngFor="let user of users">
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.phone }}</td>
-                    <td>
-                      <span *ngFor="let role of user.role" class="badge bg-info me-1">{{ role }}</span>
+                <tbody class="[&_tr:last-child]:border-0">
+                  <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    *ngFor="let user of users">
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0 font-medium">
+                      <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                          <lucide-icon name="user" class="h-5 w-5 text-muted-foreground"></lucide-icon>
+                        </div>
+                        <div>
+                          <p class="font-medium">{{ user.name }}</p>
+                          <p class="text-sm text-muted-foreground">{{ user.id }}</p>
+                        </div>
+                      </div>
                     </td>
-                    <td>
-                      <span class="badge" [ngClass]="{'bg-success': user.isActive, 'bg-danger': !user.isActive}">
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0">{{ user.email }}</td>
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0">{{ user.phone || 'N/A' }}</td>
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <div class="flex flex-wrap gap-1">
+                        <span *ngFor="let role of user.role"
+                          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          [ngClass]="{
+                            'border-transparent bg-blue-500/20 text-blue-700 dark:text-blue-300': role === 'ADMIN',
+                            'border-transparent bg-green-500/20 text-green-700 dark:text-green-300': role === 'USER',
+                            'border-transparent bg-purple-500/20 text-purple-700 dark:text-purple-300': role === 'PREMIUM_USER'
+                          }">
+                          {{ role }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <span
+                        class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        [ngClass]="{
+                          'border-transparent bg-green-500/20 text-green-700 dark:text-green-300': user.isActive,
+                          'border-transparent bg-red-500/20 text-red-700 dark:text-red-300': !user.isActive
+                        }">
+                        <span class="h-2 w-2 rounded-full mr-1" [ngClass]="{
+                          'bg-green-500': user.isActive,
+                          'bg-red-500': !user.isActive
+                        }"></span>
                         {{ user.isActive ? 'Active' : 'Inactive' }}
                       </span>
                     </td>
-                    <td>
-                      <button class="btn btn-sm btn-outline-primary me-2" (click)="editUser(user.id)">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-warning me-2" (click)="toggleUserStatus(user)">
-                        <i class="fas" [ngClass]="{'fa-toggle-on': user.isActive, 'fa-toggle-off': !user.isActive}"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user.id)">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
+                    <td class="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-right">
+                      <div class="flex justify-end gap-1">
+                        <button
+                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                          (click)="editUser(user.id)" title="Edit">
+                          <lucide-icon name="pencil" class="h-4 w-4"></lucide-icon>
+                        </button>
+                        <button
+                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                          (click)="toggleUserStatus(user)" [title]="user.isActive ? 'Deactivate' : 'Activate'">
+                          <lucide-icon [name]="user.isActive ? 'toggle-right' : 'toggle-left'"
+                            class="h-4 w-4"></lucide-icon>
+                        </button>
+                        <button
+                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive/90 hover:text-destructive-foreground h-9 w-9 text-destructive"
+                          (click)="deleteUser(user.id)" title="Delete">
+                          <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
 
-            <!-- Pagination -->
-            <nav *ngIf="totalUsers > itemsPerPage">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" (click)="onPageChange(currentPage - 1)">Previous</a>
-                </li>
-                <li class="page-item" *ngFor="let page of [].constructor(totalUsers / itemsPerPage | ceil)" [class.active]="currentPage === page">
-                  <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
-                </li>
-                <li class="page-item" [class.disabled]="currentPage === (totalUsers / itemsPerPage | ceil)">
-                  <a class="page-link" (click)="onPageChange(currentPage + 1)">Next</a>
-                </li>
-              </ul>
-            </nav>
+          <!-- Pagination -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6">
+            <div class="text-sm text-muted-foreground">
+              Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
+              <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, totalUsers) }}</span> of
+              <span class="font-medium">{{ totalUsers }}</span> users
+            </div>
+            <div class="flex gap-1">
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+                <lucide-icon name="chevron-left" class="h-4 w-4"></lucide-icon>
+                <span class="sr-only sm:not-sr-only sm:ml-2">Previous</span>
+              </button>
+              <div class="flex gap-1">
+                <button *ngFor="let page of getPageNumbers()"
+                  class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                  [class.bg-primary]="currentPage === page" [class.text-primary-foreground]="currentPage === page"
+                  (click)="onPageChange(page)">
+                  {{ page }}
+                </button>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                [disabled]="currentPage === (totalUsers / itemsPerPage | ceil)" (click)="onPageChange(currentPage + 1)">
+                <span class="sr-only sm:not-sr-only sm:mr-2">Next</span>
+                <lucide-icon name="chevron-right" class="h-4 w-4"></lucide-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-  <ng-container *ngIf="showUserForm">
-    <app-user-form
-      [user]="selectedUser"
-      (formSubmitted)="onFormSubmitted()"
-      (formCancelled)="onFormCancelled()"
-    ></app-user-form>
-  </ng-container>
+    <!-- User Form -->
+    <ng-container *ngIf="showUserForm">
+      <app-user-form [user]="selectedUser" (formSubmitted)="onFormSubmitted()"
+        (formCancelled)="onFormCancelled()"></app-user-form>
+    </ng-container>
+  </div>
 </div>

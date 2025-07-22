@@ -42,7 +42,10 @@ export class UsersService {
           { phone: { contains: search, mode: Prisma.QueryMode.insensitive } },
         ],
       }),
-      ...(role && { roles: { has: role } }), // Assuming 'has' works for array enums
+      ...(Array.isArray(role) &&
+        role.filter(Boolean).length > 0 && {
+          role: { in: role.filter(Boolean) },
+        }),
       ...(isActive !== undefined && { isActive }),
     };
 
