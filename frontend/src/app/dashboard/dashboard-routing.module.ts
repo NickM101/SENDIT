@@ -3,10 +3,24 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from '../core/guards/auth.guard';
+import { DashboardLayoutComponent } from './dashboard-layout.component';
+
 
 const routes: Routes = [
-
+  {
+    path: '',
+    component: DashboardLayoutComponent,
+  },
+  {
+    path: 'admin/users',
+    canActivate: [AuthGuard],
+    data: { roles: ['ADMIN'] },
+    loadChildren: () =>
+      import('./admin/users/users.module').then((m) => m.UsersModule),
+  },
 ];
+
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -21,6 +21,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      if (createUserDto.dateOfBirth) {
+        createUserDto.dateOfBirth = new Date(createUserDto.dateOfBirth);
+      }
     return this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -124,6 +127,12 @@ export class UsersService {
       );
     }
 
+    if (updateUserByAdminDto.dateOfBirth) {
+      updateUserByAdminDto.dateOfBirth = new Date(
+        updateUserByAdminDto.dateOfBirth,
+      );
+    }
+
     return this.prisma.user.update({
       where: { id },
       data: updateUserByAdminDto,
@@ -176,6 +185,12 @@ export class UsersService {
       if (emailExists) {
         throw new BadRequestException('Email already in use.');
       }
+    }
+
+    if (updateProfileDto.dateOfBirth) {
+      updateProfileDto.dateOfBirth = new Date(
+        updateProfileDto.dateOfBirth,
+      );
     }
 
     return this.prisma.user.update({
@@ -244,12 +259,16 @@ export class UsersService {
     const adminUsers = await this.prisma.user.count({
       where: { role: 'ADMIN' },
     });
+    const courierUsers = await this.prisma.user.count({
+      where: { role: 'COURIER' },
+    });
 
     return {
       totalUsers,
       activeUsers,
       inactiveUsers,
       adminUsers,
+      courierUsers
     };
   }
 }

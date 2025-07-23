@@ -11,7 +11,6 @@ import { AuthService } from '../../auth/services/auth.service';
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
-  console.log('[AuthInterceptor] Intercepting request:', req.url);
   const token = authService.getToken;
 
   if (token) {
@@ -27,10 +26,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
         );
         return authService.refreshToken().pipe(
           switchMap((authResponse) => {
-            console.log(
-              '[AuthInterceptor] Token refreshed. Retrying request:',
-              req.url
-            );
+          
             const newReq = addTokenToRequest(req, authResponse.token);
             return next(newReq);
           }),
@@ -53,7 +49,6 @@ function addTokenToRequest(
   req: HttpRequest<any>,
   token: string
 ): HttpRequest<any> {
-  console.log('[AuthInterceptor] Attaching token to request:', req.url);
   return req.clone({
     setHeaders: {
       Authorization: `Bearer ${token}`,

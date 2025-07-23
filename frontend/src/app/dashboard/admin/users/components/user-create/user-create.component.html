@@ -1,0 +1,274 @@
+<!-- src/app/dashboard/admin/users/user-create/user-create.component.html -->
+<div class="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li>
+                    <div class="flex items-center">
+                        <a [routerLink]="['/dashboard/admin/users']"
+                            class="text-sm font-medium text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                            Users
+                        </a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Create User</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Create New User</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            Add a new user to the system with appropriate role and permissions
+        </p>
+    </div>
+
+    <!-- Create User Form -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-6">
+            <form [formGroup]="createUserForm" (ngSubmit)="onSubmit()">
+                <!-- Profile Picture Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Profile Picture</h3>
+                    <div class="flex items-center gap-x-4">
+                        <div class="relative">
+                            <img class="inline-block size-20 rounded-full object-cover"
+                                [src]="previewUrl || '/assets/images/default-avatar.png'" alt="Profile preview">
+                            <button *ngIf="previewUrl" type="button" (click)="removeSelectedFile()"
+                                class="absolute -top-1 -end-1 size-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div>
+                            <label for="avatar-upload"
+                                class="cursor-pointer inline-flex items-center gap-x-2 py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Upload Photo
+                            </label>
+                            <input id="avatar-upload" type="file" (change)="onFileSelected($event)" accept="image/*"
+                                class="hidden">
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG or GIF. Max 5MB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="md:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Basic Information</h3>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Full Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" formControlName="name" [class.border-red-500]="isFieldInvalid('name')"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:placeholder-gray-500"
+                            placeholder="Enter full name">
+                        <p *ngIf="isFieldInvalid('name')" class="text-sm text-red-600 mt-2">
+                            {{ getFieldError('name') }}
+                        </p>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Email Address <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" formControlName="email" [class.border-red-500]="isFieldInvalid('email')"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:placeholder-gray-500"
+                            placeholder="Enter email address">
+                        <p *ngIf="isFieldInvalid('email')" class="text-sm text-red-600 mt-2">
+                            {{ getFieldError('email') }}
+                        </p>
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" formControlName="phone" [class.border-red-500]="isFieldInvalid('phone')"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:placeholder-gray-500"
+                            placeholder="+1 (555) 000-0000">
+                        <p *ngIf="isFieldInvalid('phone')" class="text-sm text-red-600 mt-2">
+                            {{ getFieldError('phone') }}
+                        </p>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Date of Birth
+                        </label>
+                        <input type="date" formControlName="dateOfBirth"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400">
+                    </div>
+
+                </div>
+
+                <!-- Account Security -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="md:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Account Security</h3>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Password <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                                [class.border-red-500]="isFieldInvalid('password')"
+                                class="py-3 px-4 pe-11 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:placeholder-gray-500"
+                                placeholder="Enter password">
+                            <button type="button" (click)="togglePasswordVisibility()"
+                                class="absolute inset-y-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-gray-600 dark:focus:text-blue-500">
+                                <svg class="w-3.5 h-3.5" [class.hidden]="showPassword" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg class="w-3.5 h-3.5" [class.hidden]="!showPassword" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878l-3.29-3.29m7.532 7.532l3.29 3.29M9.878 9.878l3.29-3.29m0 0L12 5.5m.01 5.05L15.5 8M21 12a9.96 9.96 0 01-1.563 3.029" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p *ngIf="isFieldInvalid('password')" class="text-sm text-red-600 mt-2">
+                            {{ getFieldError('password') }}
+                        </p>
+                        <div class="mt-2 text-xs text-gray-500">
+                            <div class="flex flex-col space-y-1">
+                                <span>Password must contain:</span>
+                                <ul class="list-disc list-inside ml-4 space-y-0.5">
+                                    <li>At least 8 characters</li>
+                                    <li>One uppercase letter</li>
+                                    <li>One lowercase letter</li>
+                                    <li>One number</li>
+                                    <li>One special character</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
+                            Confirm Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" formControlName="confirmPassword"
+                            [class.border-red-500]="isFieldInvalid('confirmPassword')"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:placeholder-gray-500"
+                            placeholder="Confirm password">
+                        <p *ngIf="isFieldInvalid('confirmPassword')" class="text-sm text-red-600 mt-2">
+                            {{ getFieldError('confirmPassword') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Role & Permissions -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Role & Permissions</h3>
+
+                    <!-- Role Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-3 dark:text-white">
+                            User Role <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div *ngFor="let role of userRoles" class="relative">
+                                <input type="radio" [id]="'role-' + role.value" [value]="role.value"
+                                    formControlName="role" class="peer sr-only">
+                                <label [for]="'role-' + role.value"
+                                    class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:peer-checked:bg-blue-900/25">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-semibold text-gray-800 dark:text-white">{{ role.label
+                                            }}</span>
+                                        <svg class="w-4 h-4 text-blue-600 opacity-0 peer-checked:opacity-100"
+                                            fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ role.description }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="flex items-center gap-x-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="isActive" formControlName="isActive"
+                                class="shrink-0 mt-0.5 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                            <label for="isActive" class="text-sm text-gray-800 ms-3 dark:text-white">
+                                Active Account
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Notification Preferences</h3>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="emailNotifications" formControlName="emailNotifications"
+                                class="shrink-0 mt-0.5 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                            <label for="emailNotifications" class="text-sm text-gray-800 ms-3 dark:text-white">
+                                Email Notifications
+                            </label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" id="smsNotifications" formControlName="smsNotifications"
+                                class="shrink-0 mt-0.5 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                            <label for="smsNotifications" class="text-sm text-gray-800 ms-3 dark:text-white">
+                                SMS Notifications
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div
+                    class="flex items-center justify-end gap-x-2 py-3 px-4 bg-gray-50 border-t dark:bg-gray-800 dark:border-gray-700 -mx-6 -mb-6 rounded-b-xl">
+                    <button type="button" (click)="cancel()" [disabled]="isSubmitting"
+                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800">
+                        Cancel
+                    </button>
+
+                    <button type="submit" [disabled]="createUserForm.invalid || isSubmitting"
+                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                        <span *ngIf="isSubmitting"
+                            class="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
+                            aria-label="loading"></span>
+                        <span>{{ isSubmitting ? 'Creating...' : 'Create User' }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

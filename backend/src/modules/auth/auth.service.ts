@@ -79,7 +79,6 @@ export class AuthService {
     const token = await this.generateEmailVerificationToken(user.id);
     const verificationUrl = `${process.env.FRONTEND_URL}/auth/verify-email/${token}`;
 
-    console.log('verification url:', verificationUrl);
 
     await this.sendVerificationEmail(user.email, user.name, verificationUrl);
 
@@ -135,9 +134,7 @@ export class AuthService {
       },
     });
 
-    console.log('reset token:', resetToken);
     const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${resetToken}`;
-    console.log('reset url:', resetUrl);
     await this.sendPasswordResetEmail(user.email, user.name, resetUrl);
   }
 

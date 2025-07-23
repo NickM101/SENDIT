@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../auth/services/auth.service';
+import { AuthService } from '../auth/services/auth.service';
 import { filter, map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { User, UserRole } from '../../auth/models/auth.models';
-import { SharedModule } from '../../shared/shared.module';
-import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
+import { User, UserRole } from '../auth/models/auth.models';
+import { SharedModule } from '../shared/shared.module';
+import { SidebarComponent } from '../shared/components/sidebar/sidebar.component';
 
 interface Breadcrumb {
   label: string;
@@ -363,7 +363,6 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   // Search functionality
   onSearch(): void {
     // Implement global search functionality
-    console.log('Search functionality to be implemented');
   }
 
   // Quick actions based on user role

@@ -18,7 +18,6 @@ export class ApiService {
   private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {
-    console.log('API Service initialized with base URL:', this.API_URL);
   }
 
   /** Utility to build HttpParams from QueryParams */
@@ -75,11 +74,6 @@ export class ApiService {
     params?: QueryParams
   ): Observable<PaginatedResponse<T>> {
     const httpParams = this.buildHttpParams(params);
-
-    console.log('GET Paginated Request:', `${this.API_URL}${endpoint}`, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      params: httpParams,
-    });
 
     return this.http
       .get<ApiResponse<any>>(`${this.API_URL}${endpoint}`, {

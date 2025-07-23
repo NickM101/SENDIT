@@ -1,7 +1,8 @@
+import { DashboardModule } from './dashboard/dashboard.module';
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
-import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { DashboardLayoutComponent } from './dashboard/dashboard-layout.component';
 import { GuestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
@@ -34,7 +35,11 @@ export const routes: Routes = [
     component: DashboardLayoutComponent,
     canActivateChild: [AuthGuard],
     children: [
-      
+      {
+        path: '',
+        loadChildren: () =>
+          import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+      },
     ],
   },
 
@@ -48,8 +53,8 @@ export const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      enableTracing: false,
-      preloadingStrategy: PreloadAllModules,
+      enableTracing: true,
+      preloadingStrategy: undefined,
       scrollPositionRestoration: 'top',
       urlUpdateStrategy: 'eager',
     }),

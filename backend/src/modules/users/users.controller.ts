@@ -118,8 +118,6 @@ export class UsersController {
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(`Updating user with ID: ${req.body.id}`);
-
     return this.usersService.updateProfilePicture(req.body.id, file);
   }
 

@@ -7,10 +7,11 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginationMeta {
-  page: number;
+  page?: number;
   limit: number;
   total: number;
-  totalPages: number;
+  totalPages?: number;
+  lastPage?: number;
 }
 
 export interface PaginatedResponse<T> {

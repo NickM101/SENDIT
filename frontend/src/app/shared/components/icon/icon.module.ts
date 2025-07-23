@@ -56,6 +56,10 @@ import {
   X,
   BarChart3,
   Sun,
+  Eye,
+  UserX,
+  Trash2,
+  Edit2
 
 } from 'lucide-angular';
 
@@ -114,6 +118,10 @@ const lucideIcons = {
   X,
   BarChart3,
   Sun,
+  Eye,
+  UserX,
+  Trash2,
+  Edit2
 };
 
 @NgModule({
