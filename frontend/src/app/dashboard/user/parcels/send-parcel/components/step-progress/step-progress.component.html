@@ -1,0 +1,45 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/step-progress/step-progress.component.html -->
+<div class="w-full">
+    <nav aria-label="Progress">
+        <ol class="flex items-center justify-between">
+            <li *ngFor="let step of steps; let i = index; let isLast = last" class="relative flex items-center"
+                [class.flex-1]="!isLast">
+
+                <!-- Step Button -->
+                <button type="button" (click)="onStepClick(step.id)" [disabled]="step.disabled"
+                    class="flex items-center group focus:outline-none" [class]="getStepButtonClasses(step)">
+
+                    <!-- Step Circle -->
+                    <div [class]="getStepCircleClasses(step)">
+
+                        <!-- Completed Check -->
+                        <lucide-icon *ngIf="step.completed" name="check" class="w-5 h-5 text-white">
+                        </lucide-icon>
+
+                        <!-- Current Step Icon -->
+                        <lucide-icon *ngIf="!step.completed && step.id === currentStep" [name]="step.icon"
+                            class="w-5 h-5">
+                        </lucide-icon>
+
+                        <!-- Step Number -->
+                        <span *ngIf="!step.completed && step.id !== currentStep" class="text-sm font-semibold">
+                            {{ step.id }}
+                        </span>
+                    </div>
+
+                    <!-- Step Label -->
+                    <div class="ml-3 text-left hidden sm:block">
+                        <p [class]="getStepLabelClasses(step)">
+                            {{ step.label }}
+                        </p>
+                    </div>
+                </button>
+
+                <!-- Connector Line -->
+                <div *ngIf="!isLast" class="flex-1 h-0.5 mx-4 transition-colors duration-200"
+                    [class]="step.completed ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'">
+                </div>
+            </li>
+        </ol>
+    </nav>
+</div>

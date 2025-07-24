@@ -1,0 +1,545 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/review-payment/review-payment.component.html -->
+
+<div class="space-y-6">
+
+    <!-- Order Summary Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="clipboard-check" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Review Your Order</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Sender Information -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <lucide-icon name="user" class="w-4 h-4 mr-2"></lucide-icon>
+                        Sender Details
+                    </h4>
+                    <button type="button" (click)="toggleEditSection('sender')"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                        Edit
+                    </button>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="space-y-2">
+                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ senderData?.fullName }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ senderData?.email }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ senderData?.phone }}</p>
+                        <p *ngIf="senderData?.company" class="text-sm text-gray-500 dark:text-gray-500">{{
+                            senderData?.company }}</p>
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <p class="text-xs text-gray-500 dark:text-gray-500 uppercase tracking-wide">Pickup Address
+                            </p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                {{ senderData?.pickupAddress?.street }}<br>
+                                {{ senderData?.pickupAddress?.city }}, {{ senderData?.pickupAddress?.state }} {{
+                                senderData?.pickupAddress?.zipCode }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Recipient Information -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <lucide-icon name="map-pin" class="w-4 h-4 mr-2"></lucide-icon>
+                        Recipient Details
+                    </h4>
+                    <button type="button" (click)="toggleEditSection('recipient')"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                        Edit
+                    </button>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="space-y-2">
+                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ recipientData?.fullName }}
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ recipientData?.email }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ recipientData?.phone }}</p>
+                        <p *ngIf="recipientData?.company" class="text-sm text-gray-500 dark:text-gray-500">{{
+                            recipientData?.company }}</p>
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <p class="text-xs text-gray-500 dark:text-gray-500 uppercase tracking-wide">Delivery Address
+                            </p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                {{ recipientData?.deliveryAddress?.street }}<br>
+                                {{ recipientData?.deliveryAddress?.city }}, {{ recipientData?.deliveryAddress?.state }} {{
+                                recipientData?.deliveryAddress?.zipCode }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Package Information -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <lucide-icon name="package" class="w-4 h-4 mr-2"></lucide-icon>
+                        Package Details
+                    </h4>
+                    <button type="button" (click)="toggleEditSection('parcel')"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                        Edit
+                    </button>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Est. Delivery:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{
+                                deliveryData?.estimatedDelivery | date:'mediumDate' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Signature Required:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {{ deliveryData?.deliveryPreferences?.signatureRequired ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Breakdown -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="calculator" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pricing Breakdown</h3>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Base shipping rate:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().baseRate.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().weightSurcharge > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Weight surcharge:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().weightSurcharge.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().serviceSurcharge > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Package type surcharge:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().serviceSurcharge.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().specialHandling > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Special handling:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().specialHandling.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().insurance > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Insurance coverage:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().insurance.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().deliverySpeed > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Delivery speed surcharge:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().deliverySpeed.toFixed(2) }}</span>
+            </div>
+
+            <div *ngIf="calculatePricing().processingFee > 0" class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Payment processing fee:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    calculatePricing().processingFee.toFixed(2) }}</span>
+            </div>
+
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                        calculatePricing().subtotal.toFixed(2) }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Tax (8%):</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                        calculatePricing().tax.toFixed(2) }}</span>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Total:</span>
+                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">${{
+                        calculatePricing().total.toFixed(2) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Information -->
+    <form [formGroup]="reviewForm"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="credit-card" class="w-4 h-4 text-purple-600 dark:text-purple-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Payment Information</h3>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div class="space-y-4 mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Select Payment Method *
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div *ngFor="let method of paymentMethods" (click)="onSelectPaymentMethod(method)"
+                    class="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md"
+                    [class.border-purple-500]="reviewForm.get('paymentMethod')?.value === method.value"
+                    [class.bg-purple-50]="reviewForm.get('paymentMethod')?.value === method.value"
+                    [class.dark:bg-purple-900]="reviewForm.get('paymentMethod')?.value === method.value"
+                    [class.border-gray-200]="reviewForm.get('paymentMethod')?.value !== method.value"
+                    [class.dark:border-gray-600]="reviewForm.get('paymentMethod')?.value !== method.value">
+
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-8 h-8 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center">
+                                <lucide-icon [name]="method.icon"
+                                    class="w-4 h-4 text-purple-600 dark:text-purple-400"></lucide-icon>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ method.label }}</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ method.description }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span *ngIf="method.processingFee > 0"
+                                class="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                +${{ method.processingFee }}
+                            </span>
+                            <span *ngIf="method.processingFee === 0"
+                                class="text-sm font-semibold text-green-600 dark:text-green-400">
+                                Free
+                            </span>
+                        </div>
+                    </div>
+
+                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+                        <li *ngFor="let feature of method.features" class="flex items-center">
+                            <lucide-icon name="check" class="w-3 h-3 mr-1 text-green-500"></lucide-icon>
+                            {{ feature }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Card Details (shown only for credit card payment) -->
+        <div *ngIf="requiresCardDetails" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card Number -->
+                <div class="md:col-span-2 space-y-2">
+                    <label for="cardNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Card Number *
+                    </label>
+                    <input type="text" id="cardNumber" formControlName="cardNumber" placeholder="1234 5678 9012 3456"
+                        maxlength="16" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('cardNumber') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('cardNumber')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('cardNumber') }}
+                    </p>
+                </div>
+
+                <!-- Expiry Date -->
+                <div class="space-y-2">
+                    <label for="expiryDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Expiry Date *
+                    </label>
+                    <input type="text" id="expiryDate" formControlName="expiryDate" placeholder="MM/YY" maxlength="5"
+                        [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('expiryDate') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('expiryDate')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('expiryDate') }}
+                    </p>
+                </div>
+
+                <!-- CVV -->
+                <div class="space-y-2">
+                    <label for="cvv" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        CVV *
+                    </label>
+                    <input type="text" id="cvv" formControlName="cvv" placeholder="123" maxlength="4" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('cvv') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('cvv')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('cvv') }}
+                    </p>
+                </div>
+
+                <!-- Cardholder Name -->
+                <div class="md:col-span-2 space-y-2">
+                    <label for="cardholderName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Cardholder Name *
+                    </label>
+                    <input type="text" id="cardholderName" formControlName="cardholderName" placeholder="John Doe"
+                        [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('cardholderName') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('cardholderName')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('cardholderName') }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Billing Address -->
+            <div class="space-y-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Billing Address</h4>
+
+                <div formGroupName="billingAddress" class="space-y-4">
+                    <!-- Street Address -->
+                    <div class="space-y-2">
+                        <label for="street" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Street Address *
+                        </label>
+                        <input type="text" id="street" formControlName="street" placeholder="123 Main Street" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                              (isFieldInvalid('billingAddress', 'street') ? 
+                               'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                               'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                            class="text-gray-900 dark:text-gray-100">
+                        <p *ngIf="isFieldInvalid('billingAddress', 'street')"
+                            class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                            <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                            {{ getFieldError('billingAddress', 'street') }}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- City -->
+                        <div class="space-y-2">
+                            <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                City *
+                            </label>
+                            <input type="text" id="city" formControlName="city" placeholder="New York" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                                  (isFieldInvalid('billingAddress', 'city') ? 
+                                   'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                                   'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                                class="text-gray-900 dark:text-gray-100">
+                            <p *ngIf="isFieldInvalid('billingAddress', 'city')"
+                                class="text-sm text-red-600 dark:text-red-400">
+                                {{ getFieldError('billingAddress', 'city') }}
+                            </p>
+                        </div>
+
+                        <!-- State -->
+                        <div class="space-y-2">
+                            <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                State *
+                            </label>
+                            <select id="state" formControlName="state" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                                   (isFieldInvalid('billingAddress', 'state') ? 
+                                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                                class="text-gray-900 dark:text-gray-100">
+                                <option value="" disabled>Select State</option>
+                                <option *ngFor="let state of states" [value]="state.value">{{ state.label }}</option>
+                            </select>
+                            <p *ngIf="isFieldInvalid('billingAddress', 'state')"
+                                class="text-sm text-red-600 dark:text-red-400">
+                                {{ getFieldError('billingAddress', 'state') }}
+                            </p>
+                        </div>
+
+                        <!-- ZIP Code -->
+                        <div class="space-y-2">
+                            <label for="zipCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                ZIP Code *
+                            </label>
+                            <input type="text" id="zipCode" formControlName="zipCode" placeholder="10001" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                                  (isFieldInvalid('billingAddress', 'zipCode') ? 
+                                   'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                                   'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                                class="text-gray-900 dark:text-gray-100">
+                            <p *ngIf="isFieldInvalid('billingAddress', 'zipCode')"
+                                class="text-sm text-red-600 dark:text-red-400">
+                                {{ getFieldError('billingAddress', 'zipCode') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Options -->
+        <div class="space-y-4">
+            <!-- Save Payment Method -->
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="savePaymentMethod" formControlName="savePaymentMethod"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="savePaymentMethod" class="text-sm text-gray-700 dark:text-gray-300">
+                    Save payment method for future orders
+                </label>
+            </div>
+        </div>
+    </form>
+
+    <!-- Terms and Conditions -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="file-text" class="w-4 h-4 text-orange-600 dark:text-orange-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Terms & Conditions</h3>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Agreement Checkboxes -->
+            <div class="space-y-3">
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="agreeToTerms" formControlName="agreeToTerms"
+                        class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2 mt-0.5">
+                    <label for="agreeToTerms" class="text-sm text-gray-700 dark:text-gray-300">
+                        I agree to the <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Terms of
+                            Service</a> and understand the shipping policies *
+                    </label>
+                </div>
+                <p *ngIf="isFieldInvalid('agreeToTerms')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center ml-7">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('agreeToTerms') }}
+                </p>
+
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="agreeToPrivacyPolicy" formControlName="agreeToPrivacyPolicy"
+                        class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2 mt-0.5">
+                    <label for="agreeToPrivacyPolicy" class="text-sm text-gray-700 dark:text-gray-300">
+                        I agree to the <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Privacy
+                            Policy</a> and consent to data processing *
+                    </label>
+                </div>
+                <p *ngIf="isFieldInvalid('agreeToPrivacyPolicy')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center ml-7">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('agreeToPrivacyPolicy') }}
+                </p>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Communication Preferences</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="emailNotifications" formControlName="emailNotifications"
+                            class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2">
+                        <label for="emailNotifications" class="text-sm text-gray-700 dark:text-gray-300">
+                            Send order updates and tracking information via email
+                        </label>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="smsNotifications" formControlName="smsNotifications"
+                            class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2">
+                        <label for="smsNotifications" class="text-sm text-gray-700 dark:text-gray-300">
+                            Send delivery updates via SMS (standard messaging rates apply)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Information -->
+    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="shield-check"
+                class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-green-800 dark:text-green-200 mb-2">Secure & Safe</h4>
+                <ul class="text-xs text-green-700 dark:text-green-300 space-y-1">
+                    <li>• Your payment information is encrypted and secure</li>
+                    <li>• We never store complete card details on our servers</li>
+                    <li>• All transactions are processed through secure payment gateways</li>
+                    <li>• Your personal data is protected according to privacy laws</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Order Button -->
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-2">
+            <div
+                [class]="'w-3 h-3 rounded-full transition-colors ' + (isFormValid ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600')">
+            </div>
+            <span
+                [class]="'text-sm font-medium transition-colors ' + (isFormValid ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400')">
+                {{ isFormValid ? 'Ready to complete order' : 'Please complete all required fields' }}
+            </span>
+        </div>
+
+        <button type="button" (click)="onCompleteOrder()" [disabled]="!isFormValid || isProcessingPayment"
+            class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-green-600 dark:bg-green-700 border border-transparent rounded-lg hover:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <lucide-icon *ngIf="!isProcessingPayment" name="credit-card" class="w-4 h-4 mr-2"></lucide-icon>
+            <lucide-icon *ngIf="isProcessingPayment" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+            {{ isProcessingPayment ? 'Processing Payment...' : 'Complete Order - $400' }}
+        </button>
+    </div>
+
+    <!-- Package Information -->
+    <div class="mt-6">
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Package Information</h4>
+        <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Package Type:</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ parcelData?.packageType?.replace('_',
+                ' ') }}</span>
+    </div>
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Weight:</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ parcelData?.weight }} {{
+            parcelData?.weightUnit }}</span>
+    </div>
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Dimensions:</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+            {{ parcelData?.dimensions?.length }} × {{ parcelData?.dimensions?.width }} × {{ parcelData?.dimensions?.height
+            }} {{ parcelData?.dimensions?.unit }}
+        </span>
+    </div>
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Estimated Value:</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{ parcelData?.estimatedValue }}</span>
+    </div>
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Insurance:</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{
+            parcelData?.insuranceCoverage?.replace('_', ' ') }}</span>
+    </div>
+    <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+        <p class="text-xs text-gray-500 dark:text-gray-500 uppercase tracking-wide">Description</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">{{ parcelData?.description }}</p>
+    </div>
+</div>
+</div>

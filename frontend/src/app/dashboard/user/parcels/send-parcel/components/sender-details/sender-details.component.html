@@ -1,0 +1,236 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/sender-details/sender-details.component.html -->
+<form [formGroup]="senderForm" class="space-y-6">
+
+    <!-- Personal Information Section -->
+    <div class="space-y-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="user" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Personal Information</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Full Name -->
+            <div class="space-y-2">
+                <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Full Name *
+                </label>
+                <input type="text" id="fullName" formControlName="fullName" placeholder="Enter your full name" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                   (isFieldInvalid('fullName') ? 
+                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100">
+
+                <p *ngIf="isFieldInvalid('fullName')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('fullName') }}
+                </p>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-2">
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Email Address *
+                </label>
+                <input type="email" id="email" formControlName="email" placeholder="john@example.com" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                   (isFieldInvalid('email') ? 
+                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100">
+
+                <p *ngIf="isFieldInvalid('email')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('email') }}
+                </p>
+            </div>
+
+            <!-- Phone -->
+            <div class="space-y-2">
+                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Phone Number *
+                </label>
+                <input type="tel" id="phone" formControlName="phone" placeholder="+1 (555) 123-4567" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                   (isFieldInvalid('phone') ? 
+                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100">
+
+                <p *ngIf="isFieldInvalid('phone')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('phone') }}
+                </p>
+            </div>
+
+            <!-- Company (Optional) -->
+            <div class="space-y-2">
+                <label for="company" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Company <span class="text-gray-400">(Optional)</span>
+                </label>
+                <input type="text" id="company" formControlName="company" placeholder="Company name"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+            </div>
+        </div>
+    </div>
+
+    <!-- Pickup Address Section -->
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                    <lucide-icon name="map-pin" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pickup Address</h3>
+            </div>
+
+            <!-- Use Profile Address Toggle -->
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="useProfileAddress" formControlName="useProfileAddress"
+                    class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2">
+                <label for="useProfileAddress" class="text-sm text-gray-700 dark:text-gray-300">
+                    Use my profile address
+                </label>
+            </div>
+        </div>
+
+        <div formGroupName="pickupAddress" class="space-y-4">
+            <!-- Street Address -->
+            <div class="space-y-2">
+                <label for="street" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Street Address *
+                </label>
+                <textarea id="street" formControlName="street" rows="2" placeholder="123 Main Street, Suite 400"
+                    [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ' + 
+                   (isFieldInvalid('pickupAddress', 'street') ? 
+                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100"></textarea>
+
+                <p *ngIf="isFieldInvalid('pickupAddress', 'street')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('pickupAddress', 'street') }}
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- City -->
+                <div class="space-y-2">
+                    <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        City *
+                    </label>
+                    <input type="text" id="city" formControlName="city" placeholder="New York" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'city') ? 
+                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'city')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('pickupAddress', 'city') }}
+                    </p>
+                </div>
+
+                <!-- State -->
+                <div class="space-y-2">
+                    <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        State *
+                    </label>
+                    <select id="state" formControlName="state" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'state') ? 
+                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                        <option value="" disabled>Select State</option>
+                        <option value="NY">New York</option>
+                        <option value="CA">California</option>
+                        <option value="TX">Texas</option>
+                        <option value="FL">Florida</option>
+                        <option value="IL">Illinois</option>
+                        <!-- Add more states as needed -->
+                    </select>
+
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'state')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('pickupAddress', 'state') }}
+                    </p>
+                </div>
+
+                <!-- ZIP Code -->
+                <div class="space-y-2">
+                    <label for="zipCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        ZIP Code *
+                    </label>
+                    <input type="text" id="zipCode" formControlName="zipCode" placeholder="10001" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'zipCode') ? 
+                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'zipCode')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('pickupAddress', 'zipCode') }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Interactive Map Button -->
+            <div class="flex items-center justify-center pt-4">
+                <button type="button" (click)="onAddressMapToggle()"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <lucide-icon name="map" class="w-4 h-4 mr-2"></lucide-icon>
+                    {{ showAddressMap ? 'Hide' : 'Show' }} Interactive Map
+                </button>
+            </div>
+
+            <!-- Map Placeholder -->
+            <div *ngIf="showAddressMap"
+                class="bg-gray-100 dark:bg-gray-700 rounded-lg p-8 text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
+                <lucide-icon name="map" class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3"></lucide-icon>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">Interactive map will be implemented here</p>
+                <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">Click to pinpoint exact pickup location</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pickup Instructions -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="message-square" class="w-4 h-4 text-orange-600 dark:text-orange-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pickup Instructions</h3>
+        </div>
+
+        <div class="space-y-2">
+            <label for="pickupInstructions" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Special Instructions <span class="text-gray-400">(Optional)</span>
+            </label>
+            <textarea id="pickupInstructions" formControlName="pickupInstructions" rows="3"
+                placeholder="Any special instructions for pickup (e.g., gate code, building entrance, preferred time)"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors resize-none"></textarea>
+        </div>
+    </div>
+
+    <!-- Form Status -->
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-2">
+            <div
+                [class]="'w-3 h-3 rounded-full transition-colors ' + (isFormValid ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600')">
+            </div>
+            <span
+                [class]="'text-sm font-medium transition-colors ' + (isFormValid ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400')">
+                {{ isFormValid ? 'Form completed' : 'Please fill in required fields' }}
+            </span>
+        </div>
+
+        <button type="button" (click)="onValidateForm()" [disabled]="!isFormValid"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <lucide-icon name="check" class="w-4 h-4 mr-2"></lucide-icon>
+            Validate & Continue
+        </button>
+    </div>
+</form>

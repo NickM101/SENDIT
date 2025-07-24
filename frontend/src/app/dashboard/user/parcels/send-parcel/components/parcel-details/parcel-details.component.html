@@ -1,0 +1,394 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/parcel-details/parcel-details.component.html -->
+
+<form [formGroup]="parcelForm" class="space-y-6">
+
+    <!-- Package Type Selection -->
+    <div class="space-y-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="package" class="w-4 h-4 text-purple-600 dark:text-purple-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Package Type</h3>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div *ngFor="let packageType of packageTypes" (click)="onSelectPackageType(packageType)"
+                class="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md package-card"
+                [class.border-purple-500]="parcelForm.get('packageType')?.value === packageType.value"
+                [class.bg-purple-50]="parcelForm.get('packageType')?.value === packageType.value"
+                [class.dark:bg-purple-900]="parcelForm.get('packageType')?.value === packageType.value"
+                [class.border-gray-200]="parcelForm.get('packageType')?.value !== packageType.value"
+                [class.dark:border-gray-600]="parcelForm.get('packageType')?.value !== packageType.value"
+                [class.selected]="parcelForm.get('packageType')?.value === packageType.value">
+
+                <div class="text-center">
+                    <div
+                        class="w-8 h-8 mx-auto mb-2 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center">
+                        <lucide-icon [name]="packageType.icon"
+                            class="w-4 h-4 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    </div>
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{{ packageType.label }}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ packageType.description }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ packageType.suggestedUse }}</p>
+                    <p *ngIf="packageType.maxWeight" class="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                        Max: {{ packageType.maxWeight }}kg
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <p *ngIf="isFieldInvalid('packageType')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+            <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+            {{ getFieldError('packageType') }}
+        </p>
+    </div>
+
+    <!-- Package Description -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="file-text" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Package Information</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Description -->
+            <div class="md:col-span-2 space-y-2">
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Package Description *
+                </label>
+                <textarea id="description" formControlName="description" rows="3"
+                    placeholder="For security purposes, please provide accurate description of package contents"
+                    [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ' + 
+                   (isFieldInvalid('description') ? 
+                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100"></textarea>
+
+                <div class="flex justify-between items-center">
+                    <p *ngIf="isFieldInvalid('description')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('description') }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ (parcelForm.get('description')?.value || '').length }}/500 characters
+                    </p>
+                </div>
+            </div>
+
+            <!-- Estimated Value -->
+            <div class="space-y-2">
+                <label for="estimatedValue" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Estimated Value (USD) *
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 dark:text-gray-400">$</span>
+                    </div>
+                    <input type="number" id="estimatedValue" formControlName="estimatedValue" placeholder="0.00" min="0"
+                        step="0.01" [class]="'block w-full pl-7 pr-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('estimatedValue') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                </div>
+                <p *ngIf="isFieldInvalid('estimatedValue')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('estimatedValue') }}
+                </p>
+            </div>
+
+            <!-- Weight -->
+            <div class="space-y-2">
+                <label for="weight" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Weight *
+                </label>
+                <div class="flex space-x-2">
+                    <input type="number" id="weight" formControlName="weight" placeholder="0.0" min="0" step="0.1"
+                        [class]="'flex-1 px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('weight') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+
+                    <select formControlName="weightUnit"
+                        class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+                        <option *ngFor="let unit of weightUnits" [value]="unit.value">{{ unit.label }}</option>
+                    </select>
+                </div>
+                <p *ngIf="isFieldInvalid('weight')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('weight') }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="ruler" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Dimensions</h3>
+        </div>
+
+        <div formGroupName="dimensions">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Length -->
+                <div class="space-y-2">
+                    <label for="length" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Length *
+                    </label>
+                    <input type="number" id="length" formControlName="length" placeholder="0" min="0" step="0.1"
+                        [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('dimensions', 'length') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('dimensions', 'length')" class="text-sm text-red-600 dark:text-red-400">
+                        {{ getFieldError('dimensions', 'length') }}
+                    </p>
+                </div>
+
+                <!-- Width -->
+                <div class="space-y-2">
+                    <label for="width" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Width *
+                    </label>
+                    <input type="number" id="width" formControlName="width" placeholder="0" min="0" step="0.1" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('dimensions', 'width') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('dimensions', 'width')" class="text-sm text-red-600 dark:text-red-400">
+                        {{ getFieldError('dimensions', 'width') }}
+                    </p>
+                </div>
+
+                <!-- Height -->
+                <div class="space-y-2">
+                    <label for="height" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Height *
+                    </label>
+                    <input type="number" id="height" formControlName="height" placeholder="0" min="0" step="0.1"
+                        [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                          (isFieldInvalid('dimensions', 'height') ? 
+                           'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                           'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+                    <p *ngIf="isFieldInvalid('dimensions', 'height')" class="text-sm text-red-600 dark:text-red-400">
+                        {{ getFieldError('dimensions', 'height') }}
+                    </p>
+                </div>
+
+                <!-- Unit -->
+                <div class="space-y-2">
+                    <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Unit *
+                    </label>
+                    <select id="unit" formControlName="unit"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+                        <option *ngFor="let unit of dimensionUnits" [value]="unit.value">{{ unit.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Volumetric Weight Display -->
+            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="flex items-center space-x-2">
+                    <lucide-icon name="info" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        Volumetric Weight: <span class="font-semibold">{{ calculateVolumetricWeight() }} kg</span>
+                        (used for pricing if higher than actual weight)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special Handling Requirements -->
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                    <lucide-icon name="shield-alert" class="w-4 h-4 text-orange-600 dark:text-orange-400"></lucide-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Special Handling</h3>
+            </div>
+        </div>
+
+        <div formGroupName="specialHandling" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Fragile -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="fragile" formControlName="fragile"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="fragile" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="package-x"
+                        class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Fragile - Handle with care
+                </label>
+            </div>
+
+            <!-- Perishable -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="perishable" formControlName="perishable"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="perishable" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="thermometer"
+                        class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Perishable - Temperature sensitive
+                </label>
+            </div>
+
+            <!-- Hazardous Material -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="hazardousMaterial" formControlName="hazardousMaterial"
+                    class="w-4 h-4 text-red-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-red-500 dark:focus:ring-red-600 focus:ring-2">
+                <label for="hazardousMaterial" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="triangle-alert"
+                        class="w-4 h-4 mr-2 text-red-600 dark:text-red-400"></lucide-icon>
+                    Hazardous Material - Special permits required
+                </label>
+            </div>
+
+            <!-- High Value -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="highValue" formControlName="highValue"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="highValue" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="gem" class="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    High Value - Extra security measures
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insurance Coverage -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="shield-check" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Insurance Coverage</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let insurance of insuranceOptions" (click)="onSelectInsurance(insurance)"
+                class="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md insurance-card"
+                [class.border-indigo-500]="parcelForm.get('insuranceCoverage')?.value === insurance.value"
+                [class.bg-indigo-50]="parcelForm.get('insuranceCoverage')?.value === insurance.value"
+                [class.dark:bg-indigo-900]="parcelForm.get('insuranceCoverage')?.value === insurance.value"
+                [class.border-gray-200]="parcelForm.get('insuranceCoverage')?.value !== insurance.value"
+                [class.dark:border-gray-600]="parcelForm.get('insuranceCoverage')?.value !== insurance.value"
+                [class.selected]="parcelForm.get('insuranceCoverage')?.value === insurance.value">
+
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ insurance.label }}</h4>
+                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ insurance.cost }}</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Coverage: {{ insurance.coverage }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-500">{{ insurance.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Options -->
+    <div class="space-y-4">
+        <button type="button" (click)="toggleAdvancedOptions()"
+            class="flex items-center space-x-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+            <lucide-icon name="chevron-right" class="w-4 h-4 transition-transform chevron-right"
+                [class.rotate-90]="showAdvancedOptions"></lucide-icon>
+            <span>Advanced Options</span>
+        </button>
+
+        <div *ngIf="showAdvancedOptions" class="space-y-4 pl-6 border-l-2 border-gray-200 dark:border-gray-600">
+            <!-- Packaging Instructions -->
+            <div class="space-y-2">
+                <label for="packagingInstructions" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Packaging Instructions <span class="text-gray-400">(Optional)</span>
+                </label>
+                <textarea id="packagingInstructions" formControlName="packagingInstructions" rows="3"
+                    placeholder="Special packaging requirements or instructions for handling"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Packaging Tips -->
+    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="lightbulb"
+                class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-green-800 dark:text-green-200 mb-2">Packaging Tips</h4>
+                <ul class="text-xs text-green-700 dark:text-green-300 space-y-1">
+                    <li>• Use sturdy boxes and quality tape</li>
+                    <li>• Seal all edges and corners properly</li>
+                    <li>• Label fragile items clearly</li>
+                    <li>• Use bubble wrap for delicate items</li>
+                    <li>• Keep items separate to prevent damage</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prohibited Items -->
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="ban" class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Prohibited Items</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+                    <div *ngFor="let item of prohibitedItems" class="text-xs text-red-700 dark:text-red-300">
+                        • {{ item }}
+                    </div>
+                </div>
+                <p class="text-xs text-red-600 dark:text-red-400 mt-2">
+                    <lucide-icon name="eye" class="w-3 h-3 inline mr-1"></lucide-icon>
+                    <a href="#" class="underline hover:no-underline">View complete list</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Summary -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+                <lucide-icon name="calculator" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">Estimated Shipping Cost</h4>
+            </div>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400 pricing-update">${{
+                getEstimatedShippingCost() }}</span>
+        </div>
+        <p class="text-xs text-blue-700 dark:text-blue-300">
+            Price updates automatically as you enter parcel details
+        </p>
+        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+            Final price will be calculated after entering all parcel details
+        </p>
+    </div>
+
+    <!-- Form Status -->
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-2">
+            <div
+                [class]="'w-3 h-3 rounded-full transition-colors ' + (isFormValid ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600')">
+            </div>
+            <span
+                [class]="'text-sm font-medium transition-colors ' + (isFormValid ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400')">
+                {{ isFormValid ? 'Form completed' : 'Please fill in required fields' }}
+            </span>
+        </div>
+
+        <button type="button" (click)="onValidateForm()" [disabled]="!isFormValid"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <lucide-icon name="check" class="w-4 h-4 mr-2"></lucide-icon>
+            Validate & Continue
+        </button>
+    </div>
+</form>

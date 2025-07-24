@@ -1,0 +1,346 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/send-parcel-layout/send-parcel-layout.component.html -->
+<div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <!-- Breadcrumb Navigation -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="#"
+                        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        <lucide-icon name="home" class="w-4 h-4 mr-2"></lucide-icon>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400"></lucide-icon>
+                        <a href="#"
+                            class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">Parcels</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400"></lucide-icon>
+                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">Send
+                            Parcel</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Send a Parcel</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Complete the steps below to send your package safely
+                    and securely</p>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button type="button"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <lucide-icon name="save" class="w-4 h-4 mr-2"></lucide-icon>
+                    Save Draft
+                </button>
+
+                <button type="button"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <lucide-icon name="help-circle" class="w-4 h-4 mr-2"></lucide-icon>
+                    Help
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+
+        <!-- Main Form Area -->
+        <div class="xl:col-span-3 space-y-6">
+
+            <!-- Step Progress Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <app-step-progress [steps]="steps" [currentStep]="(currentStep$ | async)!"
+                    (stepChange)="onStepChange($event)">
+                </app-step-progress>
+            </div>
+
+            <!-- Step Content Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+
+                <!-- Step Header -->
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                <ng-container [ngSwitch]="currentStep$ | async">
+                                    <lucide-icon *ngSwitchCase="1" name="user"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                    <lucide-icon *ngSwitchCase="2" name="map-pin"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                    <lucide-icon *ngSwitchCase="3" name="package"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                    <lucide-icon *ngSwitchCase="4" name="truck"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                    <lucide-icon *ngSwitchCase="5" name="credit-card"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                </ng-container>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ getCurrentStepTitle() }}
+                                </h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ getCurrentStepDescription() }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span>Step {{ currentStep$ | async }} of {{ steps.length }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step Content Area -->
+                <div class="p-6">
+                    <ng-container [ngSwitch]="currentStep$ | async">
+
+                        <!-- Step 1: Sender Details -->
+                        <div *ngSwitchCase="1" class="space-y-6">
+                            <app-sender-details [parentForm]="mainForm" (stepComplete)="onSenderStepComplete($event)"
+                                (dataChange)="onSenderDataChange($event)">
+                            </app-sender-details>
+                        </div>
+
+                        <!-- Step 2: Recipient Details -->
+                        <div *ngSwitchCase="2" class="space-y-6">
+                            <app-recipient-details [parentForm]="mainForm"
+                                (stepComplete)="onRecipientStepComplete($event)"
+                                (dataChange)="onRecipientDataChange($event)">
+                            </app-recipient-details>
+                        </div>
+
+                        <!-- Step 3: Parcel Details -->
+                        <div *ngSwitchCase="3" class="space-y-6">
+                            <app-parcel-details [parentForm]="mainForm" (stepComplete)="onParcelStepComplete($event)"
+                                (dataChange)="onParcelDataChange($event)">
+                            </app-parcel-details>
+                        </div>
+
+                        <!-- Step 4: Delivery Options -->
+                        <div *ngSwitchCase="4" class="space-y-6">
+                            <app-delivery-options [parentForm]="mainForm"
+                                (stepComplete)="onDeliveryStepComplete($event)"
+                                (dataChange)="onDeliveryDataChange($event)">
+                            </app-delivery-options>
+                        </div>
+
+                        <!-- Step 5: Review & Payment -->
+                        <div *ngSwitchCase="5" class="space-y-6">
+                            <!-- Order Completed Success State -->
+                            <div *ngIf="orderCompleted" class="text-center py-16">
+                                <div
+                                    class="w-20 h-20 mx-auto mb-6 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                    <lucide-icon name="check-circle"
+                                        class="w-10 h-10 text-green-600 dark:text-green-400"></lucide-icon>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Order Completed
+                                    Successfully!</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">Your package has been scheduled for
+                                    pickup.</p>
+
+                                <div
+                                    class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto mb-6">
+                                    <p class="text-sm text-green-800 dark:text-green-200 mb-2">Tracking Number:</p>
+                                    <p class="text-lg font-mono font-bold text-green-900 dark:text-green-100">{{
+                                        generatedTrackingNumber }}</p>
+                                    <p class="text-xs text-green-600 dark:text-green-400 mt-2">Save this number to track
+                                        your package</p>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                                    <button type="button"
+                                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                                        <lucide-icon name="search" class="w-4 h-4 mr-2"></lucide-icon>
+                                        Track Package
+                                    </button>
+                                    <button type="button" (click)="resetToFirstStep()"
+                                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
+                                        Send Another Package
+                                    </button>
+                                    <button type="button"
+                                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <lucide-icon name="download" class="w-4 h-4 mr-2"></lucide-icon>
+                                        Download Receipt
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Review & Payment Form -->
+                            <div *ngIf="!orderCompleted">
+                                <app-review-payment [senderData]="senderData ?? undefined"
+                                    [recipientData]="recipientData ?? undefined" [parcelData]="parcelData ?? undefined"
+                                    [deliveryData]="deliveryData ?? undefined"
+                                    (stepComplete)="onReviewPaymentStepComplete($event)"
+                                    (dataChange)="onReviewPaymentDataChange($event)">
+                                </app-review-payment>
+                            </div>
+                        </div>
+
+                    </ng-container>
+                </div>
+
+                <!-- Navigation Footer -->
+                <div *ngIf="!orderCompleted"
+                    class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 rounded-b-xl">
+                    <div class="flex items-center justify-between">
+                        <button type="button" (click)="previousStep()" [disabled]="(currentStep$ | async) === 1"
+                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <lucide-icon name="chevron-left" class="w-4 h-4 mr-2"></lucide-icon>
+                            Previous
+                        </button>
+
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ getProgressText() }}</span>
+
+                            <!-- Progress Indicator -->
+                            <div class="flex items-center space-x-1">
+                                <div *ngFor="let step of steps; let i = index"
+                                    class="w-2 h-2 rounded-full transition-colors" [class.bg-blue-600]="step.completed"
+                                    [class.bg-blue-400]="i + 1 === (currentStep$ | async) && !step.completed"
+                                    [class.bg-gray-300]="i + 1 !== (currentStep$ | async) && !step.completed"
+                                    [class.dark:bg-blue-500]="step.completed"
+                                    [class.dark:bg-blue-400]="i + 1 === (currentStep$ | async) && !step.completed"
+                                    [class.dark:bg-gray-600]="i + 1 !== (currentStep$ | async) && !step.completed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" (click)="nextStep()"
+                            [disabled]="(currentStep$ | async) === 5 || !isCurrentStepValid"
+                            class="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <span *ngIf="(currentStep$ | async) === 5; else continueText">Complete Order</span>
+                            <ng-template #continueText>Continue</ng-template>
+                            <lucide-icon name="chevron-right" class="w-4 h-4 ml-2"></lucide-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="xl:col-span-1 space-y-6">
+            <!-- Live Price Calculator -->
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                        <lucide-icon name="calculator" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Price Calculator</h3>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Base Rate:</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">$15.00</span>
+                    </div>
+
+                    <div class="flex justify-between items-center" *ngIf="parcelData?.weight">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Weight ({{ parcelData?.weight }} {{
+                            parcelData?.weightUnit }}):</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            +${{ getWeightSurcharge() }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between items-center"
+                        *ngIf="deliveryData?.deliveryType && deliveryData?.deliveryType !== 'STANDARD'">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ deliveryData?.deliveryType | titlecase
+                            }} Service:</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            +{{ getDeliverySpeedSurcharge() }}%
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between items-center"
+                        *ngIf="parcelData?.insuranceCoverage && parcelData?.insuranceCoverage !== 'NO_INSURANCE'">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Insurance:</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            +${{ getInsuranceCost() }}
+                        </span>
+                    </div>
+
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Estimated Total:</span>
+                            <span class="text-xl font-bold text-blue-600 dark:text-blue-400">
+                                ${{ getTotalEstimate() }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Final price calculated at checkout
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
+
+                <div class="space-y-3">
+                    <button type="button"
+                        class="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <lucide-icon name="bookmark" class="w-4 h-4 mr-3"></lucide-icon>
+                        Use Saved Address
+                    </button>
+
+                    <button type="button"
+                        class="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <lucide-icon name="copy" class="w-4 h-4 mr-3"></lucide-icon>
+                        Copy from Previous Order
+                    </button>
+
+                    <button type="button"
+                        class="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <lucide-icon name="file-text" class="w-4 h-4 mr-3"></lucide-icon>
+                        Save as Template
+                    </button>
+                </div>
+            </div>
+
+            <!-- Help & Support -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                        <lucide-icon name="help-circle" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+                    </div>
+                    <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Need Help?</h3>
+                </div>
+
+                <p class="text-sm text-blue-800 dark:text-blue-200 mb-4">
+                    Our support team is here to help you with your shipping needs.
+                </p>
+
+                <div class="space-y-2">
+                    <button type="button"
+                        class="w-full flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/30 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors">
+                        <lucide-icon name="message-circle" class="w-4 h-4 mr-2"></lucide-icon>
+                        Live Chat
+                    </button>
+
+                    <button type="button"
+                        class="w-full flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/30 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors">
+                        <lucide-icon name="book-open" class="w-4 h-4 mr-2"></lucide-icon>
+                        Shipping Guide
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

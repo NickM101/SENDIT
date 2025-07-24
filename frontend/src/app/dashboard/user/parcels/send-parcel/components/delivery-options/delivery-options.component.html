@@ -1,0 +1,418 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/delivery-options/delivery-options.component.html -->
+
+<form [formGroup]="deliveryForm" class="space-y-6">
+
+    <!-- Delivery Speed Selection -->
+    <div class="space-y-6">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="truck" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Delivery Speed</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let option of deliveryOptions" (click)="onSelectDeliveryOption(option)"
+                class="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md"
+                [class.border-blue-500]="deliveryForm.get('deliveryType')?.value === option.value"
+                [class.bg-blue-50]="deliveryForm.get('deliveryType')?.value === option.value"
+                [class.dark:bg-blue-900]="deliveryForm.get('deliveryType')?.value === option.value"
+                [class.border-gray-200]="deliveryForm.get('deliveryType')?.value !== option.value"
+                [class.dark:border-gray-600]="deliveryForm.get('deliveryType')?.value !== option.value">
+
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
+                            <lucide-icon [name]="option.icon"
+                                class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ option.label }}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ option.description }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span *ngIf="option.surcharge > 0"
+                            class="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                            +{{ (option.surcharge * 100) }}%
+                        </span>
+                        <span *ngIf="option.surcharge === 0"
+                            class="text-sm font-semibold text-green-600 dark:text-green-400">
+                            Standard
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center text-xs text-gray-600 dark:text-gray-400">
+                        <lucide-icon name="clock" class="w-3 h-3 mr-1"></lucide-icon>
+                        Cutoff: {{ option.cutoffTime }}
+                    </div>
+                    <div class="flex items-center text-xs text-gray-600 dark:text-gray-400">
+                        <lucide-icon name="map-pin" class="w-3 h-3 mr-1"></lucide-icon>
+                        {{ option.availability }}
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <h5 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Features:</h5>
+                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+                        <li *ngFor="let feature of option.features" class="flex items-center">
+                            <lucide-icon name="check" class="w-3 h-3 mr-1 text-green-500"></lucide-icon>
+                            {{ feature }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <p *ngIf="isFieldInvalid('deliveryType')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
+            <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+            {{ getFieldError('deliveryType') }}
+        </p>
+    </div>
+
+    <!-- Pickup Scheduling -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="calendar" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Schedule Pickup</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Pickup Date -->
+            <div class="space-y-2">
+                <label for="pickupDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Pickup Date *
+                </label>
+                <input type="date" id="pickupDate" formControlName="pickupDate" [min]="minPickupDate"
+                    [max]="maxPickupDate" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                      (isFieldInvalid('pickupDate') ? 
+                       'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                       'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100">
+
+                <p *ngIf="isFieldInvalid('pickupDate')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('pickupDate') }}
+                </p>
+
+                <p *ngIf="!isPickupDateValid() && deliveryForm.get('pickupDate')?.value"
+                    class="text-sm text-orange-600 dark:text-orange-400 flex items-center">
+                    <lucide-icon name="alert-triangle" class="w-4 h-4 mr-1"></lucide-icon>
+                    Pickup time has passed cutoff for {{ selectedDeliveryOption?.label }}. Choose tomorrow or select a
+                    different delivery option.
+                </p>
+            </div>
+
+            <!-- Pickup Time -->
+            <div class="space-y-2">
+                <label for="pickupTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Pickup Time Window *
+                </label>
+                <select id="pickupTime" formControlName="pickupTime" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                       (isFieldInvalid('pickupTime') ? 
+                        'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                        'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                    class="text-gray-900 dark:text-gray-100">
+                    <option value="" disabled>Select time window</option>
+                    <option *ngFor="let slot of timeSlots" [value]="slot.value">{{ slot.label }}</option>
+                </select>
+
+                <p *ngIf="isFieldInvalid('pickupTime')"
+                    class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                    {{ getFieldError('pickupTime') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Estimated Delivery Display -->
+        <div *ngIf="deliveryForm.get('estimatedDelivery')?.value"
+            class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div class="flex items-center space-x-2">
+                <lucide-icon name="calendar-check" class="w-5 h-5 text-green-600 dark:text-green-400"></lucide-icon>
+                <div>
+                    <h4 class="text-sm font-medium text-green-800 dark:text-green-200">Estimated Delivery</h4>
+                    <p class="text-sm text-green-700 dark:text-green-300">{{ getEstimatedDeliveryDate() }}</p>
+                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+                        Based on {{ selectedDeliveryOption?.label }} service
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Preferences -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="settings" class="w-4 h-4 text-purple-600 dark:text-purple-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Delivery Preferences</h3>
+        </div>
+
+        <div formGroupName="deliveryPreferences" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Signature Required -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="signatureRequired" formControlName="signatureRequired"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="signatureRequired" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="pen-tool"
+                        class="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    Signature required on delivery
+                </label>
+            </div>
+
+            <!-- Email Notifications -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="emailNotifications" formControlName="emailNotifications"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="emailNotifications" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="mail" class="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    Email delivery updates
+                </label>
+            </div>
+
+            <!-- SMS Notifications -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="smsNotifications" formControlName="smsNotifications"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="smsNotifications" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="smartphone"
+                        class="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    SMS delivery updates
+                </label>
+            </div>
+
+            <!-- Contactless Delivery -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="contactlessDelivery" formControlName="contactlessDelivery"
+                    class="w-4 h-4 text-purple-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 dark:focus:ring-purple-600 focus:ring-2">
+                <label for="contactlessDelivery" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="shield" class="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    Contactless delivery preferred
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Delivery Options -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="repeat" class="w-4 h-4 text-orange-600 dark:text-orange-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">If Delivery Fails</h3>
+        </div>
+
+        <div formGroupName="backupDeliveryOptions" class="space-y-3">
+            <!-- Retry Next Business Day -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="retryDeliveryNextBusinessDay" formControlName="retryDeliveryNextBusinessDay"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="retryDeliveryNextBusinessDay"
+                    class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="calendar-plus"
+                        class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Retry delivery next business day (Free)
+                </label>
+            </div>
+
+            <!-- Leave with Trusted Neighbor -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="leaveWithTrustedNeighbor" formControlName="leaveWithTrustedNeighbor"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="leaveWithTrustedNeighbor"
+                    class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="users" class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Leave with trusted neighbor
+                </label>
+            </div>
+
+            <!-- Hold at Pickup Point -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="holdAtNearestPickupPoint" formControlName="holdAtNearestPickupPoint"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="holdAtNearestPickupPoint"
+                    class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="map-pin" class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Hold at nearest pickup point
+                </label>
+            </div>
+
+            <!-- Return to Sender -->
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <input type="checkbox" id="returnToSender" formControlName="returnToSender"
+                    class="w-4 h-4 text-orange-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-orange-500 dark:focus:ring-orange-600 focus:ring-2">
+                <label for="returnToSender" class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <lucide-icon name="arrow-left"
+                        class="w-4 h-4 mr-2 text-orange-600 dark:text-orange-400"></lucide-icon>
+                    Return to sender (Additional charges apply)
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nearest Pickup Points -->
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+                    <lucide-icon name="map" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></lucide-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Nearest Pickup Points</h3>
+            </div>
+
+            <button type="button" (click)="togglePickupPoints()"
+                class="inline-flex items-center px-3 py-1 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors">
+                <lucide-icon name="chevron-down" class="w-4 h-4 mr-1"
+                    [class.rotate-180]="showPickupPoints"></lucide-icon>
+                {{ showPickupPoints ? 'Hide' : 'Show' }} Locations
+            </button>
+        </div>
+
+        <div *ngIf="showPickupPoints" class="space-y-3">
+            <div *ngFor="let point of nearestPickupPoints" (click)="onSelectPickupPoint(point)"
+                class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-indigo-300 dark:hover:border-indigo-500 cursor-pointer transition-colors bg-white dark:bg-gray-800">
+
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3">
+                        <div
+                            class="w-8 h-8 bg-indigo-100 dark:bg-indigo-800 rounded-full flex items-center justify-center">
+                            <lucide-icon name="map-pin"
+                                class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></lucide-icon>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ point.name }}</h4>
+                                <span
+                                    class="px-2 py-0.5 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full">
+                                    {{ point.type }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ point.address }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ point.hours }}</p>
+                            <div class="flex items-center space-x-3 mt-2">
+                                <div class="flex items-center space-x-1">
+                                    <lucide-icon name="star" class="w-3 h-3 text-yellow-500"></lucide-icon>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ point.rating }}</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <lucide-icon name="navigation" class="w-3 h-3 text-gray-400"></lucide-icon>
+                                    <span class="text-xs text-gray-500 dark:text-gray-500">{{ point.distance }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button"
+                        class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium">
+                        Select
+                    </button>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-wrap gap-2">
+                        <span *ngFor="let service of point.services"
+                            class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                            {{ service }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Options -->
+    <div class="space-y-4">
+        <button type="button" (click)="toggleAdvancedOptions()"
+            class="flex items-center space-x-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+            <lucide-icon name="chevron-right" class="w-4 h-4 transition-transform"
+                [class.rotate-90]="showAdvancedOptions"></lucide-icon>
+            <span>Advanced Delivery Options</span>
+        </button>
+
+        <div *ngIf="showAdvancedOptions" class="space-y-4 pl-6 border-l-2 border-gray-200 dark:border-gray-600">
+            <!-- Special Delivery Instructions -->
+            <div class="space-y-2">
+                <label for="specialDeliveryInstructions"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Special Delivery Instructions <span class="text-gray-400">(Optional)</span>
+                </label>
+                <textarea id="specialDeliveryInstructions" formControlName="specialDeliveryInstructions" rows="3"
+                    placeholder="Any special instructions for pickup or delivery (e.g., gate code, building access, preferred contact method)"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Summary -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="info"
+                class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div class="flex-1">
+                <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Delivery Summary</h4>
+                <div class="space-y-1 text-sm text-blue-700 dark:text-blue-300">
+                    <div class="flex justify-between">
+                        <span>Service:</span>
+                        <span class="font-medium">{{ selectedDeliveryOption?.label || 'Not selected' }}</span>
+                    </div>
+                    <div *ngIf="deliveryForm.get('pickupDate')?.value" class="flex justify-between">
+                        <span>Pickup:</span>
+                        <span class="font-medium">{{ deliveryForm.get('pickupDate')?.value | date:'mediumDate' }}</span>
+                    </div>
+                    <div *ngIf="deliveryForm.get('estimatedDelivery')?.value" class="flex justify-between">
+                        <span>Est. Delivery:</span>
+                        <span class="font-medium">{{ deliveryForm.get('estimatedDelivery')?.value | date:'mediumDate'
+                            }}</span>
+                    </div>
+                    <div *ngIf="calculateDeliverySurcharge() > 0" class="flex justify-between">
+                        <span>Speed Surcharge:</span>
+                        <span class="font-medium">+{{ (calculateDeliverySurcharge() * 100) }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Tips -->
+    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="lightbulb"
+                class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-green-800 dark:text-green-200 mb-2">Delivery Tips</h4>
+                <ul class="text-xs text-green-700 dark:text-green-300 space-y-1">
+                    <li>• Provide accurate contact information</li>
+                    <li>• Clear address and delivery instructions</li>
+                    <li>• Be available during selected time window</li>
+                    <li>• Consider signature requirements for valuable items</li>
+                    <li *ngIf="isExpressOrFaster">• Express deliveries have earlier cutoff times</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Status -->
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-2">
+            <div
+                [class]="'w-3 h-3 rounded-full transition-colors ' + (isFormValid ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600')">
+            </div>
+            <span
+                [class]="'text-sm font-medium transition-colors ' + (isFormValid ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400')">
+                {{ isFormValid ? 'Form completed' : 'Please complete required fields' }}
+            </span>
+        </div>
+
+        <button type="button" (click)="onValidateForm()" [disabled]="!isFormValid"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <lucide-icon name="check" class="w-4 h-4 mr-2"></lucide-icon>
+            Validate & Continue
+        </button>
+    </div>
+</form>

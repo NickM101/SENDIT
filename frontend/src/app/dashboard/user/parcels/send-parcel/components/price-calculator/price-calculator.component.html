@@ -1,0 +1,128 @@
+<!-- src/app/dashboard/user/parcels/send-parcel/components/price-calculator/price-calculator.component.html -->
+<div
+    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center">
+            <lucide-icon name="calculator" class="w-5 h-5 text-green-600 dark:text-green-400 mr-2"></lucide-icon>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Price Calculator</h3>
+        </div>
+
+        <!-- Completion Badge -->
+        <div class="flex items-center space-x-1 text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+            <lucide-icon name="pie-chart" class="w-3 h-3 text-gray-500 dark:text-gray-400"></lucide-icon>
+            <span class="text-gray-600 dark:text-gray-400">{{ getCompletionPercentage() }}%</span>
+        </div>
+    </div>
+
+    <!-- Step Status Indicators -->
+    <div class="mb-4 space-y-2">
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Form Progress</h4>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="flex items-center space-x-2">
+                <lucide-icon [name]="getStepStatusIcon('sender')"
+                    [class]="'w-3 h-3 ' + getStepStatusClass('sender')"></lucide-icon>
+                <span
+                    [class]="stepStatus.sender ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'">Sender</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <lucide-icon [name]="getStepStatusIcon('recipient')"
+                    [class]="'w-3 h-3 ' + getStepStatusClass('recipient')"></lucide-icon>
+                <span
+                    [class]="stepStatus.recipient ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'">Recipient</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <lucide-icon [name]="getStepStatusIcon('parcel')"
+                    [class]="'w-3 h-3 ' + getStepStatusClass('parcel')"></lucide-icon>
+                <span
+                    [class]="stepStatus.parcel ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'">Parcel</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <lucide-icon [name]="getStepStatusIcon('delivery')"
+                    [class]="'w-3 h-3 ' + getStepStatusClass('delivery')"></lucide-icon>
+                <span
+                    [class]="stepStatus.delivery ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'">Delivery</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Breakdown -->
+    <div class="space-y-4">
+        <!-- Base Rate -->
+        <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Base Rate</span>
+            <span class="font-medium text-gray-900 dark:text-gray-100">{{ formatCurrency(pricing.baseRate) }}</span>
+        </div>
+
+        <!-- Weight Surcharge -->
+        <div class="flex justify-between items-center" [class.opacity-50]="weight === 0">
+            <div class="flex items-center space-x-1">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Weight</span>
+                <span *ngIf="weight > 0" class="text-xs text-gray-500 dark:text-gray-400">({{ weight }} kg)</span>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+                {{ weight > 0 ? formatCurrency(pricing.weightSurcharge) : '+ $0.00' }}
+            </span>
+        </div>
+
+        <!-- Distance Surcharge -->
+        <div class="flex justify-between items-center" [class.opacity-50]="distance === 0">
+            <div class="flex items-center space-x-1">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Distance</span>
+                <span *ngIf="distance > 0" class="text-xs text-gray-500 dark:text-gray-400">({{ distance }} km)</span>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+                {{ distance > 0 ? formatCurrency(pricing.distanceSurcharge) : '+ $0.00' }}
+            </span>
+        </div>
+
+        <!-- Service Surcharge -->
+        <div class="flex justify-between items-center"
+            [class.opacity-50]="serviceType === 'Not selected' || serviceType === 'STANDARD'">
+            <div class="flex items-center space-x-1">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Service</span>
+                <span *ngIf="serviceType !== 'Not selected'" class="text-xs text-gray-500 dark:text-gray-400">({{
+                    serviceType }})</span>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+                {{ pricing.serviceSurcharge > 0 ? formatCurrency(pricing.serviceSurcharge) : '+ $0.00' }}
+            </span>
+        </div>
+
+        <!-- Total -->
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div class="flex justify-between items-center">
+                <span class="font-semibold text-gray-900 dark:text-gray-100">Estimated Total</span>
+                <div class="text-right">
+                    <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{
+                        formatCurrency(pricing.totalPrice) }}</span>
+                    <div *ngIf="pricing.totalPrice > pricing.baseRate" class="text-xs text-gray-500 dark:text-gray-400">
+                        ({{ formatCurrency(pricing.totalPrice - pricing.baseRate) }} in fees)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Note -->
+        <div class="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
+            <div class="flex items-start">
+                <lucide-icon name="info"
+                    class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2 mt-0.5 flex-shrink-0"></lucide-icon>
+                <div class="text-xs text-blue-700 dark:text-blue-300">
+                    <p class="font-medium mb-1">Pricing Updates Live</p>
+                    <p>Final price will be calculated based on exact package details and delivery options.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Estimate Button -->
+    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <button type="button"
+            class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+            <lucide-icon name="zap" class="w-4 h-4 mr-2"></lucide-icon>
+            Get Quick Quote
+        </button>
+    </div>
+</div>

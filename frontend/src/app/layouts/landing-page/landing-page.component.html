@@ -1,616 +1,574 @@
-<!-- Main container with theme support -->
-<div class="bg-white dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 transition-colors duration-300">
+<!-- Main container with dark mode support -->
+<div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
     <!-- Header -->
     <header
-        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200/20 dark:border-gray-800/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
-                    <a href="#" class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-6 h-6 text-indigo-600 dark:text-indigo-400">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                        <span class="font-bold text-xl text-gray-900 dark:text-white">SendIT</span>
-                    </a>
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <lucide-icon name="truck" class="w-6 h-6 text-white"></lucide-icon>
+                        </div>
+                        <span
+                            class="font-bold text-2xl bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            SendIT
+                        </span>
+                    </div>
                 </div>
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-4 h-4">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+                    <a href="#services"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                        <lucide-icon name="box" class="w-4 h-4"></lucide-icon>
                         <span>Services</span>
                     </a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-4 h-4">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
+                    <a href="#tracking"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                        <lucide-icon name="search" class="w-4 h-4"></lucide-icon>
                         <span>Tracking</span>
                     </a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-4 h-4">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
+                    <a href="#pricing"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                        <lucide-icon name="tag" class="w-4 h-4"></lucide-icon>
                         <span>Pricing</span>
                     </a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-4 h-4">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
+                    <a href="#about"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                        <lucide-icon name="info" class="w-4 h-4"></lucide-icon>
                         <span>About</span>
                     </a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-4 h-4">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
+                    <a href="#contact"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                        <lucide-icon name="mail" class="w-4 h-4"></lucide-icon>
                         <span>Contact</span>
                     </a>
                 </nav>
-                <!-- Auth section -->
-                <div class="flex items-center space-x-4">
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button (click)="toggleMobileMenu()"
+                        class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 p-2">
+                        <lucide-icon *ngIf="!isMobileMenuOpen" name="menu" class="w-6 h-6"></lucide-icon>
+                        <lucide-icon *ngIf="isMobileMenuOpen" name="x" class="w-6 h-6"></lucide-icon>
+                    </button>
+                </div>
+                <!-- Auth Section -->
+                <div class="hidden md:flex items-center space-x-4">
                     <!-- Unauthenticated State -->
                     <div *ngIf="!isAuthenticated" class="flex items-center space-x-4">
                         <button (click)="signIn()"
-                            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="w-4 h-4">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                <polyline points="10 17 15 12 10 7"></polyline>
-                                <line x1="15" y1="12" x2="3" y2="12"></line>
-                            </svg>
+                            class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
+                            <lucide-icon name="log-in" class="w-4 h-4"></lucide-icon>
                             <span>Sign In</span>
                         </button>
-                        <a href="#"
-                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="w-4 h-4">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
+                        <button
+                            class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2">
+                            <lucide-icon name="dollar-sign" class="w-4 h-4"></lucide-icon>
                             <span>Get Quote</span>
-                        </a>
+                        </button>
                     </div>
                     <!-- Authenticated State -->
                     <div *ngIf="isAuthenticated" class="relative">
                         <button (click)="toggleDropdown()"
-                            class="flex items-center space-x-3 text-left rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900">
-                            <img [src]="user.avatarUrl" alt="User avatar"
-                                class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700">
-                            <div class="hidden sm:flex flex-col">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</span>
+                            class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <img [src]="user.avatarUrl" [alt]="user.name"
+                                class="w-8 h-8 rounded-full ring-2 ring-indigo-500">
+                            <div class="hidden sm:block text-left">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ user.role }}</div>
                             </div>
+                            <lucide-icon name="chevron-down" class="w-4 h-4 text-gray-500"></lucide-icon>
                         </button>
                         <!-- Dropdown Menu -->
                         <div *ngIf="isDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 py-1 z-50 transition-all duration-200 ease-in-out transform opacity-100 scale-100">
-                            <a href="#"
-                                class=" px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-4 h-4">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="3" y1="9" x2="21" y2="9"></line>
-                                    <line x1="9" y1="21" x2="9" y2="9"></line>
-                                </svg>
-                                <span>Dashboard</span>
+                            class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 py-2 z-50 transform transition-all duration-200">
+                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+                            </div>
+                            <a href="#dashboard"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <lucide-icon name="layout-dashboard" class="w-4 h-4 mr-3"></lucide-icon>
+                                Dashboard
                             </a>
-                            <a href="#"
-                                class=" px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-4 h-4">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                <span>Profile</span>
+                            <a href="#profile"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <lucide-icon name="user" class="w-4 h-4 mr-3"></lucide-icon>
+                                Profile
                             </a>
-                            <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                            <hr class="my-1 border-gray-100 dark:border-gray-700">
                             <button (click)="signOut()"
-                                class="w-full text-left  px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-4 h-4">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                                <span>Sign Out</span>
+                                class="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <lucide-icon name="log-out" class="w-4 h-4 mr-3"></lucide-icon>
+                                Sign Out
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div *ngIf="isMobileMenuOpen" class="md:hidden border-t border-gray-200 dark:border-gray-700">
+                <div class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900">
+                    <a href="#services"
+                        class="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Services</a>
+                    <a href="#tracking"
+                        class="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Tracking</a>
+                    <a href="#pricing"
+                        class="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Pricing</a>
+                    <a href="#about"
+                        class="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">About</a>
+                    <a href="#contact"
+                        class="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Contact</a>
+                    <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
+                        <div *ngIf="!isAuthenticated" class="space-y-2">
+                            <button (click)="signIn()"
+                                class="block w-full text-left px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 font-medium">Sign
+                                In</button>
+                            <button
+                                class="block w-full text-left px-3 py-2 bg-indigo-600 text-white rounded-lg font-medium">Get
+                                Quote</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
-
     <main>
         <!-- Hero Section -->
-        <section class="bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+        <section
+            class="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-900/20">
+            <div
+                class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23f0f0f0%22%20fill-opacity%3D%220.4%22%3E%3Ccircle%20cx%3D%227%22%20cy%3D%227%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40">
+            </div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="text-center lg:text-left">
+                        <div
+                            class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200 text-sm font-medium mb-6">
+                            <lucide-icon name="zap" class="w-4 h-4 mr-2"></lucide-icon>
+                            Fast & Reliable Delivery
+                        </div>
                         <h1
-                            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                            Fast & Reliable <span class="text-indigo-600 dark:text-indigo-400">Courier Service</span>
+                            class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
+                            Send Your Packages with
+                            <span
+                                class="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                                Confidence
+                            </span>
                         </h1>
-                        <p class="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-xl mx-auto lg:mx-0">
+                        <p class="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0">
                             Get instant quotes based on weight categories and deliver your parcels to any destination
-                            with confidence.
+                            with real-time tracking and professional handling.
                         </p>
                         <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                            <a href="#"
-                                class="inline- px-8 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-5 h-5">
-                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                                </svg>
-                                <span>Get Quote Now</span>
-                            </a>
-                            <a href="#"
-                                class="inline- px-8 py-3 text-base font-semibold text-gray-800 dark:text-white bg-white dark:bg-gray-800 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 ring-1 ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-5 h-5">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span>Track Package</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-lg h-64 lg:h-80 overflow-hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-indigo-600 dark:text-indigo-400">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                            <path d="M3 11h18"></path>
-                            <path d="M3 7h18"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Get Instant Quote Section -->
-        <section class="py-16 sm:py-20">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Get Instant
-                        Quote</h2>
-                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Calculate shipping cost based on weight and
-                        destination.</p>
-                </div>
-                <div
-                    class="mt-12 max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
-                    <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="from"
-                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </div>
-                                <input type="text" id="from" placeholder="Pickup location"
-                                    class=" w-full pl-10 pr-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="to"
-                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </div>
-                                <input type="text" id="to" placeholder="Delivery destination"
-                                    class=" w-full pl-10 pr-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="weight-category"
-                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Weight
-                                Category</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                                        </path>
-                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                                    </svg>
-                                </div>
-                                <select id="weight-category"
-                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
-                                    <option>Light (0-5kg)</option>
-                                    <option>Medium (5-15kg)</option>
-                                    <option>Heavy (15-30kg)</option>
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="service-type"
-                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service
-                                Type</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                </div>
-                                <select id="service-type"
-                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
-                                    <option>Standard Delivery</option>
-                                    <option>Express Delivery</option>
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label for="package-type"
-                                class=" text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Package
-                                Type</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4 text-gray-400 dark:text-gray-500">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                                        </path>
-                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                                    </svg>
-                                </div>
-                                <select id="package-type"
-                                    class=" w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white appearance-none transition-colors duration-200">
-                                    <option>Document</option>
-                                    <option>Parcel</option>
-                                    <option>Fragile</option>
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-4 w-4">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="md:col-span-2 text-center">
-                            <button type="submit"
-                                class="w-full sm:w-auto mt-4 px-8 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="w-5 h-5">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span>Calculate Quote</span>
+                            <button
+                                class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                                <lucide-icon name="dollar-sign" class="w-5 h-5 mr-2"></lucide-icon>
+                                Get Quote Now
+                            </button>
+                            <button
+                                class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-gray-800 dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-200">
+                                <lucide-icon name="search" class="w-5 h-5 mr-2"></lucide-icon>
+                                Track Package
                             </button>
                         </div>
-                    </form>
+                        <!-- Stats -->
+                        <div class="mt-12 grid grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">50K+</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Packages Delivered</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">98%</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Success Rate</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">24/7</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Support</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hero Image/Illustration -->
+                    <div class="relative">
+                        <div
+                            class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl p-8 h-96 flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-purple-400/10"></div>
+                            <div class="relative z-10 text-center">
+                                <div
+                                    class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl">
+                                    <lucide-icon name="package" class="w-16 h-16 text-white"></lucide-icon>
+                                </div>
+                                <div class="space-y-2">
+                                    <div
+                                        class="h-2 bg-gradient-to-r from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 rounded w-32 mx-auto">
+                                    </div>
+                                    <div
+                                        class="h-2 bg-gradient-to-r from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 rounded w-24 mx-auto">
+                                    </div>
+                                    <div
+                                        class="h-2 bg-gradient-to-r from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 rounded w-28 mx-auto">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-
-        <!-- Weight Categories & Pricing Section -->
-        <section class="bg-gray-50 dark:bg-gray-800/50 py-16 sm:py-20 transition-colors duration-300">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Weight
-                        Categories & Pricing</h2>
-                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Transparent pricing based on package
-                        weight.</p>
+        <!-- Quick Quote Section -->
+        <section id="quote" class="py-16 sm:py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Get Instant Quote</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Calculate shipping cost based on weight and
+                        destination in seconds.</p>
                 </div>
-                <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Pricing cards -->
+                <div class="max-w-4xl mx-auto">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- From Location -->
+                            <div>
+                                <label for="from-location"
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">From</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <lucide-icon name="map-pin" class="w-5 h-5 text-gray-400"></lucide-icon>
+                                    </div>
+                                    <input type="text" id="from-location" [(ngModel)]="quoteForm.fromLocation"
+                                        placeholder="Pickup location"
+                                        class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors">
+                                </div>
+                            </div>
+                            <!-- To Location -->
+                            <div>
+                                <label for="to-location"
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">To</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <lucide-icon name="map-pin" class="w-5 h-5 text-gray-400"></lucide-icon>
+                                    </div>
+                                    <input type="text" id="to-location" [(ngModel)]="quoteForm.toLocation"
+                                        placeholder="Delivery destination"
+                                        class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors">
+                                </div>
+                            </div>
+                            <!-- Weight Category -->
+                            <div>
+                                <label for="weight-category"
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Weight
+                                    Category</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <lucide-icon name="weight" class="w-5 h-5 text-gray-400"></lucide-icon>
+                                    </div>
+                                    <select id="weight-category" [(ngModel)]="quoteForm.weightCategory"
+                                        class="w-full pl-10 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white appearance-none transition-colors">
+                                        <option value="">Select weight category</option>
+                                        <option *ngFor="let tier of pricingTiers" [value]="tier.name">{{ tier.name }}
+                                            ({{ tier.weight }})</option>
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                        <lucide-icon name="chevron-down" class="w-4 h-4"></lucide-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Service Type -->
+                            <div>
+                                <label for="service-type"
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Service
+                                    Type</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <lucide-icon name="clock" class="w-5 h-5 text-gray-400"></lucide-icon>
+                                    </div>
+                                    <select id="service-type" [(ngModel)]="quoteForm.serviceType"
+                                        class="w-full pl-10 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white appearance-none transition-colors">
+                                        <option value="standard">Standard Delivery</option>
+                                        <option value="express">Express Delivery (+50%)</option>
+                                        <option value="same-day">Same Day Delivery (+100%)</option>
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                        <lucide-icon name="chevron-down" class="w-4 h-4"></lucide-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Package Type -->
+                            <div class="md:col-span-2">
+                                <label for="package-type"
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Package
+                                    Type</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <lucide-icon name="package" class="w-5 h-5 text-gray-400"></lucide-icon>
+                                    </div>
+                                    <select id="package-type" [(ngModel)]="quoteForm.packageType"
+                                        class="w-full pl-10 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white appearance-none transition-colors">
+                                        <option value="document">Document</option>
+                                        <option value="standard">Standard Package</option>
+                                        <option value="fragile">Fragile Items</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="clothing">Clothing</option>
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                        <lucide-icon name="chevron-down" class="w-4 h-4"></lucide-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Calculate Button -->
+                            <div class="md:col-span-2 text-center">
+                                <button (click)="calculateQuote()"
+                                    class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2">
+                                    <lucide-icon name="calculator" class="w-5 h-5"></lucide-icon>
+                                    <span>Calculate Quote</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Quote Result -->
+                        <div *ngIf="calculatedQuote"
+                            class="mt-8 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Estimated Cost</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ quoteForm.serviceType |
+                                        titlecase }} • {{ quoteForm.weightCategory }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">${{
+                                        calculatedQuote.total }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Estimated delivery: {{
+                                        calculatedQuote.estimatedDelivery }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Weight Categories & Pricing
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Transparent pricing based on package weight
+                        with no hidden fees.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div *ngFor="let tier of pricingTiers"
-                        class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 text-center flex flex-col items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700 p-8 text-center transition-all duration-300 hover:-translate-y-2 group">
                         <div
-                            class="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="w-8 h-8">
-                                <path
-                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                                </path>
-                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                            </svg>
+                            class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br {{ tier.color }} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <lucide-icon name="package" class="w-8 h-8 text-white"></lucide-icon>
                         </div>
-                        <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white">{{ tier.name }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tier.weight }}</p>
-                        <p class="mt-4">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ tier.name }}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">{{ tier.weight }}</p>
+                        <div class="mb-4">
                             <span class="text-4xl font-bold text-gray-900 dark:text-white">${{ tier.price }}</span>
-                        </p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tier.pricePeriod }}</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Why Choose Us Section -->
-        <section class="py-16 sm:py-20">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-2xl mx-auto">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Why Choose
-                        SendIT?</h2>
-                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Reliable courier service with unmatched
-                        benefits.</p>
-                </div>
-                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <!-- Feature cards -->
-                    <div *ngFor="let feature of features"
-                        class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                        <div
-                            class="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="w-8 h-8">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
+                            <span class="text-gray-500 dark:text-gray-400 ml-1">starting</span>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ feature.title }}</h3>
-                        <p class="mt-2 text-base text-gray-600 dark:text-gray-300">{{ feature.description }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">{{ tier.description }}</p>
+                        <button
+                            class="w-full py-3 px-4 bg-gradient-to-r {{ tier.color }} text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105">
+                            Select Plan
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Track Your Package Section -->
-        <section class="bg-gray-50 dark:bg-gray-800/50 py-16 sm:py-20 transition-colors duration-300">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-xl mx-auto text-center">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Track Your
-                        Package</h2>
-                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Enter your tracking number to get real-time
-                        updates.</p>
-                    <form class="mt-8 flex flex-col sm:flex-row gap-3">
+        <!-- Features Section -->
+        <section id="services" class="py-16 sm:py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Why Choose SendIT?</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Experience the difference with our premium
+                        courier services designed for your needs.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div *ngFor="let feature of features" class="text-center group">
+                        <div
+                            class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <lucide-icon *ngIf="feature.title === 'Fast Delivery'" name="zap"
+                                class="w-10 h-10 text-white"></lucide-icon>
+                            <lucide-icon *ngIf="feature.title === 'Secure Handling'" name="shield"
+                                class="w-10 h-10 text-white"></lucide-icon>
+                            <lucide-icon *ngIf="feature.title === 'Real-time Tracking'" name="search"
+                                class="w-10 h-10 text-white"></lucide-icon>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">{{ feature.title }}</h3>
+                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ feature.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Tracking Section -->
+        <section id="tracking" class="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">Track Your Package
+                    </h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">Enter your tracking number to get real-time
+                        updates on your shipment.</p>
+                    <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="h-5 w-5 text-gray-400 dark:text-gray-500">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
+                                <lucide-icon name="search" class="w-5 h-5 text-gray-400"></lucide-icon>
                             </div>
-                            <input type="text" id="tracking-number" placeholder="Enter tracking number"
-                                class=" w-full pl-10 pr-3 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white transition-colors duration-200">
+                            <input type="text" [(ngModel)]="trackingNumber"
+                                placeholder="Enter tracking number (e.g., ST-2507829)"
+                                class="w-full pl-10 pr-4 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors">
                         </div>
-                        <button type="submit"
-                            class="px-6 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 flex items-center justify-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="w-5 h-5">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            <span>Track Package</span>
+                        <button type="submit" (click)="trackPackage()"
+                            class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2">
+                            <lucide-icon name="search" class="w-5 h-5"></lucide-icon>
+                            <span>Track</span>
                         </button>
                     </form>
+                    <!-- Sample tracking result -->
+                    <div *ngIf="trackingResult"
+                        class="mt-8 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 text-left">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Package Status</h3>
+                            <span
+                                class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-medium rounded-full">
+                                {{ trackingResult.status }}
+                            </span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Tracking Number:</span>
+                                <span class="font-medium text-gray-900 dark:text-white">{{ trackingResult.trackingNumber
+                                    }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">From:</span>
+                                <span class="text-gray-900 dark:text-white">{{ trackingResult.from }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">To:</span>
+                                <span class="text-gray-900 dark:text-white">{{ trackingResult.to }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Estimated Delivery:</span>
+                                <span class="text-gray-900 dark:text-white">{{ trackingResult.estimatedDelivery
+                                    }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Testimonials Section -->
+        <section class="py-16 sm:py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">What Our Customers Say</h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Join thousands of satisfied customers who
+                        trust SendIT for their shipping needs.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div *ngFor="let testimonial of testimonials"
+                        class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex items-center mb-4">
+                            <img [src]="testimonial.avatar" [alt]="testimonial.name"
+                                class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">{{ testimonial.name }}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ testimonial.role }}</p>
+                            </div>
+                        </div>
+                        <div class="flex mb-4">
+                            <lucide-icon *ngFor="let star of [1,2,3,4,5]" name="star"
+                                class="w-5 h-5 text-yellow-400"></lucide-icon>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 italic">"{{ testimonial.content }}"</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
-
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Logo and Description -->
+                <!-- Company Info -->
                 <div class="md:col-span-1">
-                    <a href="#" class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-6 h-6 text-indigo-400">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                        <span class="font-bold text-xl text-white">SendIT</span>
-                    </a>
-                    <p class="mt-4 text-sm text-gray-400">Fast and reliable courier service for all your delivery needs.
-                    </p>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <lucide-icon name="truck" class="w-6 h-6 text-white"></lucide-icon>
+                        </div>
+                        <span class="font-bold text-2xl text-white">SendIT</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Fast and reliable courier service for all your delivery needs. Trust
+                        us to handle your packages with care.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <lucide-icon name="facebook" class="w-6 h-6"></lucide-icon>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <lucide-icon name="twitter" class="w-6 h-6"></lucide-icon>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <lucide-icon name="instagram" class="w-6 h-6"></lucide-icon>
+                        </a>
+                    </div>
                 </div>
-                <!-- Links -->
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-8 md:col-span-3">
-                    <div>
-                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Services</h3>
-                        <ul class="mt-4 space-y-2">
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                                    </svg>
-                                    <span>Standard Delivery</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                                    </svg>
-                                    <span>Express Delivery</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    <span>Same Day Delivery</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"></path>
-                                    </svg>
-                                    <span>International Shipping</span>
-                                </a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Support</h3>
-                        <ul class="mt-4 space-y-2">
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span>Track Package</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                    </svg>
-                                    <span>Help Center</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span>Contact Us</span>
-                                </a></li>
-                            <li><a href="#"
-                                    class="text-base text-gray-400 hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-3.5 h-3.5">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                    </svg>
-                                    <span>FAQ</span>
-                                </a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Contact</h3>
-                        <ul class="mt-4 space-y-2">
-                            <li class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
-                                <span class="mr-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-4 h-4">
-                                        <path
-                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                        </path>
-                                    </svg>
-                                </span>
-                                +1 (555) 123-4567
-                            </li>
-                            <li class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
-                                <span class="mr-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-4 h-4">
-                                        <path
-                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                        </path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                </span>
-                                support&#64;sendit.com
-                            </li>
-                            <li
-                                class="flex items-start text-gray-400 hover:text-white transition-colors duration-200 pt-1">
-                                <span class="mr-2 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="w-4 h-4">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </span>
-                                123 Delivery St, City
-                            </li>
-                        </ul>
-                    </div>
+                <!-- Services -->
+                <div>
+                    <h3 class="text-white font-semibold mb-6">Services</h3>
+                    <ul class="space-y-3">
+                        <li *ngFor="let service of services">
+                            <a href="#" class="flex items-center text-gray-400 hover:text-white transition-colors">
+                                <lucide-icon name="chevron-right" class="w-4 h-4 mr-2"></lucide-icon>
+                                {{ service.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Support -->
+                <div>
+                    <h3 class="text-white font-semibold mb-6">Support</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Track Package</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Guide</a></li>
+                    </ul>
+                </div>
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-white font-semibold mb-6">Contact</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-gray-400">
+                            <lucide-icon name="phone" class="w-4 h-4 mr-3"></lucide-icon>
+                            +1 (555) 123-4567
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <lucide-icon name="mail" class="w-4 h-4 mr-3"></lucide-icon>
+                            support&#64;sendit.com
+                        </li>
+                        <li class="flex items-start text-gray-400">
+                            <lucide-icon name="map-pin" class="w-4 h-4 mr-3 mt-1"></lucide-icon>
+                            <span>123 Business Ave<br>Suite 100<br>New York, NY 10001</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-                <p>&copy; 2025 SendIT. All rights reserved.</p>
+            <!-- Bottom Footer -->
+            <div class="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">© 2025 SendIT. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+                </div>
             </div>
         </div>
     </footer>

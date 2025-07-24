@@ -83,6 +83,7 @@ model Address {
   country     String
   latitude    Float?   // For Google Maps marker
   longitude   Float?   // For Google Maps marker
+  createdAt   DateTime?
   deletedAt   DateTime? // Soft delete
   createdBy   String?  // Admin or user who created the address
   updatedBy   String?  // Admin or user who last updated the address
