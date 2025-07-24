@@ -45,17 +45,18 @@
                 </p>
             </div>
 
-            <!-- Phone -->
+            <!-- Phone (Kenyan Format) -->
             <div class="space-y-2">
                 <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Phone Number *
                 </label>
-                <input type="tel" id="phone" formControlName="phone" placeholder="+1 (555) 123-4567" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                <input type="tel" id="phone" formControlName="phone" placeholder="+254712345678" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
                    (isFieldInvalid('phone') ? 
                     'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
                     'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
                     class="text-gray-900 dark:text-gray-100">
 
+                <p class="text-xs text-gray-500 dark:text-gray-400">Format: +254712345678</p>
                 <p *ngIf="isFieldInvalid('phone')" class="text-sm text-red-600 dark:text-red-400 flex items-center">
                     <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
                     {{ getFieldError('phone') }}
@@ -93,33 +94,72 @@
             </div>
         </div>
 
-        <div formGroupName="pickupAddress" class="space-y-4">
-            <!-- Street Address -->
-            <div class="space-y-2">
-                <label for="street" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Street Address *
-                </label>
-                <textarea id="street" formControlName="street" rows="2" placeholder="123 Main Street, Suite 400"
-                    [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ' + 
-                   (isFieldInvalid('pickupAddress', 'street') ? 
-                    'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
-                    'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
-                    class="text-gray-900 dark:text-gray-100"></textarea>
-
-                <p *ngIf="isFieldInvalid('pickupAddress', 'street')"
-                    class="text-sm text-red-600 dark:text-red-400 flex items-center">
-                    <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
-                    {{ getFieldError('pickupAddress', 'street') }}
-                </p>
+        <!-- Address Display (when address is selected) -->
+        <div *ngIf="currentAddress"
+            class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div class="flex items-start space-x-3">
+                <lucide-icon name="map-pin" class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5"></lucide-icon>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-green-800 dark:text-green-200">Selected Address:</p>
+                    <p class="text-sm text-green-700 dark:text-green-300">{{ currentAddress.formattedAddress }}</p>
+                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+                        Coordinates: {{ currentAddress.latitude | number:'1.4-4' }}, {{ currentAddress.longitude |
+                        number:'1.4-4' }}
+                    </p>
+                </div>
+                <button type="button" (click)="onAddressMapToggle()"
+                    class="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300">
+                    Change
+                </button>
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Manual Address Form (when no coordinates selected) -->
+        <div *ngIf="!currentAddress" formGroupName="pickupAddress" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Street Address -->
+                <div class="space-y-2 md:col-span-2">
+                    <label for="street" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Street Address *
+                    </label>
+                    <input type="text" id="street" formControlName="street"
+                        placeholder="e.g., Kimathi Street, Building 123" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'street') ? 
+                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'street')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('pickupAddress', 'street') }}
+                    </p>
+                </div>
+
+                <!-- Area/Estate -->
+                <div class="space-y-2">
+                    <label for="area" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Area/Estate *
+                    </label>
+                    <input type="text" id="area" formControlName="area" placeholder="e.g., CBD, Westlands" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'area') ? 
+                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
+                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
+                        class="text-gray-900 dark:text-gray-100">
+
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'area')"
+                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
+                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                        {{ getFieldError('pickupAddress', 'area') }}
+                    </p>
+                </div>
+
                 <!-- City -->
                 <div class="space-y-2">
                     <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         City *
                     </label>
-                    <input type="text" id="city" formControlName="city" placeholder="New York" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                    <input type="text" id="city" formControlName="city" placeholder="e.g., Nairobi, Mombasa" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
                      (isFieldInvalid('pickupAddress', 'city') ? 
                       'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
                       'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
@@ -132,67 +172,43 @@
                     </p>
                 </div>
 
-                <!-- State -->
-                <div class="space-y-2">
-                    <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        State *
+                <!-- County -->
+                <div class="space-y-2 md:col-span-2">
+                    <label for="county" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        County *
                     </label>
-                    <select id="state" formControlName="state" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
-                     (isFieldInvalid('pickupAddress', 'state') ? 
+                    <select id="county" formControlName="county" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
+                     (isFieldInvalid('pickupAddress', 'county') ? 
                       'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
                       'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
                         class="text-gray-900 dark:text-gray-100">
-                        <option value="" disabled>Select State</option>
-                        <option value="NY">New York</option>
-                        <option value="CA">California</option>
-                        <option value="TX">Texas</option>
-                        <option value="FL">Florida</option>
-                        <option value="IL">Illinois</option>
-                        <!-- Add more states as needed -->
+                        <option value="" disabled>Select County</option>
+                        <option *ngFor="let county of kenyanCounties" [value]="county">{{ county }}</option>
                     </select>
 
-                    <p *ngIf="isFieldInvalid('pickupAddress', 'state')"
+                    <p *ngIf="isFieldInvalid('pickupAddress', 'county')"
                         class="text-sm text-red-600 dark:text-red-400 flex items-center">
                         <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
-                        {{ getFieldError('pickupAddress', 'state') }}
-                    </p>
-                </div>
-
-                <!-- ZIP Code -->
-                <div class="space-y-2">
-                    <label for="zipCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        ZIP Code *
-                    </label>
-                    <input type="text" id="zipCode" formControlName="zipCode" placeholder="10001" [class]="'block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
-                     (isFieldInvalid('pickupAddress', 'zipCode') ? 
-                      'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' : 
-                      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800')"
-                        class="text-gray-900 dark:text-gray-100">
-
-                    <p *ngIf="isFieldInvalid('pickupAddress', 'zipCode')"
-                        class="text-sm text-red-600 dark:text-red-400 flex items-center">
-                        <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
-                        {{ getFieldError('pickupAddress', 'zipCode') }}
+                        {{ getFieldError('pickupAddress', 'county') }}
                     </p>
                 </div>
             </div>
+        </div>
 
-            <!-- Interactive Map Button -->
-            <div class="flex items-center justify-center pt-4">
-                <button type="button" (click)="onAddressMapToggle()"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                    <lucide-icon name="map" class="w-4 h-4 mr-2"></lucide-icon>
-                    {{ showAddressMap ? 'Hide' : 'Show' }} Interactive Map
-                </button>
-            </div>
+        <!-- Interactive Map Button -->
+        <div class="flex items-center justify-center pt-4">
+            <button type="button" (click)="onAddressMapToggle()"
+                class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors shadow-sm">
+                <lucide-icon name="map" class="w-4 h-4 mr-2"></lucide-icon>
+                {{ showAddressMap ? 'Hide' : 'Open' }} Address Map
+            </button>
+        </div>
 
-            <!-- Map Placeholder -->
-            <div *ngIf="showAddressMap"
-                class="bg-gray-100 dark:bg-gray-700 rounded-lg p-8 text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
-                <lucide-icon name="map" class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3"></lucide-icon>
-                <p class="text-gray-500 dark:text-gray-400 text-sm">Interactive map will be implemented here</p>
-                <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">Click to pinpoint exact pickup location</p>
-            </div>
+        <!-- Map Component -->
+        <div *ngIf="showAddressMap" class="mt-6">
+            <app-map-address-picker #mapAddressPicker [currentAddress]="currentAddress"
+                (addressSelected)="onAddressSelected($event)" class="block w-full">
+            </app-map-address-picker>
         </div>
     </div>
 

@@ -119,55 +119,55 @@
         <div class="space-y-3">
             <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Base shipping rate:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().baseRate.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().weightSurcharge > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Weight surcharge:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().weightSurcharge.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().serviceSurcharge > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Package type surcharge:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().serviceSurcharge.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().specialHandling > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Special handling:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().specialHandling.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().insurance > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Insurance coverage:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().insurance.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().deliverySpeed > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Delivery speed surcharge:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().deliverySpeed.toFixed(2) }}</span>
             </div>
 
             <div *ngIf="calculatePricing().processingFee > 0" class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Payment processing fee:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                     calculatePricing().processingFee.toFixed(2) }}</span>
             </div>
 
             <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                         calculatePricing().subtotal.toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-600 dark:text-gray-400">Tax (8%):</span>
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{
                         calculatePricing().tax.toFixed(2) }}</span>
                 </div>
             </div>
@@ -175,7 +175,7 @@
             <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                 <div class="flex justify-between items-center">
                     <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Total:</span>
-                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">${{
+                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">KES {{
                         calculatePricing().total.toFixed(2) }}</span>
                 </div>
             </div>
@@ -222,7 +222,7 @@
                         <div class="text-right">
                             <span *ngIf="method.processingFee > 0"
                                 class="text-sm font-semibold text-orange-600 dark:text-orange-400">
-                                +${{ method.processingFee }}
+                                +KES {{ method.processingFee }}
                             </span>
                             <span *ngIf="method.processingFee === 0"
                                 class="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -504,7 +504,7 @@
             class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-green-600 dark:bg-green-700 border border-transparent rounded-lg hover:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             <lucide-icon *ngIf="!isProcessingPayment" name="credit-card" class="w-4 h-4 mr-2"></lucide-icon>
             <lucide-icon *ngIf="isProcessingPayment" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
-            {{ isProcessingPayment ? 'Processing Payment...' : 'Complete Order - $400' }}
+            {{ isProcessingPayment ? 'Processing Payment...' : 'Complete Order - KES 400' }}
         </button>
     </div>
 
@@ -530,7 +530,7 @@
     </div>
     <div class="flex justify-between items-center">
         <span class="text-sm text-gray-600 dark:text-gray-400">Estimated Value:</span>
-        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">${{ parcelData?.estimatedValue }}</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">KES {{ parcelData?.estimatedValue }}</span>
     </div>
     <div class="flex justify-between items-center">
         <span class="text-sm text-gray-600 dark:text-gray-400">Insurance:</span>

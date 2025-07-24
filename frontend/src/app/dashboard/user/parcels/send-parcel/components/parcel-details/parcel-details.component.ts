@@ -133,22 +133,22 @@ export class ParcelDetailsComponent implements OnInit, OnDestroy {
     {
       value: 'NO_INSURANCE',
       label: 'No Insurance',
-      coverage: '$0',
+      coverage: 'KES 0',
       cost: 'Free',
       description: 'No coverage - use at your own risk',
     },
     {
       value: 'BASIC_COVERAGE',
       label: 'Basic Coverage',
-      coverage: 'Up to $100',
-      cost: '+$2.50',
+      coverage: 'Up to KES 10,000',
+      cost: '+KES 250',
       description: 'Basic protection for standard items',
     },
     {
       value: 'PREMIUM_COVERAGE',
       label: 'Premium Coverage',
-      coverage: 'Up to $500',
-      cost: '+$7.50',
+      coverage: 'Up to KES 50,000',
+      cost: '+KES 750',
       description: 'Enhanced protection for valuable items',
     },
     {
@@ -352,35 +352,34 @@ export class ParcelDetailsComponent implements OnInit, OnDestroy {
     return 0;
   }
 
-  getEstimatedShippingCost(): number {
+  getEstimatedShippingCost(): string {
     const weight = this.parcelForm.get('weight')?.value || 0;
     const packageType = this.parcelForm.get('packageType')?.value;
     const insurance = this.parcelForm.get('insuranceCoverage')?.value;
+    let baseCost = 850; // Base rate in KES
 
-    let baseCost = 8.5; // Base rate from PRD
+    // Weight-based pricing in KES
+    if (weight <= 1) baseCost = 1500;
+    else if (weight <= 5) baseCost = 2500;
+    else if (weight <= 20) baseCost = 4500;
+    else baseCost = 7500;
 
-    // Weight-based pricing
-    if (weight <= 1) baseCost = 15;
-    else if (weight <= 5) baseCost = 25;
-    else if (weight <= 20) baseCost = 45;
-    else baseCost = 75;
-
-    // Package type surcharges
+    // Package type surcharges in KES
     const surcharges: { [key: string]: number } = {
-      FRAGILE: 5,
-      LIQUID: 3,
-      PERISHABLE: 7,
-      ELECTRONICS: 4,
+      FRAGILE: 500,
+      LIQUID: 300,
+      PERISHABLE: 700,
+      ELECTRONICS: 400,
     };
 
     if (surcharges[packageType]) {
       baseCost += surcharges[packageType];
     }
 
-    // Insurance costs
+    // Insurance costs in KES
     const insuranceCosts: { [key: string]: number } = {
-      BASIC_COVERAGE: 2.5,
-      PREMIUM_COVERAGE: 7.5,
+      BASIC_COVERAGE: 250,
+      PREMIUM_COVERAGE: 750,
       CUSTOM_COVERAGE: 0, // Would be calculated based on value
     };
 
@@ -388,7 +387,12 @@ export class ParcelDetailsComponent implements OnInit, OnDestroy {
       baseCost += insuranceCosts[insurance];
     }
 
-    return Math.round(baseCost * 100) / 100;
+    return (Math.round(baseCost * 100) / 100).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'KES',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   }
 
   onValidateForm() {

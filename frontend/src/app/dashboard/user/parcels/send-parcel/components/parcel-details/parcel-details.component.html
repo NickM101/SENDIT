@@ -81,11 +81,11 @@
             <!-- Estimated Value -->
             <div class="space-y-2">
                 <label for="estimatedValue" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Estimated Value (USD) *
+                    Estimated Value (KES) *
                 </label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 dark:text-gray-400">$</span>
+                        <span class="text-gray-500 dark:text-gray-400">KES</span>
                     </div>
                     <input type="number" id="estimatedValue" formControlName="estimatedValue" placeholder="0.00" min="0"
                         step="0.01" [class]="'block w-full pl-7 pr-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ' + 
@@ -362,7 +362,7 @@
                 <lucide-icon name="calculator" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
                 <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">Estimated Shipping Cost</h4>
             </div>
-            <span class="text-lg font-bold text-blue-600 dark:text-blue-400 pricing-update">${{
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400 pricing-update">{{
                 getEstimatedShippingCost() }}</span>
         </div>
         <p class="text-xs text-blue-700 dark:text-blue-300">

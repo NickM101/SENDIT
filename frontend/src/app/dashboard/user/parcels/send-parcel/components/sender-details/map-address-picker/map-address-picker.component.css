@@ -1,0 +1,47 @@
+/* src/app/dashboard/user/parcels/send-parcel/components/sender-details/map-address-picker/map-address-picker.component.css */
+
+/* Ensure the map container has proper dimensions */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  z-index: 1;
+}
+
+/* Fix for Leaflet tiles appearing fragmented */
+.leaflet-tile-container {
+  transform: none !important;
+}
+
+.leaflet-tile {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Custom marker styling */
+.custom-marker {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Loading state styling */
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f3f4f6;
+}
+
+.map-loading.dark {
+  background-color: #374151;
+}
+
+/* Ensure proper z-index for controls */
+.leaflet-control-container {
+  z-index: 10;
+}
+
+/* Style for the search dropdown */
+.search-results {
+  z-index: 1000;
+}

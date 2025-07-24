@@ -62,7 +62,7 @@
                 <span *ngIf="weight > 0" class="text-xs text-gray-500 dark:text-gray-400">({{ weight }} kg)</span>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400">
-                {{ weight > 0 ? formatCurrency(pricing.weightSurcharge) : '+ $0.00' }}
+                {{ weight > 0 ? formatCurrency(pricing.weightSurcharge) : '+ KES 0.00' }}
             </span>
         </div>
 
@@ -73,7 +73,7 @@
                 <span *ngIf="distance > 0" class="text-xs text-gray-500 dark:text-gray-400">({{ distance }} km)</span>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400">
-                {{ distance > 0 ? formatCurrency(pricing.distanceSurcharge) : '+ $0.00' }}
+                {{ distance > 0 ? formatCurrency(pricing.distanceSurcharge) : '+ KES 0.00' }}
             </span>
         </div>
 
@@ -86,7 +86,7 @@
                     serviceType }})</span>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400">
-                {{ pricing.serviceSurcharge > 0 ? formatCurrency(pricing.serviceSurcharge) : '+ $0.00' }}
+                {{ pricing.serviceSurcharge > 0 ? formatCurrency(pricing.serviceSurcharge) : '+ KES 0.00' }}
             </span>
         </div>
 

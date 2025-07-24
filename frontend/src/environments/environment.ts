@@ -20,5 +20,15 @@ export const environment = {
     vehiclesCacheDuration: 5 * 60 * 1000, // 5 minutes
     categoriesCacheDuration: 30 * 60 * 1000, // 30 minutes
   },
-  googleMapsApiKey: "AIzaSyDYARPupxqAM2c16XfNcpauCGNBxs8c8qQ"
+  nominatim: {
+    baseUrl: 'https://nominatim.openstreetmap.org',
+    countryCode: 'ke',
+    language: 'en',
+  },
+  map: {
+    defaultCenter: [-1.2921, 36.8219], // Nairobi
+    defaultZoom: 7,
+    maxZoom: 18,
+    minZoom: 6,
+  },
 };

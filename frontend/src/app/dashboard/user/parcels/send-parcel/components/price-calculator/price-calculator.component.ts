@@ -138,7 +138,7 @@ export class PriceCalculatorComponent implements OnInit, OnDestroy, OnChanges {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'KES',
       minimumFractionDigits: 2,
     }).format(amount);
   }

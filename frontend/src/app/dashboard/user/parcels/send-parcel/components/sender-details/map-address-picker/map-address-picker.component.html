@@ -1,0 +1,125 @@
+<div class="space-y-4">
+    <!-- Search Input -->
+    <div class="relative">
+        <div class="relative">
+            <input type="text" [formControl]="searchControl" placeholder="Search for an address in Kenya..."
+                class="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors" />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Search Results Dropdown -->
+        <div *ngIf="searchResults.length > 0"
+            class="absolute z-[10000] w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <button *ngFor="let result of searchResults; trackBy: trackByResult" (click)="selectSearchResult(result)"
+                class="block w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ getResultTitle(result) }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {{ result.display_name }}
+                </div>
+            </button>
+        </div>
+
+        <!-- Loading indicator -->
+        <div *ngIf="isSearching" class="absolute right-3 top-3">
+            <svg class="animate-spin h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Current Location Button -->
+    <div class="flex justify-center">
+        <button type="button" (click)="getCurrentLocation()" [disabled]="isGettingLocation"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <svg *ngIf="!isGettingLocation" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <svg *ngIf="isGettingLocation" class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            {{ isGettingLocation ? 'Getting location...' : 'Use Current Location' }}
+        </button>
+    </div>
+
+    <!-- Map Container - Fixed dimensions and styling -->
+    <div class="relative">
+        <div #mapContainer
+            class="w-full h-96 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-700"
+            style="min-height: 400px;">
+            <!-- Loading indicator for map -->
+            <div *ngIf="!mapInitialized" class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Loading map...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Instructions -->
+        <div
+            class="absolute top-2 left-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
+            <p class="text-xs text-gray-600 dark:text-gray-400">
+                📍 Click on the map to select pickup location
+            </p>
+        </div>
+    </div>
+
+    <!-- Selected Address Display -->
+    <div *ngIf="selectedAddress"
+        class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <div class="flex-1">
+                <p class="text-sm font-medium text-green-800 dark:text-green-200">
+                    Selected Address:
+                </p>
+                <p class="text-sm text-green-700 dark:text-green-300">
+                    {{ selectedAddress.formattedAddress }}
+                </p>
+                <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+                    {{ selectedAddress.latitude | number : '1.4-4' }},
+                    {{ selectedAddress.longitude | number : '1.4-4' }}
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-3 flex justify-end space-x-2">
+            <button type="button" (click)="confirmAddress()"
+                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-green-600 dark:bg-green-700 rounded-md hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
+                ✓ Confirm Address
+            </button>
+            <button type="button" (click)="clearSelection()"
+                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                Clear
+            </button>
+        </div>
+    </div>
+</div>
