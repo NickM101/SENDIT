@@ -18,15 +18,21 @@ export class ResponseInterceptor<T>
   ): Observable<ApiResponse<T>> {
     return next.handle().pipe(
       map((data: T) => {
-        const response: { statusCode: number } = context
-          .switchToHttp()
-          .getResponse();
-        const statusCode: number = response.statusCode;
-
+        // If already wrapped in ApiResponse, return as is
         if (data instanceof ApiResponse) {
-          return data as ApiResponse<T>;
+          return data;
         }
 
+        // Check if it's a raw response that should be wrapped
+        const response = context.switchToHttp().getResponse();
+        const statusCode = response.statusCode;
+
+        // If data has a specific structure we expect, handle it
+        if (data && typeof data === 'object' && 'data' in data) {
+          return data as unknown as ApiResponse<T>;
+        }
+
+        // Otherwise wrap it
         return ApiResponse.success<T>(data, 'Success', statusCode);
       }),
     );

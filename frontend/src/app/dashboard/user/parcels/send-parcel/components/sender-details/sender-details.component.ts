@@ -1,4 +1,3 @@
-// src/app/dashboard/user/parcels/send-parcel/components/sender-details/sender-details.component.ts
 import {
   Component,
   Input,
@@ -13,6 +12,8 @@ import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { SharedModule } from '../../../../../../shared/shared.module';
 import { MapAddressPickerComponent } from './map-address-picker/map-address-picker.component';
+import { AuthService } from '../../../../../../auth/services/auth.service';
+import { SendParcelService } from '../../services/send-parcel.service';
 
 export interface AddressData {
   state: string;
@@ -35,58 +36,8 @@ export interface SenderData {
   pickupAddress: AddressData;
   pickupInstructions?: string;
   useProfileAddress: boolean;
+  useProfileDetails: boolean;
 }
-
-// Kenyan Counties data
-const KENYAN_COUNTIES = [
-  'Baringo',
-  'Bomet',
-  'Bungoma',
-  'Busia',
-  'Elgeyo-Marakwet',
-  'Embu',
-  'Garissa',
-  'Homa Bay',
-  'Isiolo',
-  'Kajiado',
-  'Kakamega',
-  'Kericho',
-  'Kiambu',
-  'Kilifi',
-  'Kirinyaga',
-  'Kisii',
-  'Kisumu',
-  'Kitui',
-  'Kwale',
-  'Laikipia',
-  'Lamu',
-  'Machakos',
-  'Makueni',
-  'Mandera',
-  'Marsabit',
-  'Meru',
-  'Migori',
-  'Mombasa',
-  'Muranga',
-  'Nairobi',
-  'Nakuru',
-  'Nandi',
-  'Narok',
-  'Nyamira',
-  'Nyandarua',
-  'Nyeri',
-  'Samburu',
-  'Siaya',
-  'Taita-Taveta',
-  'Tana River',
-  'Tharaka-Nithi',
-  'Trans Nzoia',
-  'Turkana',
-  'Uasin Gishu',
-  'Vihiga',
-  'Wajir',
-  'West Pokot',
-];
 
 @Component({
   selector: 'app-sender-details',
@@ -94,7 +45,6 @@ const KENYAN_COUNTIES = [
   imports: [SharedModule, MapAddressPickerComponent],
 })
 export class SenderDetailsComponent implements OnInit, OnDestroy {
-  [x: string]: any;
   @Input() parentForm?: FormGroup;
   @Output() stepComplete = new EventEmitter<SenderData>();
   @Output() dataChange = new EventEmitter<SenderData>();
@@ -103,34 +53,36 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   senderForm!: FormGroup;
-  isLoading = false;
   showAddressMap = false;
-  kenyanCounties = KENYAN_COUNTIES;
 
-  // Mock user profile data (updated for Kenya)
   userProfile = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+254712345678',
+    fullName: '',
+    email: '',
+    phone: '',
     address: {
-      street: 'Kimathi Street',
-      area: 'CBD',
-      city: 'Nairobi',
-      county: 'Nairobi',
+      street: '',
+      area: '',
+      city: '',
+      county: '',
       country: 'Kenya',
-      state: 'Nairobi',
-      zipCode: '00100',
-      latitude: -1.2921,
-      longitude: 36.8219,
-      formattedAddress: 'Kimathi Street, Nairobi CBD, Nairobi, Kenya',
+      state: '',
+      zipCode: '',
+      latitude: null,
+      longitude: null,
+      formattedAddress: '',
     },
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private sendParcelService: SendParcelService
+  ) {
     this.initializeForm();
   }
 
   ngOnInit() {
+    this.loadDraft();
     this.setupFormWatchers();
     this.prefillUserData();
   }
@@ -146,7 +98,7 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       phone: [
         '',
-        [Validators.required, Validators.pattern(/^\+254[17]\d{8}$/)], // Kenyan phone format
+        [Validators.required, Validators.pattern(/^\+254[17]\d{8}$/)],
       ],
       company: [''],
       pickupAddress: this.fb.group({
@@ -169,24 +121,49 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       }),
       pickupInstructions: [''],
       useProfileAddress: [true],
+      useProfileDetails: [true],
     });
   }
 
-  private setupFormWatchers() {
-    // Watch for form changes and emit data
-    this.senderForm.valueChanges
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
-      .subscribe((formData) => {
-        console.log('📝 Form data changed:', formData);
-        this.dataChange.emit(formData);
+  private loadDraft() {
+    this.sendParcelService
+      .getCurrentDraft()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (draft) => {
+          if (draft && draft.stepData?.step1) {
+            this.senderForm.patchValue(draft.stepData.step1);
+          }
+        },
+        error: () => {
+          // Silent fail is fine for drafts.
+        },
       });
+  }
 
-    // Watch for useProfileAddress changes
+  private prefillUserData() {
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((profile) => {
+        if (this.senderForm.get('useProfileAddress')?.value) {
+          this.senderForm.patchValue({
+            fullName: profile?.name || '',
+            email: profile?.email || '',
+            phone: profile?.phone || '',
+            pickupAddress: {
+              ...this.senderForm.get('pickupAddress')?.value,
+              ...((typeof profile?.address === 'object' && profile?.address !== null) ? profile.address : {}),
+            },
+          });
+        }
+      });
+  }
+
+  private setupFormWatchers() {
     this.senderForm
       .get('useProfileAddress')
       ?.valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((useProfile) => {
-        console.log('🏠 Use profile address toggled:', useProfile);
         if (useProfile) {
           this.prefillUserData();
         } else {
@@ -195,21 +172,30 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
-  private prefillUserData() {
-    console.log('👤 Prefilling user data:', this.userProfile);
-    this.senderForm.patchValue(
-      {
-        fullName: this.userProfile.name,
-        email: this.userProfile.email,
-        phone: this.userProfile.phone,
-        pickupAddress: this.userProfile.address,
-      },
-      { emitEvent: false }
-    );
+  saveDraft() {
+    if (this.senderForm.valid) {
+      const draftData = {
+        stepData: {
+          step1: this.senderForm.value,
+        },
+      };
+      this.sendParcelService
+        .saveDraft(draftData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            console.log('Draft saved successfully');
+          },
+          error: (error) => {
+            console.error('Error saving draft:', error);
+          },
+        });
+    } else {
+      this.markFormGroupTouched();
+    }
   }
 
   private clearAddressFields() {
-    console.log('🧹 Clearing address fields');
     this.senderForm.get('pickupAddress')?.patchValue({
       street: '',
       area: '',
@@ -224,18 +210,9 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onUseProfileAddress(event: any) {
-    const useProfile = event.target.checked;
-    console.log('🔄 Profile address checkbox changed:', useProfile);
-    this.senderForm.get('useProfileAddress')?.setValue(useProfile);
-  }
-
   onAddressMapToggle() {
     this.showAddressMap = !this.showAddressMap;
-    console.log('🗺️ Map toggle:', this.showAddressMap ? 'Opening' : 'Closing');
-
     if (this.showAddressMap && this.mapAddressPicker) {
-      // Initialize map after view is rendered
       setTimeout(() => {
         this.mapAddressPicker.initializeMap();
       }, 100);
@@ -243,113 +220,34 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
   }
 
   onAddressSelected(addressData: AddressData) {
-    console.log('📍 Address selected from map:', addressData);
-
-    // Update the form with the selected address
-    this.senderForm.get('pickupAddress')?.patchValue({
-      street: addressData.street,
-      area: addressData.area,
-      city: addressData.city,
-      county: addressData.county,
-      country: addressData.country,
-      state: addressData.state,
-      zipCode: addressData.zipCode,
-      latitude: addressData.latitude,
-      longitude: addressData.longitude,
-      formattedAddress: addressData.formattedAddress,
-    });
-
-    // Disable use profile address since user selected a custom address
+    this.senderForm.get('pickupAddress')?.patchValue(addressData);
     this.senderForm
       .get('useProfileAddress')
       ?.setValue(false, { emitEvent: false });
-
-    // Optionally close the map after selection
     this.showAddressMap = false;
-
-    console.log('✅ Form updated with selected address');
-    console.log(
-      '📋 Current pickup address form value:',
-      this.senderForm.get('pickupAddress')?.value
-    );
   }
 
   onValidateForm() {
-    console.log('🔍 Validating form...');
-    console.log('📊 Form valid:', this.senderForm.valid);
-    console.log('📄 Complete form data:', this.senderForm.value);
-    console.log('❌ Form errors:', this.getFormErrors());
+    const pickupAddressGroup = this.senderForm.get(
+      'pickupAddress'
+    ) as FormGroup;
+    pickupAddressGroup.updateValueAndValidity({
+      onlySelf: false,
+      emitEvent: false,
+    });
 
     if (this.senderForm.valid) {
-      console.log('✅ Form is valid! Emitting step complete event');
-      console.log('📤 Data being emitted:', this.senderForm.value);
+      console.log('📤 Submitting form data:', this.senderForm.value);
       this.stepComplete.emit(this.senderForm.value);
     } else {
-      console.log('❌ Form is invalid. Marking all fields as touched');
       this.markFormGroupTouched();
-      console.log('🔍 Detailed validation errors:');
-      this.logDetailedErrors();
     }
-  }
-
-  private getFormErrors(): any {
-    let formErrors: any = {};
-
-    Object.keys(this.senderForm.controls).forEach((key) => {
-      const control = this.senderForm.get(key);
-      if (control && !control.valid && control.touched) {
-        formErrors[key] = control.errors;
-      }
-
-      // Check nested form group (pickupAddress)
-      if (control instanceof FormGroup) {
-        Object.keys(control.controls).forEach((nestedKey) => {
-          const nestedControl = control.get(nestedKey);
-          if (nestedControl && !nestedControl.valid && nestedControl.touched) {
-            if (!formErrors[key]) formErrors[key] = {};
-            formErrors[key][nestedKey] = nestedControl.errors;
-          }
-        });
-      }
-    });
-
-    return formErrors;
-  }
-
-  private logDetailedErrors() {
-    Object.keys(this.senderForm.controls).forEach((key) => {
-      const control = this.senderForm.get(key);
-      if (control && !control.valid) {
-        console.log(`❌ ${key}:`, {
-          value: control.value,
-          errors: control.errors,
-          touched: control.touched,
-          dirty: control.dirty,
-        });
-
-        // Log nested form errors (pickupAddress)
-        if (control instanceof FormGroup) {
-          Object.keys(control.controls).forEach((nestedKey) => {
-            const nestedControl = control.get(nestedKey);
-            if (nestedControl && !nestedControl.valid) {
-              console.log(`  ❌ ${key}.${nestedKey}:`, {
-                value: nestedControl.value,
-                errors: nestedControl.errors,
-                touched: nestedControl.touched,
-                dirty: nestedControl.dirty,
-              });
-            }
-          });
-        }
-      }
-    });
   }
 
   private markFormGroupTouched() {
     Object.keys(this.senderForm.controls).forEach((key) => {
       const control = this.senderForm.get(key);
       control?.markAsTouched();
-
       if (control instanceof FormGroup) {
         Object.keys(control.controls).forEach((nestedKey) => {
           control.get(nestedKey)?.markAsTouched();
@@ -358,12 +256,10 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper methods for template
   isFieldInvalid(fieldName: string, nestedField?: string): boolean {
     const field = nestedField
       ? this.senderForm.get(fieldName)?.get(nestedField)
       : this.senderForm.get(fieldName);
-
     return !!(field?.invalid && field?.touched);
   }
 
@@ -371,19 +267,14 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     const field = nestedField
       ? this.senderForm.get(fieldName)?.get(nestedField)
       : this.senderForm.get(fieldName);
-
     if (field?.errors) {
       if (field.errors['required'])
         return `${this.getFieldLabel(fieldName, nestedField)} is required`;
       if (field.errors['email']) return 'Please enter a valid email address';
-      if (field.errors['pattern']) {
-        if (fieldName === 'phone')
-          return 'Please enter a valid Kenyan phone number (+254...)';
-      }
+      if (field.errors['pattern'] && fieldName === 'phone')
+        return 'Please enter a valid Kenyan phone number (+254...)';
       if (field.errors['minlength'])
         return `${this.getFieldLabel(fieldName, nestedField)} is too short`;
-      if (field.errors['min'] || field.errors['max'])
-        return `Invalid ${this.getFieldLabel(fieldName, nestedField)} value`;
     }
     return '';
   }
@@ -405,20 +296,17 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       longitude: 'Longitude',
       formattedAddress: 'Address',
     };
-
     return labels[nestedField || fieldName] || fieldName;
   }
 
   get isFormValid(): boolean {
-    const isValid = this.senderForm.valid;
-    console.log('🎯 Form validity check:', isValid);
-    return isValid;
+    return this.senderForm.valid;
   }
 
   get currentAddress(): AddressData | null {
     const address = this.senderForm.get('pickupAddress')?.value;
-    const hasCoordinates = address?.latitude && address?.longitude;
-    console.log('🏠 Current address check:', { address, hasCoordinates });
+    const hasCoordinates =
+      address?.latitude != null && address?.longitude != null;
     return hasCoordinates ? address : null;
   }
 }

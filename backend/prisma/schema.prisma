@@ -1,3 +1,4 @@
+// Updated Prisma Schema for SendIT Kenya Parcel Workflow
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,7 +12,7 @@ model User {
   id          String    @id @default(cuid())
   email       String    @unique // Must be a valid email format (e.g., user@example.com)
   name        String
-  phone       String    // Must match phone number format (e.g., +1234567890)
+  phone       String    // Must match Kenyan phone number format (e.g., +254712345678)
   password    String
   dateOfBirth DateTime?
   address     String?
@@ -19,7 +20,7 @@ model User {
   avatarUrl   String?
   role        Role      @default(USER)
   deletedAt   DateTime? // Soft delete
-  welcomeEmailSent Boolean @default(false) // Track if welcome email was sent
+  welcomeEmailSent Boolean @default(false)
 
   // Profile settings
   emailNotifications Boolean @default(true)
@@ -45,8 +46,11 @@ model User {
   addressesUpdated       Address[]                @relation("AddressUpdatedBy")
   dimensionsCreated      Dimensions[]             @relation("DimensionsCreatedBy")
   dimensionsUpdated      Dimensions[]             @relation("DimensionsUpdatedBy")
+  savedRecipients        SavedRecipient[]         @relation("UserSavedRecipients")
+  parcelDrafts           ParcelDraft[]            @relation("UserParcelDrafts")
 
-  @@index([email]) // Index for faster email lookups
+  @@index([email])
+  @@index([phone])
   @@map("users")
 }
 
@@ -72,29 +76,63 @@ model EmailVerificationToken {
 }
 
 model Address {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   // Used for non-registered recipients
-  phone       String   // Used for non-registered recipients
+  id          String       @id @default(cuid())
+  name        String       // Building/location name
+  email       String?      // Used for non-registered recipients
+  phone       String?      // Used for non-registered recipients
   street      String
+  area        String       // Area/Estate (e.g., CBD, Westlands)
   city        String
-  state       String
-  zipCode     String
-  country     String
-  latitude    Float?   // For Google Maps marker
-  longitude   Float?   // For Google Maps marker
-  createdAt   DateTime?
-  deletedAt   DateTime? // Soft delete
-  createdBy   String?  // Admin or user who created the address
-  updatedBy   String?  // Admin or user who last updated the address
+  county      KenyanCounty // Using enum for Kenyan counties
+  state       String       // Same as county for Kenya
+  zipCode     String       // Postal code
+  country     String       @default("Kenya")
+  latitude    Float?       // For Google Maps marker
+  longitude   Float?       // For Google Maps marker
+  
+  // Address validation fields
+  isValidated Boolean @default(false)
+  validatedAt DateTime?
+  
+  // Soft delete and audit
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
 
-  parcelsSender    Parcel[] @relation("SenderAddress")
-  parcelsRecipient Parcel[] @relation("RecipientAddress")
-  createdByUser    User?    @relation("AddressCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser    User?    @relation("AddressUpdatedBy", fields: [updatedBy], references: [id])
+  // Relationships
+  parcelsSender      Parcel[]        @relation("SenderAddress")
+  parcelsRecipient   Parcel[]        @relation("RecipientAddress")
+  createdByUser      User?           @relation("AddressCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser      User?           @relation("AddressUpdatedBy", fields: [updatedBy], references: [id])
+  savedRecipients    SavedRecipient[] @relation("RecipientAddress")
 
-  @@unique([email, phone]) // Ensure unique email/phone for non-registered recipients
+  @@index([county])
+  @@index([city])
+  @@index([latitude, longitude])
   @@map("addresses")
+}
+
+model SavedRecipient {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  email     String
+  phone     String
+  company   String?
+  addressId String
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  user    User    @relation("UserSavedRecipients", fields: [userId], references: [id], onDelete: Cascade)
+  address Address @relation("RecipientAddress", fields: [addressId], references: [id])
+
+  @@unique([userId, email, phone])
+  @@index([userId, lastUsed])
+  @@map("saved_recipients")
 }
 
 model Dimensions {
@@ -102,66 +140,123 @@ model Dimensions {
   length    Float
   width     Float
   height    Float
-  unit      String
-  deletedAt DateTime? // Soft delete
-  createdBy String?   // Admin or user who created the dimensions
-  updatedBy String?   // Admin or user who last updated the dimensions
+  unit      DimensionUnit @default(cm)
+  volumetricWeight Float? // Calculated volumetric weight
+  
+  // Audit fields
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
 
-  parcels        Parcel[] @relation
-  createdByUser  User?    @relation("DimensionsCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser  User?    @relation("DimensionsUpdatedBy", fields: [updatedBy], references: [id])
+  // Relationships
+  parcels       Parcel[] @relation
+  createdByUser User?    @relation("DimensionsCreatedBy", fields: [createdBy], references: [id])
+  updatedByUser User?    @relation("DimensionsUpdatedBy", fields: [updatedBy], references: [id])
 
   @@map("dimensions")
 }
 
+model ParcelDraft {
+  id       String @id @default(cuid())
+  userId   String
+  stepData Json   // Store step-by-step data as JSON
+  currentStep Int @default(1)
+  expiresAt DateTime // Auto-cleanup old drafts
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  user User @relation("UserParcelDrafts", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("parcel_drafts")
+}
+
 model Parcel {
   id             String       @id @default(cuid())
-  trackingNumber String       @unique
+  trackingNumber String       @unique // Format: ST-XXXXXXXX
   senderId       String
   recipientId    String?      // Optional for non-registered recipients
+  
+  // Pricing fields (in KES)
   basePrice      Float
-  additionalFees Float?       @default(0)
+  weightSurcharge Float?      @default(0)
+  serviceSurcharge Float?     @default(0)
+  specialHandlingSurcharge Float? @default(0)
+  insuranceCost  Float?      @default(0)
+  deliverySpeedSurcharge Float? @default(0)
+  additionalFees Float?      @default(0)
+  subtotal       Float
+  tax            Float       // 8% tax for Kenya
   totalPrice     Float
-  weight         Float?       // Weight for pricing
-  weightUnit     String?      // e.g., "kg", "lb"
-  deletedAt      DateTime?    // Soft delete
+  currency       String      @default("KES")
 
+  // Package details
+  weight         Float?
+  weightUnit     WeightUnit? @default(kg)
+  estimatedValue Float?      // In KES
+  description    String?
+  
+  // Address references
   dimensionsId       String?
   senderAddressId    String
   recipientAddressId String
 
+  // Package classification
   packageType        PackageType
-  estimatedValue     Float?
-  description        String?
-
+  
+  // Delivery configuration
   deliveryType       DeliveryType     @default(STANDARD)
   pickupDate         DateTime?
+  pickupTimeSlot     String?          // e.g., "08:00-10:00"
   deliveryDate       DateTime?
   estimatedDelivery  DateTime?
   actualDelivery     DateTime?
 
+  // Status and tracking
   status             ParcelStatus     @default(PROCESSING)
 
+  // Special handling flags
   fragile            Boolean          @default(false)
   perishable         Boolean          @default(false)
   hazardousMaterial  Boolean          @default(false)
   highValue          Boolean          @default(false)
 
+  // Instructions
   pickupInstructions   String?
   deliveryInstructions String?
   specialHandling      String?
+  packagingInstructions String?
 
+  // Insurance and signature
   insuranceCoverage  InsuranceCoverage @default(NO_INSURANCE)
   signatureRequired  Boolean           @default(false)
 
+  // Notification preferences
   emailNotifications Boolean          @default(true)
   smsNotifications   Boolean          @default(false)
 
+  // Delivery preferences
+  contactlessDelivery Boolean @default(false)
+  
+  // Backup delivery options
+  retryNextBusinessDay Boolean @default(true)
+  leaveWithNeighbor   Boolean @default(false)
+  holdAtPickupPoint   Boolean @default(false)
+  returnToSender      Boolean @default(false)
+
+  // Audit fields
+  deletedAt          DateTime?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
-  createdBy          String?          // Admin who created the parcel
-  updatedBy          String?          // Admin who last updated the parcel
+  createdBy          String?
+  updatedBy          String?
 
+  // Relationships
   sender             User             @relation("SenderParcels", fields: [senderId], references: [id])
   recipient          User?            @relation("RecipientParcels", fields: [recipientId], references: [id])
   createdByUser      User?            @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
@@ -173,10 +268,29 @@ model Parcel {
   recipientAddress   Address          @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
   payments           Payment[]
   notifications      Notification[]
+  pricingHistory     PricingHistory[]
 
-  @@index([trackingNumber]) // Index for search
-  @@index([status])         // Index for filtering
+  @@index([trackingNumber])
+  @@index([status])
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([createdAt])
+  @@index([estimatedDelivery])
   @@map("parcels")
+}
+
+model PricingHistory {
+  id        String   @id @default(cuid())
+  parcelId  String
+  step      String   // Which step triggered the pricing
+  pricing   Json     // Store complete pricing breakdown
+  createdAt DateTime @default(now())
+
+  // Relationships
+  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  @@index([parcelId])
+  @@map("pricing_history")
 }
 
 model TrackingHistory {
@@ -185,14 +299,18 @@ model TrackingHistory {
   status      ParcelStatus
   location    String?
   description String?
+  latitude    Float?       // GPS coordinates for location tracking
+  longitude   Float?
   timestamp   DateTime     @default(now())
   updatedBy   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  // Relationships
   parcel        Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
   updatedByUser User?    @relation(fields: [updatedBy], references: [id])
 
+  @@index([parcelId, timestamp])
   @@map("tracking_history")
 }
 
@@ -203,9 +321,14 @@ model DeliveryAttempt {
   status      AttemptStatus
   reason      String?
   nextAttempt DateTime?
+  courierNotes String?
+  latitude    Float?        // GPS coordinates of attempt
+  longitude   Float?
 
+  // Relationships
   parcel      Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
 
+  @@index([parcelId])
   @@map("delivery_attempts")
 }
 
@@ -213,34 +336,78 @@ model Notification {
   id          String             @id @default(cuid())
   parcelId    String?
   userId      String?
-  type        NotificationType   // EMAIL or SMS
-  status      NotificationStatus // SENT, FAILED, PENDING
-  message     String?            // Notification content or error message
+  type        NotificationType
+  status      NotificationStatus
+  subject     String?            // Email subject or SMS title
+  message     String?            // Notification content
+  recipient   String?            // Email or phone number
   sentAt      DateTime?
-  queuedAt    DateTime?          // When notification was queued
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  queuedAt    DateTime?
+  failureReason String?          // Error message if failed
+  retryCount  Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
+  // Relationships
   parcel      Parcel?            @relation(fields: [parcelId], references: [id])
   user        User?              @relation(fields: [userId], references: [id])
 
+  @@index([status, queuedAt])
+  @@index([parcelId])
   @@map("notifications")
 }
 
 model Payment {
   id                    String        @id @default(cuid())
-  stripePaymentIntentId String        @unique
-  amount                Float
-  currency              String
-  status                PaymentStatus // Use enum for consistency
+  stripePaymentIntentId String?       @unique
+  amount                Float         // Amount in KES
+  currency              String        @default("KES")
+  status                PaymentStatus
+  paymentMethod         PaymentMethod
+  stripeClientSecret    String?       // For frontend Stripe integration
   parcelId              String?
-  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
+  
+  // Payment details
+  cardLast4             String?
+  cardBrand             String?
+  paymentIntentMetadata Json?         // Store additional Stripe metadata
+  
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
+  // Relationships
+  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
+
+  @@index([status])
+  @@index([parcelId])
   @@map("payments")
 }
 
+model PickupPoint {
+  id          String    @id @default(cuid())
+  name        String
+  type        PickupPointType
+  address     String
+  city        String
+  county      KenyanCounty
+  latitude    Float
+  longitude   Float
+  hours       String    // Operating hours
+  phone       String?
+  email       String?
+  services    String[]  // Available services
+  rating      Float?    @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([county, city])
+  @@index([latitude, longitude])
+  @@index([isActive])
+  @@map("pickup_points")
+}
+
+// Enums
 enum Role {
   USER
   ADMIN
@@ -248,7 +415,10 @@ enum Role {
 }
 
 enum ParcelStatus {
+  DRAFT
   PROCESSING
+  PAYMENT_PENDING
+  PAYMENT_CONFIRMED
   PICKED_UP
   IN_TRANSIT
   OUT_FOR_DELIVERY
@@ -256,6 +426,7 @@ enum ParcelStatus {
   DELAYED
   RETURNED
   CANCELLED
+  REFUNDED
 }
 
 enum PackageType {
@@ -269,17 +440,17 @@ enum PackageType {
 }
 
 enum DeliveryType {
-  STANDARD
-  EXPRESS
-  SAME_DAY
-  OVERNIGHT
+  STANDARD      // 3-5 business days
+  EXPRESS       // 1-2 business days  
+  SAME_DAY      // Within 4-6 hours
+  OVERNIGHT     // Next business day by 10:30 AM
 }
 
 enum InsuranceCoverage {
   NO_INSURANCE
-  BASIC_COVERAGE
-  PREMIUM_COVERAGE
-  CUSTOM_COVERAGE
+  BASIC_COVERAGE      // Up to KES 10,000
+  PREMIUM_COVERAGE    // Up to KES 50,000
+  CUSTOM_COVERAGE     // Custom amount
 }
 
 enum AttemptStatus {
@@ -287,23 +458,111 @@ enum AttemptStatus {
   FAILED_NO_ONE_HOME
   FAILED_INCORRECT_ADDRESS
   FAILED_REFUSED
+  FAILED_WEATHER
   FAILED_OTHER
 }
 
 enum PaymentStatus {
   PENDING
+  PROCESSING
   PAID
   FAILED
   REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  MPESA
+  BANK_TRANSFER
+  CASH_ON_DELIVERY
 }
 
 enum NotificationType {
   EMAIL
   SMS
+  PUSH
+  WEBHOOK
 }
 
 enum NotificationStatus {
   PENDING
+  QUEUED
   SENT
+  DELIVERED
   FAILED
+  RETRY
+}
+
+enum WeightUnit {
+  kg
+  lb
+  g
+  oz
+}
+
+enum DimensionUnit {
+  cm
+  in
+  m
+  ft
+}
+
+enum PickupPointType {
+  SENDIT_CENTER
+  PARTNER_LOCATION
+  MALL_LOCKER
+  POST_OFFICE
+  RETAIL_STORE
+}
+
+enum KenyanCounty {
+  BARINGO
+  BOMET
+  BUNGOMA
+  BUSIA
+  ELGEYO_MARAKWET
+  EMBU
+  GARISSA
+  HOMA_BAY
+  ISIOLO
+  KAJIADO
+  KAKAMEGA
+  KERICHO
+  KIAMBU
+  KILIFI
+  KIRINYAGA
+  KISII
+  KISUMU
+  KITUI
+  KWALE
+  LAIKIPIA
+  LAMU
+  MACHAKOS
+  MAKUENI
+  MANDERA
+  MARSABIT
+  MERU
+  MIGORI
+  MOMBASA
+  MURANGA
+  NAIROBI
+  NAKURU
+  NANDI
+  NAROK
+  NYAMIRA
+  NYANDARUA
+  NYERI
+  SAMBURU
+  SIAYA
+  TAITA_TAVETA
+  TANA_RIVER
+  THARAKA_NITHI
+  TRANS_NZOIA
+  TURKANA
+  UASIN_GISHU
+  VIHIGA
+  WAJIR
+  WEST_POKOT
 }

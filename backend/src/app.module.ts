@@ -8,6 +8,10 @@ import { EmailModule } from './modules/email/email.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { AddressModule } from './modules/address/address.module';
+import { ParcelModule } from './modules/parcel/parcel.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { PricingModule } from './modules/pricing/pricing.module';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     UsersModule,
     EmailModule,
     UploadsModule,
+    ParcelModule,
+    AddressModule,
+    PricingModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

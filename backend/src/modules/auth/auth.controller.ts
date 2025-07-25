@@ -21,11 +21,12 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { PrismaService } from '@app/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 interface AuthRequest extends Request {
   user: UserWithoutPassword;
 }
-
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(

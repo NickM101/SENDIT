@@ -41,12 +41,20 @@ async function bootstrap() {
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('SendIT API')
-    .setDescription('API documentation for the SendIT courier service application.')
+    .setDescription(
+      'API documentation for the SendIT courier service application.',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
       'access-token',
     )
+    .addTag('Authentication', 'User authentication and authorization')
+    .addTag('Users', 'User management operations')
+    .addTag('Admin Users', 'Admin user management operations')
+    .addTag('Parcels', 'Parcel management and tracking')
+    .addTag('Address & Geocoding', 'Address validation and geocoding services')
+    .addTag('Payments', 'Payment processing with Stripe')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
