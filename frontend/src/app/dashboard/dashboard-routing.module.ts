@@ -9,10 +9,6 @@ import { DashboardLayoutComponent } from './dashboard-layout.component';
 
 const routes: Routes = [
   {
-    path: '',
-    component: DashboardLayoutComponent,
-  },
-  {
     path: 'admin/users',
     canActivate: [AuthGuard],
     data: { roles: ['ADMIN'] },
@@ -32,7 +28,14 @@ const routes: Routes = [
     data: { roles: ['USER'] },
     loadChildren: () =>
       import('./user/parcels/parcels.module').then((m) => m.ParcelsModule),
-  }
+  },
+  {
+    path: 'user/pickup-points',
+    canActivate: [AuthGuard],
+    data: { roles: ['USER'] },
+    loadChildren: () =>
+      import('./user/pickup-points/pickup-point.module').then((m) => m.PickupPointModule),
+  },
 ];
 
 

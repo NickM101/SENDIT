@@ -1,0 +1,87 @@
+<div class="space-y-6">
+    <h2 class="text-2xl font-semibold">Delivery Pickup Points</h2>
+
+    <!-- Filters -->
+    <form [formGroup]="filtersForm" (ngSubmit)="onFilterSubmit()"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">City</label>
+            <input type="text" formControlName="city" class="preline-input" placeholder="Search by city" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">County</label>
+            <select formControlName="county" class="preline-select">
+                <option value="">All Counties</option>
+                <option *ngFor="let county of kenyanCounties" [value]="county">
+                    {{ county }}
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Type</label>
+            <select formControlName="type" class="preline-select">
+                <option value="">All Types</option>
+                <option *ngFor="let type of pickupPointTypes" [value]="type">
+                    {{ type }}
+                </option>
+            </select>
+        </div>
+
+        <div class="md:col-span-3">
+            <button type="submit" class="preline-btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="preline-table w-full">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>City</th>
+                    <th>County</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let point of pickupPoints">
+                    <td>{{ point.name }}</td>
+                    <td>{{ point.type }}</td>
+                    <td>{{ point.city }}</td>
+                    <td>{{ point.county }}</td>
+                    <td>
+                        <span
+                            [class]="'inline-flex px-2 py-1 rounded text-xs font-medium ' + (point.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                            {{ point.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="preline-btn-sm preline-btn-outline-primary">Edit</button>
+                        <button class="preline-btn-sm preline-btn-outline-danger ml-2">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-4">
+        <p class="text-sm text-gray-500">
+            Showing {{ pagination.page }} of {{ pagination.totalPages }} pages ({{ pagination.total }} total)
+        </p>
+        <div class="flex items-center space-x-2">
+            <button class="preline-btn-sm preline-btn-outline" [disabled]="pagination.page === 1"
+                (click)="changePage(pagination.page - 1)">
+                Prev
+            </button>
+            <button class="preline-btn-sm preline-btn-outline" [disabled]="pagination.page === pagination.totalPages"
+                (click)="changePage(pagination.page + 1)">
+                Next
+            </button>
+        </div>
+    </div>
+</div>

@@ -4,6 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { DashboardLayoutComponent } from './dashboard/dashboard-layout.component';
 import { GuestGuard } from './core/guards/guest.guard';
+import { UserListComponent } from './dashboard/admin/users/components/user-list/user-list.component';
 
 export const routes: Routes = [
   // Public landing page
@@ -30,15 +31,28 @@ export const routes: Routes = [
   },
 
   // Authenticated user section with layout
+  // {
+  //   path: 'dashboard',
+  //   component: DashboardLayoutComponent,
+  //   canActivateChild: [AuthGuard],
+  //   children: [
+  //     {
+  //       path: '',
+  //       loadChildren: () =>
+  //         import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+  //     },
+  //   ],
+  // },
+
   {
-    path: 'dashboard',
+    path: 'dashboard/admin',
+    canActivate: [AuthGuard],
+    data: { roles: ['ADMIN'] },
     component: DashboardLayoutComponent,
-    canActivateChild: [AuthGuard],
     children: [
       {
-        path: '',
-        loadChildren: () =>
-          import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+        path: 'users',
+        component: UserListComponent,
       },
     ],
   },

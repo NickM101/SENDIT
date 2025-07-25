@@ -7,8 +7,10 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
+import { map, take } from 'rxjs/operators';
+import { User } from '../../auth/models/auth.models';
 
 @Injectable({
   providedIn: 'root',
@@ -19,47 +21,39 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
-    return this.checkAccess(route, state);
+  ): Observable<boolean | UrlTree> {
+    return this.checkAccess(route);
   }
 
   canActivateChild(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
-    return this.checkAccess(route, state);
+  ): Observable<boolean | UrlTree> {
+    return this.checkAccess(route);
   }
 
   private checkAccess(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    route: ActivatedRouteSnapshot
   ): Observable<boolean | UrlTree> {
-    return this.authService.currentUser$.pipe(
-      map((user) => {
-        const isAuthenticated = !!user;
-        const userRole = user?.role || 'GUEST';
-        const allowedRoles = route.data['roles'] as string[] | undefined;
-
-        if (!isAuthenticated) {
-          console.warn('User not authenticated. Redirecting to login.');
+    return combineLatest([this.authService.isAuthenticated$, this.authService.currentUser$]).pipe(
+      take(1),
+      map(([isAuthenticated, user]) => {
+        if (!isAuthenticated || !user) {
+          console.warn('User is not authenticated or user data is missing. Redirecting to login.');
           return this.router.createUrlTree(['/auth/login']);
         }
 
+        const allowedRoles = route.data['roles'] as string[] | undefined;
+        const userRole = user.role || 'GUEST';
+
         if (allowedRoles && !allowedRoles.includes(userRole)) {
           console.warn(
-            `Access denied for role "${userRole}". Required roles: ${allowedRoles.join(
+            `Access denied for role "${userRole}". Allowed roles: ${allowedRoles.join(
               ', '
             )}`
           );
 
+          // Redirect based on role
           if (userRole === 'ADMIN') {
             return this.router.createUrlTree(['/dashboard/admin']);
           } else if (userRole === 'USER' || userRole === 'COURIER') {
@@ -69,6 +63,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           }
         }
 
+        console.log('Access granted to route.');
         return true;
       })
     );

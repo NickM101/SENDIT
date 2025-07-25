@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpEventType, HttpRequest } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpParams,
+  HttpHeaders,
+  HttpEvent,
+  HttpEventType,
+  HttpRequest,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -17,8 +24,7 @@ import { environment } from '../../../environments/environment';
 export class ApiService {
   private readonly API_URL = environment.apiUrl;
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   /** Utility to build HttpParams from QueryParams */
   private buildHttpParams(params?: QueryParams): HttpParams {
@@ -26,7 +32,7 @@ export class ApiService {
     if (!params) return httpParams;
 
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && value !== '') {
         if (Array.isArray(value)) {
           value.forEach(
             (v) => (httpParams = httpParams.append(key, v.toString()))

@@ -25,6 +25,7 @@ export class AuthService {
   private tokenSubject = new BehaviorSubject<string | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   public token$ = this.tokenSubject.asObservable();
+  public isAuthenticated$: Observable<boolean>;
 
   constructor(
     private apiService: ApiService,
@@ -38,6 +39,7 @@ export class AuthService {
       const parsedUser = JSON.parse(user);
       this.currentUserSubject.next(parsedUser);
     }
+    this.isAuthenticated$ = this.token$.pipe(map(token => !!token));
   }
 
   public get currentUserValue(): User | null {
@@ -182,8 +184,10 @@ export class AuthService {
     this.tokenSubject.next(token);
     this.currentUserSubject.next(user);
 
-    // Navigate based on user role
-    this.navigateByRole(user.role);
+    // Use setTimeout to ensure navigation happens after state update
+    setTimeout(() => {
+      this.navigateByRole(user.role);
+    }, 0);
   }
 
   public navigateByRole(role: UserRole): void {

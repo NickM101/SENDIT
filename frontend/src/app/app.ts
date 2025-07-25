@@ -28,6 +28,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.listenToRouterEvents();
+    // Subscribe to auth state changes to update layout visibility
+    this.authService.isAuthenticated$.subscribe(() => {
+      this.handleLayoutVisibility(this.router.url);
+    });
   }
 
   /**

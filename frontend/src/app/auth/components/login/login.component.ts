@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.isLoading = false;
-          this.router.navigateByUrl(this.returnUrl);
+          // Navigation is handled in the AuthService after setting auth data
         },
         error: (error) => {
           this.isLoading = false;

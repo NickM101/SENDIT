@@ -12,6 +12,7 @@ import { AddressModule } from './modules/address/address.module';
 import { ParcelModule } from './modules/parcel/parcel.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { PricingModule } from './modules/pricing/pricing.module';
+import { PickupPointModule } from './modules/pickup-point/pickup-point.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PricingModule } from './modules/pricing/pricing.module';
     AddressModule,
     PricingModule,
     PaymentModule,
+    PickupPointModule
   ],
   controllers: [AppController],
   providers: [AppService],
