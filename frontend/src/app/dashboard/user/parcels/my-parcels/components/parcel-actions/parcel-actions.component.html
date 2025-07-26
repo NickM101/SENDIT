@@ -1,0 +1,47 @@
+<!-- src/app/dashboard/user/parcels/my-parcels/components/parcel-actions/parcel-actions.component.html -->
+<div class="relative inline-block text-left" #dropdown (document:click)="onDocumentClick($event)">
+    <!-- Dropdown Trigger -->
+    <button (click)="toggleDropdown()"
+        class="inline-flex items-center p-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        [attr.aria-expanded]="showDropdown" aria-haspopup="true">
+        <lucide-icon name="more-vertical" class="w-4 h-4"></lucide-icon>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div *ngIf="showDropdown"
+        class="absolute right-0 z-50 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 focus:outline-none"
+        role="menu" aria-orientation="vertical">
+
+        <div class="py-1" role="none">
+            <div class="px-4 py-2 text-sm">
+                <div class="font-medium text-gray-900 dark:text-white">
+                    {{ parcel.trackingNumber }}
+                </div>
+                <div class="text-gray-500 dark:text-gray-400">
+                    Actions
+                </div>
+            </div>
+        </div>
+
+        <div class="py-1" role="none">
+            <button *ngFor="let action of getAvailableActions()" (click)="onActionClick(action.action)"
+                [class]="action.color"
+                class="group flex items-center px-4 py-2 text-sm w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                role="menuitem">
+                <lucide-icon [name]="action.icon" class="mr-3 h-4 w-4"></lucide-icon>
+                {{ action.label }}
+            </button>
+        </div>
+
+        <!-- Divider for destructive actions -->
+        <div *ngIf="shouldShowDelete()" class="py-1"
+            role="none">
+            <button (click)="onActionClick('delete')"
+                class="group flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 w-full text-left hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors duration-200"
+                role="menuitem">
+                <lucide-icon name="trash-2" class="mr-3 h-4 w-4"></lucide-icon>
+                Delete Parcel
+            </button>
+        </div>
+    </div>
+</div>

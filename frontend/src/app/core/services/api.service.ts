@@ -81,34 +81,52 @@ export class ApiService {
   ): Observable<PaginatedResponse<T>> {
     const httpParams = this.buildHttpParams(params);
 
-    return this.http
-      .get<ApiResponse<any>>(`${this.API_URL}${endpoint}`, {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        params: httpParams,
-      })
-      .pipe(
-        map((response) => {
-          const rawData = response.data;
+    return this.getRaw<any>(endpoint, params).pipe(
+      map((response: ApiResponse<any>) => {
+        // The actual data payload is in response.data
+        const payload = response.data;
 
-          if (!rawData || typeof rawData !== 'object') {
-            throw new Error(
-              'Invalid response format: expected object in `data`.'
-            );
-          }
+        // Validate the structure of the payload
+        if (!payload || typeof payload !== 'object') {
+          throw new Error(
+            'Invalid response format: expected object in `data`.'
+          );
+        }
 
-          const pagination = rawData.pagination as PaginationMeta;
-          const items = rawData[itemKey];
+        // Extract pagination metadata from payload.pagination
+        const pagination = payload.pagination as PaginationMeta | undefined;
+        if (!pagination) {
+          console.warn(
+            'Pagination metadata not found in response.data.pagination'
+          );
+          // Or throw an error if pagination is strictly required
+          throw new Error('Pagination metadata not found in response.data.pagination');
+        }
 
-          if (!Array.isArray(items)) {
-            throw new Error(
-              `Expected "${itemKey}" to be an array in response.data.`
-            );
-          }
+        // Extract items array using the provided itemKey from the payload
+        const items = payload[itemKey];
 
-          return { items, pagination };
-        }),
-        catchError(this.handleError)
-      );
+        // Validate that the extracted items is an array
+        if (!Array.isArray(items)) {
+          throw new Error(
+            `Expected an array under "data.${itemKey}" in the API response.`
+          );
+        }
+
+        // Construct and return the standardized PaginatedResponse
+        // Ensure pagination object has required fields or defaults
+        const standardizedPagination: PaginationMeta = {
+          page: pagination?.page ?? 1,
+          limit: pagination?.limit ?? 0,
+          total: pagination?.total ?? items.length, // Fallback if total not provided
+          totalPages: pagination?.totalPages,
+          lastPage: pagination?.lastPage,
+        };
+
+        return { items, pagination: standardizedPagination };
+      }),
+      catchError(this.handleError) // Handle errors appropriately
+    );
   }
 
   /** POST request */

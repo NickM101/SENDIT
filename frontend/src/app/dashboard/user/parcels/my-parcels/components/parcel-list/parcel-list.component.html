@@ -1,0 +1,242 @@
+<!-- src/app/dashboard/user/parcels/my-parcels/components/parcel-list/parcel-list.component.html -->
+<div class="space-y-4">
+    <!-- List Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+                Showing {{ startItem }} to {{ endItem }} of {{ totalItems }} results
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- Refresh Button -->
+            <button (click)="onRefresh()" [disabled]="loading"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                <lucide-icon name="refresh-cw" [class]="loading ? 'animate-spin' : ''"
+                    class="w-4 h-4 mr-2"></lucide-icon>
+                Refresh
+            </button>
+
+            <!-- View Mode Toggle -->
+            <div class="flex rounded-md shadow-sm">
+                <button (click)="viewMode = 'list'"
+                    [class]="viewMode === 'list' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'"
+                    class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 text-sm font-medium focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600">
+                    <lucide-icon name="list" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button (click)="viewMode = 'grid'"
+                    [class]="viewMode === 'grid' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'"
+                    class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 text-sm font-medium focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600">
+                    <lucide-icon name="grid-3x3" class="w-4 h-4"></lucide-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="space-y-3">
+        <div *ngFor="let i of [1,2,3,4,5]" class="animate-pulse">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                    </div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                </div>
+                <div class="mt-4 grid grid-cols-4 gap-4">
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && parcels.length === 0" class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500">
+            <lucide-icon name="package" class="h-24 w-24"></lucide-icon>
+        </div>
+        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No parcels found</h3>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            You haven't sent any parcels yet, or no parcels match your current filters.
+        </p>
+        <div class="mt-6">
+            <button (click)="onParcelAction('send', defaultParcel)"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
+                Send Your First Parcel
+            </button>
+        </div>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="!loading && parcels.length > 0 && viewMode === 'list'"
+        class="bg-white dark:bg-gray-800 shadow overflow-hidden rounded-md">
+
+        <!-- Desktop Table View -->
+        <div class="hidden md:block">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Tracking Number
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Recipient
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Description
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Date Sent
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let parcel of parcels; trackBy: trackByFn"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-700">
+
+                        <!-- Tracking Number -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8">
+                                    <div
+                                        class="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                        <lucide-icon name="package"
+                                            class="h-4 w-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ parcel.trackingNumber }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ parcel.packageType | titlecase }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Recipient -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">{{ parcel.recipient.name }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ parcel.recipient.address.city }}, {{ parcel.recipient.address.state }}
+                            </div>
+                        </td>
+
+                        <!-- Description -->
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ parcel.description | slice:0:50 }}{{ parcel.description.length > 50 ? '...' : '' }}
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ parcel.weight }}{{ parcel.weightUnit }} • {{ parcel.currency }} {{ parcel.totalPrice
+                                }}
+                            </div>
+                        </td>
+
+                        <!-- Date -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {{ parcel.createdAt | date:'MMM d, y' }}
+                        </td>
+
+                        <!-- Status -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <app-parcel-card [parcel]="parcel" [showActions]="false"></app-parcel-card>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <app-parcel-actions [parcel]="parcel" (actionClick)="onParcelAction($event, parcel)">
+                            </app-parcel-actions>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden">
+            <app-parcel-card *ngFor="let parcel of parcels; trackBy: trackByFn" [parcel]="parcel" [showActions]="true"
+                (actionClick)="onParcelAction($event, parcel)" class="block mb-4">
+            </app-parcel-card>
+        </div>
+    </div>
+
+    <!-- Grid View -->
+    <div *ngIf="!loading && parcels.length > 0 && viewMode === 'grid'"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <app-parcel-card *ngFor="let parcel of parcels; trackBy: trackByFn" [parcel]="parcel" [showActions]="true"
+            (actionClick)="onParcelAction($event, parcel)">
+        </app-parcel-card>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && parcels.length > 0 && totalPages > 1"
+        class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6 rounded-b-lg">
+
+        <div class="flex-1 flex justify-between sm:hidden">
+            <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                Previous
+            </button>
+            <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                Next
+            </button>
+        </div>
+
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    Showing <span class="font-medium">{{ startItem }}</span> to <span class="font-medium">{{ endItem }}</span> of
+                    <span class="font-medium">{{ totalItems }}</span> results
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <!-- Previous Button -->
+                    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                    </button>
+
+                    <!-- Page Numbers -->
+                    <button *ngFor="let page of getPaginationPages()" (click)="onPageChange(page)"
+                        [class]="page === currentPage 
+                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900 dark:border-blue-500 dark:text-blue-300' 
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600'"
+                        class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        {{ page }}
+                    </button>
+
+                    <!-- Next Button -->
+                    <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

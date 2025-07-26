@@ -51,7 +51,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'My Parcels',
       icon: 'package',
-      link: '/my-parcels',
+      link: '/dashboard/user/my-parcels',
       roles: [UserRole.USER],
       badge: '3',
     },

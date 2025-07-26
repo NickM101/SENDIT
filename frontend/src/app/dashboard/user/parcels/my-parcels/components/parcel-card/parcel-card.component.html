@@ -1,0 +1,151 @@
+<!-- src/app/dashboard/user/parcels/my-parcels/components/parcel-card/parcel-card.component.html -->
+<div
+    class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200">
+
+    <!-- Card Header -->
+    <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+            <!-- Tracking Info -->
+            <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0">
+                    <div class="h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                        <lucide-icon name="package" class="h-5 w-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                    </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {{ parcel.trackingNumber }}
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ parcel.packageType | titlecase }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="flex-shrink-0">
+                <span [class]="getStatusConfig(parcel.status).color"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    <lucide-icon [name]="getStatusConfig(parcel.status).icon" class="w-3 h-3 mr-1"></lucide-icon>
+                    {{ getStatusConfig(parcel.status).label }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mt-4">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Delivery Progress</span>
+                <span class="text-gray-900 dark:text-white font-medium">{{ getDeliveryProgress() }}%</span>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div [style.width.%]="getDeliveryProgress()" [class]="parcel.status === 'DELIVERED' ? 'bg-green-500' : 
+                     parcel.status === 'DELAYED' || parcel.status === 'CANCELLED' ? 'bg-red-500' : 'bg-blue-500'"
+                    class="h-2 rounded-full transition-all duration-300 ease-in-out">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-4">
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+
+            <!-- Recipient -->
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Recipient</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                    {{ parcel.recipient.name }}
+                </dd>
+                <dd class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ parcel.recipient.address.city }}, {{ parcel.recipient.address.state }}
+                </dd>
+            </div>
+
+            <!-- Weight & Price -->
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Details</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                    {{ parcel.weight }}{{ parcel.weightUnit }}
+                </dd>
+                <dd class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ formatCurrency(parcel.totalPrice, parcel.currency) }}
+                </dd>
+            </div>
+
+            <!-- Description -->
+            <div class="sm:col-span-2">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                    {{ parcel.description | slice:0:100 }}{{ parcel.description.length > 100 ? '...' : '' }}
+                </dd>
+            </div>
+
+            <!-- Date Info -->
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Sent</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                    {{ parcel.createdAt | date:'MMM d, y' }}
+                </dd>
+                <dd class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ parcel.createdAt | date:'h:mm a' }}
+                </dd>
+            </div>
+
+            <!-- Delivery Estimate -->
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Delivery</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                    {{ getEstimatedDeliveryText() }}
+                </dd>
+                <dd *ngIf="parcel.estimatedDelivery && parcel.status !== 'DELIVERED'"
+                    class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ parcel.estimatedDelivery | date:'MMM d, y' }}
+                </dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Card Actions -->
+    <div *ngIf="showActions" class="border-t border-gray-200 dark:border-gray-700 px-4 py-4">
+        <div class="flex items-center justify-between">
+
+            <!-- Quick Actions -->
+            <div class="flex space-x-2">
+                <button (click)="onActionClick('view')"
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                    <lucide-icon name="eye" class="w-3 h-3 mr-1"></lucide-icon>
+                    View
+                </button>
+
+                <button (click)="onActionClick('track')"
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                    <lucide-icon name="map-pin" class="w-3 h-3 mr-1"></lucide-icon>
+                    Track
+                </button>
+
+                <!-- Conditional Actions -->
+                <button *ngIf="parcel.status === 'DELIVERED'" (click)="onActionClick('receipt')"
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                    <lucide-icon name="download" class="w-3 h-3 mr-1"></lucide-icon>
+                    Receipt
+                </button>
+            </div>
+
+            <!-- More Actions Dropdown -->
+            <div class="relative">
+                <app-parcel-actions [parcel]="parcel" (actionClick)="onActionClick($event)">
+                </app-parcel-actions>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status-only view (for table) -->
+    <div *ngIf="!showActions" class="px-4 py-2">
+        <span [class]="getStatusConfig(parcel.status).color"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+            <lucide-icon [name]="getStatusConfig(parcel.status).icon" class="w-3 h-3 mr-1"></lucide-icon>
+            {{ getStatusConfig(parcel.status).label }}
+        </span>
+    </div>
+</div>

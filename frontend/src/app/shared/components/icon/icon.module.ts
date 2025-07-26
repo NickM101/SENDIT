@@ -100,9 +100,13 @@ import {
   Tag,
   Twitter,
   Instagram,
-  
-
-
+  Filter,
+  Download,
+ Edit,
+ TrendingUp,
+ RefreshCw,
+ List,
+ Grid3X3 
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -204,7 +208,13 @@ const lucideIcons = {
   Tag,
   Twitter,
   Instagram,
-  
+  Filter,
+  Download,
+  Edit,
+  TrendingUp,
+  RefreshCw,
+  List,
+  Grid3X3
 };
 
 @NgModule({

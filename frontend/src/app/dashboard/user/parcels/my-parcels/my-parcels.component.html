@@ -1,0 +1,74 @@
+<!-- src/app/dashboard/user/parcels/my-parcels/components/my-parcels/my-parcels.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+
+    <!-- Main Content -->
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between">
+
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">My Parcels</h1>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        Manage and track all your parcels in one place
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-3">
+                    <button (click)="onExportData()"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <lucide-icon name="download" class="w-4 h-4 mr-2"></lucide-icon>
+                        Export History
+                    </button>
+
+                    <button (click)="onSendNewParcel()"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600">
+                        <lucide-icon name="send" class="w-4 h-4 mr-2"></lucide-icon>
+                        Send New Parcel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Component -->
+            <app-parcel-stats [stats]="stats" [loading]="loading" class="mb-8 block">
+            </app-parcel-stats>
+
+            <!-- Tab Navigation -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="-mb-px flex" aria-label="Tabs">
+                        <button (click)="onTabChange('sent')"
+                            [class]="activeTab === 'sent' 
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
+                            class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm">
+                            Sent Parcels ({{ stats?.totalSent || 0 }})
+                        </button>
+                        <button (click)="onTabChange('received')"
+                            [class]="activeTab === 'received' 
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
+                            class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm">
+                            Received Parcels ({{ stats?.totalReceived || 0 }})
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Filters -->
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <app-parcel-filters (filtersChange)="onFiltersChange($event)" [loading]="loading">
+                    </app-parcel-filters>
+                </div>
+
+                <!-- Parcel List -->
+                <div class="p-6">
+                    <app-parcel-list [parcels]="parcels" [loading]="loading" [currentPage]="currentPage"
+                        [totalPages]="totalPages" [totalItems]="totalItems" (pageChange)="onPageChange($event)"
+                        (parcelAction)="onParcelAction($event)" (refresh)="refreshData()">
+                    </app-parcel-list>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

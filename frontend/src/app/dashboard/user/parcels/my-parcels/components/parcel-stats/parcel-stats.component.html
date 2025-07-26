@@ -1,0 +1,151 @@
+<!-- src/app/dashboard/user/parcels/my-parcels/components/parcel-stats/parcel-stats.component.html -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Parcels Sent -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="send" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Total Parcels Sent
+                        </dt>
+                        <dd class="flex items-baseline">
+                            <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                <ng-container *ngIf="!loading; else loadingSkeleton">
+                                    {{ stats?.totalSent || 0 }}
+                                </ng-container>
+                            </div>
+                            <div class="ml-2 flex items-baseline text-sm font-semibold"
+                                [ngClass]="growthIndicator.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                <lucide-icon [name]="growthIndicator.isPositive ? 'trending-up' : 'trending-down'"
+                                    class="w-4 h-4 mr-1"></lucide-icon>
+                                {{ growthIndicator.value }}%
+                            </div>
+                        </dd>
+                        <dd class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ growthIndicator.value }}% {{ growthIndicator.text }} from last month
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parcels Received -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="package" class="w-5 h-5 text-green-600 dark:text-green-400"></lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Parcels Received
+                        </dt>
+                        <dd class="flex items-baseline">
+                            <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                <ng-container *ngIf="!loading; else loadingSkeleton">
+                                    {{ stats?.totalReceived || 0 }}
+                                </ng-container>
+                            </div>
+                            <div
+                                class="ml-2 flex items-baseline text-sm font-semibold text-green-600 dark:text-green-400">
+                                <lucide-icon name="trending-up" class="w-4 h-4 mr-1"></lucide-icon>
+                                8%
+                            </div>
+                        </dd>
+                        <dd class="text-sm text-gray-600 dark:text-gray-400">
+                            8% increase from last month
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Deliveries -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="clock" class="w-5 h-5 text-yellow-600 dark:text-yellow-400"></lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Pending Deliveries
+                        </dt>
+                        <dd class="flex items-baseline">
+                            <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                <ng-container *ngIf="!loading; else loadingSkeleton">
+                                    {{ stats?.pending || 0 }}
+                                </ng-container>
+                            </div>
+                            <div
+                                class="ml-2 flex items-baseline text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+                                <lucide-icon name="alert-circle" class="w-4 h-4 mr-1"></lucide-icon>
+                                2 more than yesterday
+                            </div>
+                        </dd>
+                        <dd class="text-sm text-gray-600 dark:text-gray-400">
+                            2 more than yesterday
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivered Today -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="check-circle"
+                            class="w-5 h-5 text-purple-600 dark:text-purple-400"></lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Successfully Delivered
+                        </dt>
+                        <dd class="flex items-baseline">
+                            <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                <ng-container *ngIf="!loading; else loadingSkeleton">
+                                    {{ stats?.delivered || 0 }}
+                                </ng-container>
+                            </div>
+                            <div
+                                class="ml-2 flex items-baseline text-sm font-semibold text-green-600 dark:text-green-400">
+                                <lucide-icon name="trending-up" class="w-4 h-4 mr-1"></lucide-icon>
+                                12%
+                            </div>
+                        </dd>
+                        <dd class="text-sm text-gray-600 dark:text-gray-400">
+                            12% increase from last month
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Skeleton Template -->
+<ng-template #loadingSkeleton>
+    <div class="animate-pulse">
+        <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+    </div>
+</ng-template>
