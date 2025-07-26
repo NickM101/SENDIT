@@ -28,7 +28,8 @@ import { PickupPointModule } from './modules/pickup-point/pickup-point.module';
     AddressModule,
     PricingModule,
     PaymentModule,
-    PickupPointModule
+    PickupPointModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

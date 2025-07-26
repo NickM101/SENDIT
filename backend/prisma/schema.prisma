@@ -1,4 +1,3 @@
-// Updated Prisma Schema for SendIT Kenya Parcel Workflow
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,44 +9,43 @@ datasource db {
 
 model User {
   id          String    @id @default(cuid())
-  email       String    @unique // Must be a valid email format (e.g., user@example.com)
+  email       String    @unique
   name        String
-  phone       String    // Must match Kenyan phone number format (e.g., +254712345678)
+  phone       String
   password    String
   dateOfBirth DateTime?
   address     String?
   isActive    Boolean   @default(true)
   avatarUrl   String?
   role        Role      @default(USER)
-  deletedAt   DateTime? // Soft delete
+  deletedAt   DateTime?
   welcomeEmailSent Boolean @default(false)
 
-  // Profile settings
   emailNotifications Boolean @default(true)
   smsNotifications   Boolean @default(false)
 
-  // Timestamps
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   lastLogin            DateTime?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
-  // Relationships
-  sentParcels            Parcel[]                 @relation("SenderParcels")
-  receivedParcels        Parcel[]                 @relation("RecipientParcels")
+  sentParcels            Parcel[] @relation("SenderParcels")
+  receivedParcels        Parcel[] @relation("RecipientParcels")
   trackingHistory        TrackingHistory[]
-  createdParcels         Parcel[]                 @relation("ParcelCreatedBy")
-  updatedParcels         Parcel[]                 @relation("ParcelUpdatedBy")
+  createdParcels         Parcel[] @relation("ParcelCreatedBy")
+  updatedParcels         Parcel[] @relation("ParcelUpdatedBy")
   refreshToken           RefreshToken[]
   emailVerificationToken EmailVerificationToken[]
   notifications          Notification[]
-  addressesCreated       Address[]                @relation("AddressCreatedBy")
-  addressesUpdated       Address[]                @relation("AddressUpdatedBy")
-  dimensionsCreated      Dimensions[]             @relation("DimensionsCreatedBy")
-  dimensionsUpdated      Dimensions[]             @relation("DimensionsUpdatedBy")
-  savedRecipients        SavedRecipient[]         @relation("UserSavedRecipients")
-  parcelDrafts           ParcelDraft[]            @relation("UserParcelDrafts")
+  addressesCreated       Address[] @relation("AddressCreatedBy")
+  addressesUpdated       Address[] @relation("AddressUpdatedBy")
+  dimensionsCreated      Dimensions[] @relation("DimensionsCreatedBy")
+  dimensionsUpdated      Dimensions[] @relation("DimensionsUpdatedBy")
+  savedRecipients        SavedRecipient[] @relation("UserSavedRecipients")
+  parcelDrafts           ParcelDraft[] @relation("UserParcelDrafts")
+  CourierAssignmentsAssignedBy CourierAssignment[] @relation("AssignedByUser")
+  CourierAssignmentCourier CourierAssignment[] @relation("CourierUser")
 
   @@index([email])
   @@index([phone])
@@ -77,36 +75,31 @@ model EmailVerificationToken {
 
 model Address {
   id          String       @id @default(cuid())
-  name        String       // Building/location name
-  email       String?      // Used for non-registered recipients
-  phone       String?      // Used for non-registered recipients
+  name        String
+  email       String?
+  phone       String?
   street      String
-  area        String       // Area/Estate (e.g., CBD, Westlands)
+  area        String
   city        String
-  county      KenyanCounty // Using enum for Kenyan counties
-  state       String       // Same as county for Kenya
-  zipCode     String       // Postal code
+  county      KenyanCounty
+  state       String
+  zipCode     String
   country     String       @default("Kenya")
-  latitude    Float?       // For Google Maps marker
-  longitude   Float?       // For Google Maps marker
-  
-  // Address validation fields
-  isValidated Boolean @default(false)
+  latitude    Float?
+  longitude   Float?
+  isValidated Boolean      @default(false)
   validatedAt DateTime?
-  
-  // Soft delete and audit
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   createdBy   String?
   updatedBy   String?
 
-  // Relationships
-  parcelsSender      Parcel[]        @relation("SenderAddress")
-  parcelsRecipient   Parcel[]        @relation("RecipientAddress")
-  createdByUser      User?           @relation("AddressCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser      User?           @relation("AddressUpdatedBy", fields: [updatedBy], references: [id])
-  savedRecipients    SavedRecipient[] @relation("RecipientAddress")
+  parcelsSender    Parcel[] @relation("SenderAddress")
+  parcelsRecipient Parcel[] @relation("RecipientAddress")
+  createdByUser    User?    @relation("AddressCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updatedByUser    User?    @relation("AddressUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
+  savedRecipients  SavedRecipient[] @relation("RecipientAddress")
 
   @@index([county])
   @@index([city])
@@ -126,9 +119,8 @@ model SavedRecipient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relationships
   user    User    @relation("UserSavedRecipients", fields: [userId], references: [id], onDelete: Cascade)
-  address Address @relation("RecipientAddress", fields: [addressId], references: [id])
+  address Address @relation("RecipientAddress", fields: [addressId], references: [id], onDelete: Cascade)
 
   @@unique([userId, email, phone])
   @@index([userId, lastUsed])
@@ -136,39 +128,35 @@ model SavedRecipient {
 }
 
 model Dimensions {
-  id        String    @id @default(cuid())
-  length    Float
-  width     Float
-  height    Float
-  unit      DimensionUnit @default(cm)
-  volumetricWeight Float? // Calculated volumetric weight
-  
-  // Audit fields
-  deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?
-  updatedBy String?
+  id               String     @id @default(cuid())
+  length           Float
+  width            Float
+  height           Float
+  unit             DimensionUnit @default(cm)
+  volumetricWeight Float?
+  deletedAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  createdBy        String?
+  updatedBy        String?
 
-  // Relationships
-  parcels       Parcel[] @relation
-  createdByUser User?    @relation("DimensionsCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser User?    @relation("DimensionsUpdatedBy", fields: [updatedBy], references: [id])
+  parcels          Parcel[] @relation("ParcelDimensions")
+  createdByUser    User?    @relation("DimensionsCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updatedByUser    User?    @relation("DimensionsUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@map("dimensions")
 }
 
 model ParcelDraft {
-  id       String @id @default(cuid())
-  userId   String
-  stepData Json   // Store step-by-step data as JSON
-  currentStep Int @default(1)
-  expiresAt DateTime // Auto-cleanup old drafts
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  userId      String
+  stepData    Json
+  currentStep Int      @default(1)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // Relationships
-  user User @relation("UserParcelDrafts", fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation("UserParcelDrafts", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
   @@index([userId])
@@ -177,98 +165,72 @@ model ParcelDraft {
 }
 
 model Parcel {
-  id             String       @id @default(cuid())
-  trackingNumber String       @unique // Format: ST-XXXXXXXX
-  senderId       String
-  recipientId    String?      // Optional for non-registered recipients
-  
-  // Pricing fields (in KES)
-  basePrice      Float
-  weightSurcharge Float?      @default(0)
-  serviceSurcharge Float?     @default(0)
-  specialHandlingSurcharge Float? @default(0)
-  insuranceCost  Float?      @default(0)
-  deliverySpeedSurcharge Float? @default(0)
-  additionalFees Float?      @default(0)
-  subtotal       Float
-  tax            Float       // 8% tax for Kenya
-  totalPrice     Float
-  currency       String      @default("KES")
+  id                         String    @id @default(cuid())
+  trackingNumber              String   @unique
+  senderId                    String
+  recipientId                 String?
+  basePrice                   Float
+  weightSurcharge             Float?   @default(0)
+  serviceSurcharge            Float?   @default(0)
+  specialHandlingSurcharge    Float?   @default(0)
+  insuranceCost               Float?   @default(0)
+  deliverySpeedSurcharge      Float?   @default(0)
+  additionalFees              Float?   @default(0)
+  subtotal                    Float
+  tax                         Float
+  totalPrice                  Float
+  currency                    String   @default("KES")
+  weight                      Float?
+  weightUnit                  WeightUnit? @default(kg)
+  estimatedValue              Float?
+  description                 String?
+  dimensionsId                String?
+  senderAddressId             String
+  recipientAddressId          String
+  packageType                 PackageType
+  deliveryType                DeliveryType @default(STANDARD)
+  pickupDate                  DateTime?
+  pickupTimeSlot              String?
+  deliveryDate                DateTime?
+  estimatedDelivery           DateTime?
+  actualDelivery              DateTime?
+  status                      ParcelStatus @default(PROCESSING)
+  fragile                     Boolean @default(false)
+  perishable                  Boolean @default(false)
+  hazardousMaterial           Boolean @default(false)
+  highValue                   Boolean @default(false)
+  pickupInstructions          String?
+  deliveryInstructions        String?
+  specialHandling             String?
+  packagingInstructions       String?
+  insuranceCoverage           InsuranceCoverage @default(NO_INSURANCE)
+  signatureRequired           Boolean @default(false)
+  emailNotifications          Boolean @default(true)
+  smsNotifications            Boolean @default(false)
+  contactlessDelivery         Boolean @default(false)
+  retryNextBusinessDay        Boolean @default(true)
+  leaveWithNeighbor           Boolean @default(false)
+  holdAtPickupPoint           Boolean @default(false)
+  returnToSender              Boolean @default(false)
+  deletedAt                   DateTime?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+  createdBy                   String?
+  updatedBy                   String?
 
-  // Package details
-  weight         Float?
-  weightUnit     WeightUnit? @default(kg)
-  estimatedValue Float?      // In KES
-  description    String?
-  
-  // Address references
-  dimensionsId       String?
-  senderAddressId    String
-  recipientAddressId String
-
-  // Package classification
-  packageType        PackageType
-  
-  // Delivery configuration
-  deliveryType       DeliveryType     @default(STANDARD)
-  pickupDate         DateTime?
-  pickupTimeSlot     String?          // e.g., "08:00-10:00"
-  deliveryDate       DateTime?
-  estimatedDelivery  DateTime?
-  actualDelivery     DateTime?
-
-  // Status and tracking
-  status             ParcelStatus     @default(PROCESSING)
-
-  // Special handling flags
-  fragile            Boolean          @default(false)
-  perishable         Boolean          @default(false)
-  hazardousMaterial  Boolean          @default(false)
-  highValue          Boolean          @default(false)
-
-  // Instructions
-  pickupInstructions   String?
-  deliveryInstructions String?
-  specialHandling      String?
-  packagingInstructions String?
-
-  // Insurance and signature
-  insuranceCoverage  InsuranceCoverage @default(NO_INSURANCE)
-  signatureRequired  Boolean           @default(false)
-
-  // Notification preferences
-  emailNotifications Boolean          @default(true)
-  smsNotifications   Boolean          @default(false)
-
-  // Delivery preferences
-  contactlessDelivery Boolean @default(false)
-  
-  // Backup delivery options
-  retryNextBusinessDay Boolean @default(true)
-  leaveWithNeighbor   Boolean @default(false)
-  holdAtPickupPoint   Boolean @default(false)
-  returnToSender      Boolean @default(false)
-
-  // Audit fields
-  deletedAt          DateTime?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  createdBy          String?
-  updatedBy          String?
-
-  // Relationships
-  sender             User             @relation("SenderParcels", fields: [senderId], references: [id])
-  recipient          User?            @relation("RecipientParcels", fields: [recipientId], references: [id])
-  createdByUser      User?            @relation("ParcelCreatedBy", fields: [createdBy], references: [id])
-  updatedByUser      User?            @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id])
+  sender             User       @relation("SenderParcels", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient          User?      @relation("RecipientParcels", fields: [recipientId], references: [id], onDelete: SetNull)
+  createdByUser      User?      @relation("ParcelCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updatedByUser      User?      @relation("ParcelUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
   trackingHistory    TrackingHistory[]
   deliveryAttempts   DeliveryAttempt[]
-  dimensions         Dimensions?      @relation(fields: [dimensionsId], references: [id])
-  senderAddress      Address          @relation("SenderAddress", fields: [senderAddressId], references: [id])
-  recipientAddress   Address          @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
+  dimensions         Dimensions?  @relation("ParcelDimensions", fields: [dimensionsId], references: [id])
+  senderAddress      Address      @relation("SenderAddress", fields: [senderAddressId], references: [id])
+  recipientAddress   Address      @relation("RecipientAddress", fields: [recipientAddressId], references: [id])
   payments           Payment[]
   notifications      Notification[]
   pricingHistory     PricingHistory[]
+  CourierAssignment  CourierAssignment[]
 
   @@index([trackingNumber])
   @@index([status])
@@ -282,12 +244,11 @@ model Parcel {
 model PricingHistory {
   id        String   @id @default(cuid())
   parcelId  String
-  step      String   // Which step triggered the pricing
-  pricing   Json     // Store complete pricing breakdown
+  step      String
+  pricing   Json
   createdAt DateTime @default(now())
 
-  // Relationships
-  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  parcel    Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
 
   @@index([parcelId])
   @@map("pricing_history")
@@ -299,58 +260,55 @@ model TrackingHistory {
   status      ParcelStatus
   location    String?
   description String?
-  latitude    Float?       // GPS coordinates for location tracking
+  latitude    Float?
   longitude   Float?
-  timestamp   DateTime     @default(now())
+  timestamp   DateTime @default(now())
   updatedBy   String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // Relationships
   parcel        Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
-  updatedByUser User?    @relation(fields: [updatedBy], references: [id])
+  updatedByUser User?    @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([parcelId, timestamp])
   @@map("tracking_history")
 }
 
 model DeliveryAttempt {
-  id          String        @id @default(cuid())
-  parcelId    String
-  attemptDate DateTime      @default(now())
-  status      AttemptStatus
-  reason      String?
-  nextAttempt DateTime?
+  id           String        @id @default(cuid())
+  parcelId     String
+  attemptDate  DateTime      @default(now())
+  status       AttemptStatus
+  reason       String?
+  nextAttempt  DateTime?
   courierNotes String?
-  latitude    Float?        // GPS coordinates of attempt
-  longitude   Float?
+  latitude     Float?
+  longitude    Float?
 
-  // Relationships
-  parcel      Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  parcel       Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
 
   @@index([parcelId])
   @@map("delivery_attempts")
 }
 
 model Notification {
-  id          String             @id @default(cuid())
-  parcelId    String?
-  userId      String?
-  type        NotificationType
-  status      NotificationStatus
-  subject     String?            // Email subject or SMS title
-  message     String?            // Notification content
-  recipient   String?            // Email or phone number
-  sentAt      DateTime?
-  queuedAt    DateTime?
-  failureReason String?          // Error message if failed
-  retryCount  Int               @default(0)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id            String             @id @default(cuid())
+  parcelId      String?
+  userId        String?
+  type          NotificationType
+  status        NotificationStatus
+  subject       String?
+  message       String?
+  recipient     String?
+  sentAt        DateTime?
+  queuedAt      DateTime?
+  failureReason String?
+  retryCount    Int                @default(0)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 
-  // Relationships
-  parcel      Parcel?            @relation(fields: [parcelId], references: [id])
-  user        User?              @relation(fields: [userId], references: [id])
+  parcel        Parcel?            @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  user          User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([status, queuedAt])
   @@index([parcelId])
@@ -360,23 +318,21 @@ model Notification {
 model Payment {
   id                    String        @id @default(cuid())
   stripePaymentIntentId String?       @unique
-  amount                Float         // Amount in KES
+  amount                Float
   currency              String        @default("KES")
   status                PaymentStatus
   paymentMethod         PaymentMethod
-  stripeClientSecret    String?       // For frontend Stripe integration
+  stripeClientSecret    String?
   parcelId              String?
-  
-  // Payment details
+
   cardLast4             String?
   cardBrand             String?
-  paymentIntentMetadata Json?         // Store additional Stripe metadata
-  
+  paymentIntentMetadata Json?
+
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
-  // Relationships
-  parcel                Parcel?       @relation(fields: [parcelId], references: [id])
+  parcel                Parcel?       @relation(fields: [parcelId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([parcelId])
@@ -384,27 +340,43 @@ model Payment {
 }
 
 model PickupPoint {
-  id          String    @id @default(cuid())
-  name        String
-  type        PickupPointType
-  address     String
-  city        String
-  county      KenyanCounty
-  latitude    Float
-  longitude   Float
-  hours       String    // Operating hours
-  phone       String?
-  email       String?
-  services    String[]  // Available services
-  rating      Float?    @default(0)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String    @id @default(cuid())
+  name      String
+  type      PickupPointType
+  address   String
+  city      String
+  county    KenyanCounty
+  latitude  Float
+  longitude Float
+  hours     String
+  phone     String?
+  email     String?
+  services  String[]
+  rating    Float? @default(0)
+  isActive  Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([county, city])
   @@index([latitude, longitude])
   @@index([isActive])
   @@map("pickup_points")
+}
+
+model CourierAssignment {
+  id             String   @id @default(cuid())
+  parcelId       String   @unique
+  courierId      String
+  assignedBy     String
+  assignedAt     DateTime @default(now())
+  status         CourierAssignmentStatus @default(ACTIVE)
+  completedAt    DateTime?
+
+  parcel         Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  courier        User     @relation("CourierUser", fields: [courierId], references: [id], onDelete: Cascade)
+  assignedByUser User     @relation("AssignedByUser", fields: [assignedBy], references: [id], onDelete: Cascade)
+
+  @@map("courier_assignments")
 }
 
 // Enums
@@ -440,17 +412,17 @@ enum PackageType {
 }
 
 enum DeliveryType {
-  STANDARD      // 3-5 business days
-  EXPRESS       // 1-2 business days  
-  SAME_DAY      // Within 4-6 hours
-  OVERNIGHT     // Next business day by 10:30 AM
+  STANDARD
+  EXPRESS
+  SAME_DAY
+  OVERNIGHT
 }
 
 enum InsuranceCoverage {
   NO_INSURANCE
-  BASIC_COVERAGE      // Up to KES 10,000
-  PREMIUM_COVERAGE    // Up to KES 50,000
-  CUSTOM_COVERAGE     // Custom amount
+  BASIC_COVERAGE
+  PREMIUM_COVERAGE
+  CUSTOM_COVERAGE
 }
 
 enum AttemptStatus {
@@ -515,6 +487,12 @@ enum PickupPointType {
   MALL_LOCKER
   POST_OFFICE
   RETAIL_STORE
+}
+
+enum CourierAssignmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
 }
 
 enum KenyanCounty {

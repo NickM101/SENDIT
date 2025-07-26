@@ -54,6 +54,10 @@ async function bootstrap() {
     .addTag('Admin Users', 'Admin user management operations')
     .addTag('Pickup Points', 'Management of pickup points for parcels')
     .addTag('Parcels', 'Parcel management and tracking')
+    .addTag('Admin - Parcels', 'Admin operations for parcel management')
+    .addTag('Pricing', 'Pricing calculations and management')
+    .addTag('Notifications', 'Email and SMS notifications for users')
+    .addTag('Analytics', 'Analytics and reporting features')
     .addTag('Address & Geocoding', 'Address validation and geocoding services')
     .addTag('Payments', 'Payment processing with Stripe')
     .build();
