@@ -51,14 +51,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'My Parcels',
       icon: 'package',
-      link: '/parcels/my-parcels',
+      link: '/my-parcels',
       roles: [UserRole.USER],
-      badge: '3', // Example badge
+      badge: '3',
     },
     {
       title: 'Send Parcel',
       icon: 'send',
-      link: '/parcels/send',
+      link: '/dashboard/user/send-parcel',
       roles: [UserRole.USER],
     },
     {
@@ -129,7 +129,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       title: 'Delivery Points',
       icon: 'map-pin',
       link: '/delivery-points',
-      roles: [UserRole.ADMIN, UserRole.USER],
+      roles: [UserRole.ADMIN],
     },
     {
       title: 'Payments',
@@ -156,7 +156,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
   ];
-tooltipEvent: any;
+  tooltipEvent: any;
 
   constructor(private authService: AuthService, private router: Router) {
     // Track route changes
@@ -269,6 +269,17 @@ tooltipEvent: any;
 
   // Helper method to check if route is active
   isRouteActive(link: string): boolean {
+    if (link === '/') {
+      return this.activeLink === '/';
+    }
+
+    // Exact match if the nav item has no children
+    const navItem = this.navigation.find((item) => item.link === link);
+    if (navItem && !navItem.children) {
+      return this.activeLink === link;
+    }
+
+    // StartsWith only for parent items with children
     return this.activeLink.startsWith(link);
   }
 

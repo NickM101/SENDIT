@@ -1,19 +1,25 @@
-import { DashboardModule } from './dashboard/dashboard.module';
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+
 import { AuthGuard } from './core/guards/auth.guard';
-import { DashboardLayoutComponent } from './dashboard/dashboard-layout.component';
 import { GuestGuard } from './core/guards/guest.guard';
+import { DashboardLayoutComponent } from './dashboard/dashboard-layout.component';
 import { UserListComponent } from './dashboard/admin/users/components/user-list/user-list.component';
+import { LandingPageComponent } from './layouts/landing-page/landing-page.component';
+import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { LoginComponent } from './auth/components/login/login.component';
+import { RegisterComponent } from './auth/components/register/register.component';
+import { EmailVerificationComponent } from './auth/components/email-verification/email-verification.component';
+import { ForgotPasswordComponent } from './auth/components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './auth/components/reset-password/reset-password.component';
+import { SendParcelLayoutComponent } from './dashboard/user/parcels/send-parcel/send-parcel-layout.component';
+import { PickupPointModule } from './dashboard/admin/pickup-points/pickup-point.module';
 
 export const routes: Routes = [
   // Public landing page
   {
     path: '',
-    loadChildren: () =>
-      import('./layouts/landing-page/landing-page.module').then(
-        (m) => m.LandingPageModule
-      ),
+    component: LandingPageComponent,
     data: {
       title: 'Landing Page - SendIT',
       description: 'Welcome to SendIT, your reliable parcel delivery service',
@@ -23,27 +29,51 @@ export const routes: Routes = [
   // Auth pages (login, register, etc.)
   {
     path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+    component: AuthLayoutComponent,
     canActivate: [GuestGuard],
-    data: {
-      preload: true,
-    },
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+        data: {
+          title: 'Login - SendIT',
+          description: 'Sign in to your SendIT account',
+        },
+      },
+      {
+        path: 'register',
+        component: RegisterComponent,
+        data: {
+          title: 'Create Account - SendIT',
+          description: 'Join SendIT and start shipping with confidence',
+        },
+      },
+      {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent,
+        data: {
+          title: 'Reset Password - SendIT',
+          description: 'Reset your SendIT account password',
+        },
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        data: {
+          title: 'Create New Password - SendIT',
+          description: 'Create a new password for your SendIT account',
+        },
+      },
+      {
+        path: 'verify-email/:token',
+        component: EmailVerificationComponent,
+        data: {
+          title: 'Email Verification - SendIT',
+          description: 'Verify your email address to complete registration',
+        },
+      },
+    ],
   },
-
-  // Authenticated user section with layout
-  // {
-  //   path: 'dashboard',
-  //   component: DashboardLayoutComponent,
-  //   canActivateChild: [AuthGuard],
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadChildren: () =>
-  //         import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-  //     },
-  //   ],
-  // },
-
   {
     path: 'dashboard/admin',
     canActivate: [AuthGuard],
@@ -53,6 +83,22 @@ export const routes: Routes = [
       {
         path: 'users',
         component: UserListComponent,
+      },
+      {
+        path: 'pickup-point',
+        component: PickupPointModule,
+      },
+    ],
+  },
+  {
+    path: 'dashboard/user',
+    canActivate: [AuthGuard],
+    data: { roles: ['USER'] },
+    component: DashboardLayoutComponent,
+    children: [
+      {
+        path: 'send-parcel',
+        component: SendParcelLayoutComponent,
       },
     ],
   },
