@@ -1,0 +1,122 @@
+<!-- src/app/dashboard/user/tracking/components/tracking-timeline/tracking-timeline.component.html -->
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+            <lucide-icon name="clock" class="w-5 h-5 inline mr-2"></lucide-icon>
+            Delivery Progress
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Track the real-time progress of your package delivery
+        </p>
+    </div>
+
+    <!-- Timeline Content -->
+    <div class="p-6">
+        <div *ngIf="trackingHistory && trackingHistory.length > 0; else noHistory" class="flow-root">
+            <ul role="list" class="-mb-8">
+                <li *ngFor="let item of trackingHistory; let i = index; let last = last">
+                    <div class="relative pb-8" [class.pb-0]="last">
+                        <!-- Connecting Line -->
+                        <span *ngIf="!last"
+                            class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700"
+                            aria-hidden="true"></span>
+
+                        <div class="relative flex space-x-3">
+                            <!-- Icon -->
+                            <div>
+                                <span [class]="getStatusIconColor(item.status)"
+                                    class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800"
+                                    [class.ring-blue-100]="isLatestUpdate(i)"
+                                    [class.dark:ring-blue-900]="isLatestUpdate(i)">
+                                    <lucide-icon [name]="getStatusIcon(item.status)" class="w-4 h-4"
+                                        [class.text-white]="isCompletedStatus(item.status)"></lucide-icon>
+                                </span>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ formatStatus(item.status) }}
+                                            <span *ngIf="isLatestUpdate(i)"
+                                                class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                                Current
+                                            </span>
+                                        </p>
+                                        <p *ngIf="item.description"
+                                            class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                            {{ item.description }}
+                                        </p>
+
+                                        <!-- Location and Time -->
+                                        <div
+                                            class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                            <div *ngIf="item.location" class="flex items-center">
+                                                <lucide-icon name="map-pin" class="w-3 h-3 mr-1"></lucide-icon>
+                                                {{ item.location }}
+                                            </div>
+                                            <div class="flex items-center">
+                                                <lucide-icon name="calendar" class="w-3 h-3 mr-1"></lucide-icon>
+                                                {{ formatDate(item.timestamp) }}
+                                            </div>
+                                            <div class="flex items-center">
+                                                <lucide-icon name="clock" class="w-3 h-3 mr-1"></lucide-icon>
+                                                {{ formatTime(item.timestamp) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status Badge -->
+                                    <div class="flex-shrink-0">
+                                        <span [class]="getStatusIconColor(item.status)"
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
+                                            <div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5"></div>
+                                            {{ formatStatus(item.status) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- GPS Coordinates (if available) -->
+                                <div *ngIf="item.latitude && item.longitude"
+                                    class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                                    <lucide-icon name="navigation" class="w-3 h-3 inline mr-1"></lucide-icon>
+                                    GPS: {{ item.latitude | number:'1.6-6' }}, {{ item.longitude | number:'1.6-6' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- No History State -->
+        <ng-template #noHistory>
+            <div class="text-center py-8">
+                <lucide-icon name="clock" class="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4"></lucide-icon>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    No tracking history available
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Tracking information will appear here once your package is processed.
+                </p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                <lucide-icon name="refresh-cw" class="w-4 h-4 inline mr-1"></lucide-icon>
+                Last updated: {{ trackingHistory.length > 0 ? formatTime(trackingHistory[0].timestamp) : 'Never' }}
+            </div>
+            <button
+                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                <lucide-icon name="refresh-cw" class="w-4 h-4 inline mr-1"></lucide-icon>
+                Refresh
+            </button>
+        </div>
+    </div>
+</div>

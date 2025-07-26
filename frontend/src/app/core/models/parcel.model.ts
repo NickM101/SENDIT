@@ -11,6 +11,7 @@ export interface Parcel {
   estimatedDelivery?: Date;
   actualDelivery?: Date;
   recipient: {
+    id: string;
     name: string;
     email: string;
     phone: string;
@@ -22,12 +23,19 @@ export interface Parcel {
     };
   };
   sender: {
+    id: string;
     name: string;
     email: string;
     phone: string;
   };
   packageType: PackageType;
   deliveryType: DeliveryType;
+  dimensions?: {
+    length: number;
+    width: number;
+    height: number;
+    unit: string;
+  };
 }
 
 export enum ParcelStatus {
@@ -77,16 +85,6 @@ export interface ParcelFilters {
   endDate?: Date;
   packageType?: PackageType;
   deliveryType?: DeliveryType;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    lastPage: number;
-  };
 }
 
 export interface ParcelAction {
@@ -159,3 +157,82 @@ export const StatusConfig = {
     icon: 'x-circle',
   },
 };
+
+export interface TrackingHistory {
+  id: string;
+  status: string;
+  location?: string;
+  description?: string;
+  latitude?: number;
+  longitude?: number;
+  timestamp: Date;
+  updatedBy?: string;
+}
+
+export interface DeliveryAttempt {
+  id: string;
+  attemptDate: Date;
+  status: string;
+  reason?: string;
+  nextAttempt?: Date;
+  courierNotes?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface Address {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  street: string;
+  area: string;
+  city: string;
+  county: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface RecentSearch {
+  trackingNumber: string;
+  searchedAt: Date;
+  status: string;
+}
+
+export interface ParcelDetails {
+  id: string;
+  trackingNumber: string;
+  status: string;
+  sender: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  recipient?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  senderAddress: Address;
+  recipientAddress: Address;
+  weight?: number;
+  weightUnit?: string;
+  packageType: string;
+  deliveryType: string;
+  totalPrice: number;
+  currency: string;
+  estimatedDelivery?: Date;
+  actualDelivery?: Date;
+  createdAt: Date;
+  trackingHistory: TrackingHistory[];
+  deliveryAttempts: DeliveryAttempt[];
+  dimensions?: {
+    length: number;
+    width: number;
+    height: number;
+    unit: string;
+  };
+}

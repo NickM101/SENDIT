@@ -37,11 +37,13 @@ export class ParcelListComponent {
         state: '',
         country: '',
       },
+      id: ''
     },
     sender: {
       name: '',
       email: '',
       phone: '',
+      id: ''
     },
     description: '',
     weight: 0,

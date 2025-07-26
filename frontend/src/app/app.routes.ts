@@ -15,6 +15,7 @@ import { ResetPasswordComponent } from './auth/components/reset-password/reset-p
 import { SendParcelLayoutComponent } from './dashboard/user/parcels/send-parcel/send-parcel-layout.component';
 import { PickupPointModule } from './dashboard/admin/pickup-points/pickup-point.module';
 import { MyParcelsComponent } from './dashboard/user/parcels/my-parcels/my-parcels.component';
+import { TrackParcelComponent } from './dashboard/user/tracking/track-parcel.component';
 
 export const routes: Routes = [
   // Public landing page
@@ -104,6 +105,10 @@ export const routes: Routes = [
       {
         path: 'my-parcels',
         component: MyParcelsComponent,
+      },
+      {
+        path: 'track-parcel',
+        component: TrackParcelComponent,
       },
     ],
   },

@@ -1,0 +1,147 @@
+<!-- src/app/dashboard/user/tracking/components/quick-actions/quick-actions.component.html -->
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+            <lucide-icon name="zap" class="w-5 h-5 inline mr-2"></lucide-icon>
+            Quick Actions
+        </h3>
+    </div>
+
+    <!-- Actions -->
+    <div class="p-6 space-y-3">
+        <!-- Primary Actions (when tracking number is available) -->
+        <div *ngIf="trackingNumber" class="space-y-3">
+            <button (click)="onDownloadReceipt()"
+                class="w-full flex items-center justify-between p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="download"
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            Download Receipt
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Get your shipping receipt
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+            </button>
+
+            <button (click)="onShareTracking()"
+                class="w-full flex items-center justify-between p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="share" class="w-5 h-5 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            Share Tracking Info
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Share with others
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+            </button>
+
+            <button (click)="onPrintLabel()"
+                class="w-full flex items-center justify-between p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="printer"
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            Print Shipping Label
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Print label for reference
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+            </button>
+
+            <button (click)="onContactSupport()"
+                class="w-full flex items-center justify-between p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="headphones"
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            Contact Support
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Get help with this parcel
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+            </button>
+
+            <!-- Divider -->
+            <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+        </div>
+
+        <!-- General Actions -->
+        <div class="space-y-3">
+            <button (click)="onSendNewParcel()"
+                class="w-full flex items-center justify-between p-3 text-left border border-blue-200 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="send" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-blue-900 dark:text-blue-200">
+                            Send New Parcel
+                        </p>
+                        <p class="text-xs text-blue-700 dark:text-blue-300">
+                            Start a new shipment
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
+            </button>
+
+            <button (click)="onFindDeliveryPoints()"
+                class="w-full flex items-center justify-between p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="map-pin"
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            Find Delivery Points
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Locate pickup locations
+                        </p>
+                    </div>
+                </div>
+                <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></lucide-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex items-center justify-center">
+            <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+                <lucide-icon name="help-circle" class="w-3 h-3 inline mr-1"></lucide-icon>
+                Need help?
+                <button (click)="onContactSupport()" class="text-blue-600 dark:text-blue-400 hover:underline ml-1">
+                    Contact our support team
+                </button>
+            </p>
+        </div>
+    </div>
+</div>

@@ -64,7 +64,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Track Parcel',
       icon: 'search',
-      link: '/track',
+      link: '/dashboard/user/track-parcel',
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
     {

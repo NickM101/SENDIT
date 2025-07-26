@@ -106,7 +106,13 @@ import {
  TrendingUp,
  RefreshCw,
  List,
- Grid3X3 
+ Grid3X3,
+ History,
+ QrCode,
+ Maximize,
+ Headphones,
+ Share,
+ Printer 
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -214,7 +220,13 @@ const lucideIcons = {
   TrendingUp,
   RefreshCw,
   List,
-  Grid3X3
+  Grid3X3,
+  History,
+  QrCode,
+  Maximize,
+  Headphones,
+  Share,
+  Printer
 };
 
 @NgModule({

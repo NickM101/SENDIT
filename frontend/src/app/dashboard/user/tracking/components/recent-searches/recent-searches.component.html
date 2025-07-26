@@ -1,0 +1,87 @@
+<!-- src/app/dashboard/user/tracking/components/recent-searches/recent-searches.component.html -->
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                <lucide-icon name="history" class="w-5 h-5 inline mr-2"></lucide-icon>
+                Recent Tracking Searches
+            </h3>
+            <button *ngIf="recentSearches.length > 0" (click)="onClearAll()"
+                class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium">
+                <lucide-icon name="trash-2" class="w-4 h-4 inline mr-1"></lucide-icon>
+                Clear All
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+        <!-- Recent Searches List -->
+        <div *ngIf="recentSearches.length > 0; else noSearches" class="space-y-3">
+            <div *ngFor="let search of recentSearches; let i = index" class="group cursor-pointer"
+                (click)="onSelectSearch(search.trackingNumber)">
+                <div
+                    class="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200">
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <!-- Status Icon -->
+                        <div class="flex-shrink-0">
+                            <div [class]="getStatusColor(search.status)"
+                                class="w-8 h-8 rounded-full flex items-center justify-center">
+                                <lucide-icon [name]="getStatusIcon(search.status)" class="w-4 h-4"></lucide-icon>
+                            </div>
+                        </div>
+
+                        <!-- Search Info -->
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {{ search.trackingNumber }}
+                            </p>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span [class]="getStatusColor(search.status)"
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
+                                    {{ formatStatus(search.status) }}
+                                </span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ formatRelativeTime(search.searchedAt) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Arrow -->
+                    <div class="flex-shrink-0">
+                        <lucide-icon name="chevron-right"
+                            class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></lucide-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Recent Searches -->
+        <ng-template #noSearches>
+            <div class="text-center py-8">
+                <lucide-icon name="search"
+                    class="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4"></lucide-icon>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    No recent searches
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                    Your recent tracking searches will appear here for quick access. Start by searching for a tracking
+                    number above.
+                </p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Footer Tips -->
+    <div *ngIf="recentSearches.length > 0"
+        class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex items-center justify-center">
+            <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+                <lucide-icon name="info" class="w-3 h-3 inline mr-1"></lucide-icon>
+                Click on any tracking number to search again
+            </p>
+        </div>
+    </div>
+</div>
