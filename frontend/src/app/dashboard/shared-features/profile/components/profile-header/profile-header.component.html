@@ -1,0 +1,117 @@
+<div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+    <!-- Avatar Section -->
+    <div class="text-center">
+        <div class="relative inline-block">
+            <div
+                class="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-4 border-white dark:border-gray-600 shadow-lg">
+                <img *ngIf="user?.avatarUrl; else defaultAvatar" [src]="user?.avatarUrl" [alt]="user?.name"
+                    class="w-full h-full object-cover" />
+                <ng-template #defaultAvatar>
+                    <div
+                        class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                        <span class="text-3xl font-bold text-white">
+                            {{ getInitials(user?.name) }}
+                        </span>
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- Camera Button -->
+            <button (click)="triggerFileInput()" [disabled]="isLoading"
+                class="absolute bottom-2 right-2 p-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <lucide-icon name="Camera" class="h-4 w-4"></lucide-icon>
+            </button>
+
+            <!-- Hidden File Input -->
+            <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+        </div>
+
+        <!-- User Name and Role -->
+        <div class="mt-4">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ user?.name || 'User Name' }}
+            </h2>
+            <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mt-2">
+                {{ getRoleDisplayName(user?.role) }}
+            </span>
+        </div>
+    </div>
+
+    <!-- User Info Cards -->
+    <div class="mt-6 space-y-3">
+        <!-- Email -->
+        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex-shrink-0">
+                <lucide-icon name="Mail" class="h-5 w-5 text-gray-400 dark:text-gray-500"></lucide-icon>
+            </div>
+            <div class="ml-3 flex-1 min-w-0">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {{ user?.email || 'Not provided' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex-shrink-0">
+                <lucide-icon name="Phone" class="h-5 w-5 text-gray-400 dark:text-gray-500"></lucide-icon>
+            </div>
+            <div class="ml-3 flex-1 min-w-0">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {{ user?.phone || 'Not provided' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Address -->
+        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg" *ngIf="user?.address">
+            <div class="flex-shrink-0">
+                <lucide-icon name="MapPin" class="h-5 w-5 text-gray-400 dark:text-gray-500"></lucide-icon>
+            </div>
+            <div class="ml-3 flex-1 min-w-0">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Address</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white line-clamp-2">
+                    {{ user?.address }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Member Since -->
+        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex-shrink-0">
+                <lucide-icon name="Calendar" class="h-5 w-5 text-gray-400 dark:text-gray-500"></lucide-icon>
+            </div>
+            <div class="ml-3 flex-1 min-w-0">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Member Since</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ formatDate(user?.createdAt) }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Status -->
+    <div class="mt-6 p-4 rounded-lg" [ngClass]="getStatusBgClass()">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-2 h-2 rounded-full" [ngClass]="getStatusDotClass()"></div>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium" [ngClass]="getStatusTextClass()">
+                    Account {{ user?.isActive ? 'Active' : 'Inactive' }}
+                </p>
+                <p class="text-xs" [ngClass]="getStatusSubTextClass()">
+                    {{
+                    user?.isActive
+                    ? 'Your account is active and verified'
+                    : 'Your account needs activation'
+                    }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

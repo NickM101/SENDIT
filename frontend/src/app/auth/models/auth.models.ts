@@ -9,10 +9,12 @@ export interface User {
   avatarUrl: string | null;
   emailVerified: boolean;
   access_token: string;
-  dateOfBirth?: string;
+  dateOfBirth?: string | null | undefined | Date;
   profilePicture?: string;
   address?: string;
   bio?: string;
+  emailNotifications?: boolean;
+  smsNotifications?: boolean;
 }
 
 export interface LoginRequest {

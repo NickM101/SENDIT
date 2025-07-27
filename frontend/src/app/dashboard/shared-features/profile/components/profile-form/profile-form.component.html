@@ -1,0 +1,128 @@
+<div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Profile Information
+            </h3>
+            <button *ngIf="!isEditing" (click)="startEditing()"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                <lucide-icon name="Edit" class="h-4 w-4 mr-1"></lucide-icon>
+                Edit
+            </button>
+        </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="p-6">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Full Name -->
+                <div class="md:col-span-2">
+                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Full Name *
+                    </label>
+                    <input id="name" type="text" formControlName="name" [readonly]="!isEditing"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                        [class.bg-gray-50]="!isEditing" [class.dark:bg-gray-600]="!isEditing"
+                        placeholder="Enter your full name" />
+                    <div *ngIf="profileForm.get('name')?.errors?.['required'] && profileForm.get('name')?.touched"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        Full name is required
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email Address *
+                    </label>
+                    <input id="email" type="email" formControlName="email" [readonly]="!isEditing"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                        [class.bg-gray-50]="!isEditing" [class.dark:bg-gray-600]="!isEditing"
+                        placeholder="Enter your email" />
+                    <div *ngIf="profileForm.get('email')?.errors?.['required'] && profileForm.get('email')?.touched"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        Email is required
+                    </div>
+                    <div *ngIf="profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        Please enter a valid email address
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Phone Number *
+                    </label>
+                    <input id="phone" type="tel" formControlName="phone" [readonly]="!isEditing"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                        [class.bg-gray-50]="!isEditing" [class.dark:bg-gray-600]="!isEditing"
+                        placeholder="+1 (555) 000-0000" />
+                    <div *ngIf="profileForm.get('phone')?.errors?.['required'] && profileForm.get('phone')?.touched"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        Phone number is required
+                    </div>
+                </div>
+
+                <!-- Date of Birth -->
+                <div>
+                    <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Date of Birth
+                    </label>
+                    <input id="dateOfBirth" type="date" formControlName="dateOfBirth" [readonly]="!isEditing"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                        [class.bg-gray-50]="!isEditing" [class.dark:bg-gray-600]="!isEditing" />
+                </div>
+
+                <!-- Address -->
+                <div class="md:col-span-2">
+                    <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Address
+                    </label>
+                    <textarea id="address" formControlName="address" [readonly]="!isEditing" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors resize-none"
+                        [class.bg-gray-50]="!isEditing" [class.dark:bg-gray-600]="!isEditing"
+                        placeholder="Enter your complete address including street, city, state, and postal code"></textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div *ngIf="isEditing" class="mt-8 flex justify-end space-x-3">
+                <button type="button" (click)="cancelEditing()" [disabled]="isLoading"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 transition-colors">
+                    <lucide-icon name="X" class="h-4 w-4 mr-1"></lucide-icon>
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="isLoading || profileForm.invalid"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors">
+                    <lucide-icon name="Save" class="h-4 w-4 mr-1"></lucide-icon>
+                    {{ isLoading ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </form>
+
+        <!-- Info Message -->
+        <div *ngIf="!isEditing"
+            class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>Final price will be calculated after entering all parcel details.</strong>
+                        Keep your profile information up to date to ensure accurate delivery notifications and smooth
+                        service.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<!-- src/app/dashboard/shared-features/profile/components/profile-page/profile-page.component.html -->
+
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">
+                        Manage your account settings and profile information
+                    </p>
+                </div>
+                <button (click)="toggleTheme()"
+                    class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <lucide-icon [name]="isDarkMode ? 'sun' : 'moon'"
+                        class="h-5 w-5 text-gray-600 dark:text-gray-400"></lucide-icon>
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Profile Info -->
+            <div class="lg:col-span-1">
+                <app-profile-header [user]="currentUser" [isLoading]="isLoading"
+                    (onAvatarChange)="handleAvatarChange($event)"></app-profile-header>
+            </div>
+
+            <!-- Right Column - Forms and Settings -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Profile Form -->
+                <app-profile-form [user]="currentUser" [isLoading]="isLoading"
+                    (onProfileUpdate)="handleProfileUpdate($event)"></app-profile-form>
+
+                <!-- Password Change -->
+                <app-password-change [isLoading]="isLoading"
+                    (onPasswordChange)="handlePasswordChange($event)"></app-password-change>
+
+                <!-- Account Settings -->
+                <app-account-settings [user]="currentUser" [isLoading]="isLoading"
+                    (onSettingsUpdate)="handleSettingsUpdate($event)"></app-account-settings>
+            </div>
+        </div>
+    </div>
+</div>

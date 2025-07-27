@@ -33,11 +33,9 @@ interface NavItem {
 export class SidebarComponent implements OnInit, OnDestroy {
   @Input() isCollapsed: boolean = false;
   @Output() toggleCollapsed = new EventEmitter<void>();
-
   currentUser: User | null = null;
   activeLink: string = '';
   showProfileMenu: boolean = false;
-
   private destroy$ = new Subject<void>();
 
   // Dynamic navigation based on user roles
@@ -128,7 +126,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Delivery Points',
       icon: 'map-pin',
-      link: '/delivery-points',
+      link: '/dashboard/user/pickup-point',
       roles: [UserRole.ADMIN],
     },
     {
@@ -140,7 +138,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Profile',
       icon: 'user',
-      link: '/profile',
+      link: this.generateDynamicLink('/dashboard', 'profile'),
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
     {
@@ -156,10 +154,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
   ];
-  tooltipEvent: any;
 
   constructor(private authService: AuthService, private router: Router) {
-    // Track route changes
     this.router.events
       .pipe(
         filter(
@@ -169,22 +165,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
       )
       .subscribe((event: NavigationEnd) => {
         this.activeLink = event.urlAfterRedirects;
-        // Auto-expand parent menus for active child routes
         this.expandActiveParentMenus();
       });
   }
 
   ngOnInit(): void {
-    // Subscribe to user changes
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
         this.currentUser = user;
-        // Reset expanded states when user changes
         this.resetMenuStates();
+        this.updateDynamicLinks(); // Update dynamic links when user changes
       });
 
-    // Set initial active link
     this.activeLink = this.router.url;
     this.expandActiveParentMenus();
   }
@@ -194,7 +187,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Close profile menu when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
@@ -203,87 +195,64 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Track by function for ngFor performance
   trackByFn(index: number, item: NavItem): string {
     return item.title;
   }
 
-  // Filter navigation items based on user role
   filterNavigation(items: NavItem[]): NavItem[] {
     if (!this.currentUser?.role) return [];
-
     return items.filter((item) => {
-      // Check if user has required role
       const hasRole =
         !item.roles || item.roles.includes(this.currentUser!.role);
-
       if (item.children) {
-        // Filter children and only show parent if it has visible children
         item.children = this.filterNavigation(item.children);
         return item.children.length > 0 && hasRole;
       }
-
       return hasRole;
     });
   }
 
-  // Toggle sidebar collapsed state
   onToggleCollapsed(): void {
     this.toggleCollapsed.emit();
-    // Close profile menu when collapsing
     if (this.isCollapsed) {
       this.showProfileMenu = false;
     }
   }
 
-  // Toggle submenu expansion
   toggleSubmenu(item: NavItem): void {
     if (this.isCollapsed) return;
-
-    // Close other submenus (accordion behavior)
     this.navigation.forEach((navItem) => {
       if (navItem !== item && navItem.children) {
         navItem.expanded = false;
       }
     });
-
     item.expanded = !item.expanded;
   }
 
-  // Toggle profile dropdown menu
   toggleProfileMenu(): void {
     if (this.isCollapsed) {
-      // In collapsed mode, navigate to profile directly
-      this.router.navigate(['/profile']);
+      this.router.navigate([this.generateDynamicLink('/dashboard', 'profile')]);
       return;
     }
-
     this.showProfileMenu = !this.showProfileMenu;
   }
 
-  // Logout user
   logout(): void {
     this.authService.logout();
     this.showProfileMenu = false;
   }
 
-  // Helper method to check if route is active
   isRouteActive(link: string): boolean {
     if (link === '/') {
       return this.activeLink === '/';
     }
-
-    // Exact match if the nav item has no children
     const navItem = this.navigation.find((item) => item.link === link);
     if (navItem && !navItem.children) {
       return this.activeLink === link;
     }
-
-    // StartsWith only for parent items with children
     return this.activeLink.startsWith(link);
   }
 
-  // Auto-expand parent menus for active child routes
   private expandActiveParentMenus(): void {
     this.navigation.forEach((item) => {
       if (item.children) {
@@ -297,7 +266,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Reset all menu expanded states
   private resetMenuStates(): void {
     this.navigation.forEach((item) => {
       if (item.children) {
@@ -307,7 +275,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.showProfileMenu = false;
   }
 
-  // Get user role display name
   getUserRoleDisplay(): string {
     switch (this.currentUser?.role) {
       case UserRole.ADMIN:
@@ -321,7 +288,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Get role-based styling
   getUserRoleColor(): string {
     switch (this.currentUser?.role) {
       case UserRole.ADMIN:
@@ -337,10 +303,35 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   getTooltipPosition(event: any): number {
     const rect = event.target.getBoundingClientRect();
-    return rect.top + rect.height / 2 - 12; // Center the tooltip vertically
+    return rect.top + rect.height / 2 - 12;
   }
 
   openProfileModal(): void {
     // Logic to open the profile modal
+  }
+
+  // Method to generate dynamic links based on user role
+  generateDynamicLink(basePath: string, path: string): string {
+    if (!this.currentUser?.role) return `${basePath}/${path}`;
+
+    switch (this.currentUser.role) {
+      case UserRole.ADMIN:
+        return `${basePath}/admin/${path}`;
+      case UserRole.COURIER:
+        return `${basePath}/courier/${path}`;
+      case UserRole.USER:
+        return `${basePath}/user/${path}`;
+      default:
+        return `${basePath}/${path}`;
+    }
+  }
+
+  // Method to update dynamic links when user changes
+  updateDynamicLinks(): void {
+    this.navigation.forEach((item) => {
+      if (item.title === 'Profile') {
+        item.link = this.generateDynamicLink('/dashboard', 'profile');
+      }
+    });
   }
 }

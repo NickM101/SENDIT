@@ -112,7 +112,9 @@ import {
  Maximize,
  Headphones,
  Share,
- Printer 
+ Printer,
+ Camera,
+  
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -226,7 +228,9 @@ const lucideIcons = {
   Maximize,
   Headphones,
   Share,
-  Printer
+  Printer,
+  Camera,
+  
 };
 
 @NgModule({
