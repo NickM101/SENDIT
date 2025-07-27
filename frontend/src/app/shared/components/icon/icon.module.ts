@@ -114,7 +114,10 @@ import {
  Share,
  Printer,
  Camera,
-  
+  Lock,
+  RotateCcw,
+  Key,
+  Monitor  
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -230,7 +233,10 @@ const lucideIcons = {
   Share,
   Printer,
   Camera,
-  
+  Lock,
+  RotateCcw,
+  Key,
+  Monitor  
 };
 
 @NgModule({

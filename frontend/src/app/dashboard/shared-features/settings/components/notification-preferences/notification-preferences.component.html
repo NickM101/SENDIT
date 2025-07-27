@@ -1,0 +1,201 @@
+<!-- src/app/dashboard/shared-features/settings/components/notification-preferences/notification-preferences.component.html -->
+
+<div class="space-y-8">
+    <!-- Page Header -->
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Notification Preferences</h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Choose how you want to be notified about updates and
+            activities</p>
+    </div>
+
+    <!-- Global Settings -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Global Settings</h3>
+
+        <div class="space-y-4">
+            <!-- Channel Toggles -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <lucide-icon name="mail" class="w-5 h-5 text-blue-500 mr-3"></lucide-icon>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">Email Notifications</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [checked]="globalSettings.emailEnabled"
+                            (change)="toggleGlobalSetting('emailEnabled')" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <lucide-icon name="smartphone" class="w-5 h-5 text-green-500 mr-3"></lucide-icon>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">SMS Notifications</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [checked]="globalSettings.smsEnabled"
+                            (change)="toggleGlobalSetting('smsEnabled')" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <lucide-icon name="bell" class="w-5 h-5 text-purple-500 mr-3"></lucide-icon>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">Push Notifications</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [checked]="globalSettings.pushEnabled"
+                            (change)="toggleGlobalSetting('pushEnabled')" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Quiet Hours -->
+            <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Quiet Hours</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Disable notifications during specified hours
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [checked]="globalSettings.quietHoursEnabled"
+                            (change)="toggleGlobalSetting('quietHoursEnabled')" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+                </div>
+
+                <div *ngIf="globalSettings.quietHoursEnabled" class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start
+                            Time</label>
+                        <input type="time" [value]="globalSettings.quietHoursStart"
+                            (change)="updateQuietHours('start', $any($event.target).value)"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">End Time</label>
+                        <input type="time" [value]="globalSettings.quietHoursEnd"
+                            (change)="updateQuietHours('end', $any($event.target).value)"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Categories -->
+    <div *ngFor="let category of categories"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{{ category }}</h3>
+
+        <div class="space-y-4">
+            <div *ngFor="let notification of getNotificationsByCategory(category)"
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex-1">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ notification.title }}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ notification.description }}</p>
+                </div>
+
+                <div class="flex items-center space-x-4 ml-6">
+                    <!-- Email Toggle -->
+                    <div class="flex items-center">
+                        <lucide-icon name="mail" class="w-4 h-4 text-blue-500 mr-2"></lucide-icon>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [checked]="notification.email"
+                                [disabled]="!globalSettings.emailEnabled"
+                                (change)="updateNotification(notification.id, 'email', $any($event.target).checked)"
+                                class="sr-only peer">
+                            <div
+                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- SMS Toggle -->
+                    <div class="flex items-center">
+                        <lucide-icon name="smartphone" class="w-4 h-4 text-green-500 mr-2"></lucide-icon>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [checked]="notification.sms" [disabled]="!globalSettings.smsEnabled"
+                                (change)="updateNotification(notification.id, 'sms', $any($event.target).checked)"
+                                class="sr-only peer">
+                            <div
+                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Push Toggle -->
+                    <div class="flex items-center">
+                        <lucide-icon name="bell" class="w-4 h-4 text-purple-500 mr-2"></lucide-icon>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [checked]="notification.push"
+                                [disabled]="!globalSettings.pushEnabled"
+                                (change)="updateNotification(notification.id, 'push', $any($event.target).checked)"
+                                class="sr-only peer">
+                            <div
+                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Manage your notification preferences</p>
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" (click)="resetToDefaults()"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <lucide-icon name="rotate-ccw" class="w-4 h-4 mr-2"></lucide-icon>
+                    Reset to Defaults
+                </button>
+                <button type="button" (click)="saveNotificationSettings()"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <lucide-icon name="save" class="w-4 h-4 mr-2"></lucide-icon>
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+        <div class="flex items-start">
+            <lucide-icon name="info" class="w-5 h-5 text-blue-500 mr-3 mt-0.5"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-blue-900 dark:text-blue-300">Legend</h4>
+                <div class="mt-2 flex items-center space-x-6 text-xs text-blue-700 dark:text-blue-400">
+                    <div class="flex items-center">
+                        <lucide-icon name="mail" class="w-4 h-4 mr-1"></lucide-icon>
+                        Email
+                    </div>
+                    <div class="flex items-center">
+                        <lucide-icon name="smartphone" class="w-4 h-4 mr-1"></lucide-icon>
+                        SMS
+                    </div>
+                    <div class="flex items-center">
+                        <lucide-icon name="bell" class="w-4 h-4 mr-1"></lucide-icon>
+                        Push
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

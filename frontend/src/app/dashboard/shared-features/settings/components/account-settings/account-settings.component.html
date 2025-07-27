@@ -1,0 +1,175 @@
+<!-- src/app/dashboard/shared-features/settings/components/account-settings/account-settings.component.html -->
+
+<div class="space-y-8">
+    <!-- Page Header -->
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Account Settings</h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage your account information and profile settings
+        </p>
+    </div>
+
+    <!-- Profile Picture Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
+        <div class="flex items-center space-x-6">
+            <div class="relative">
+                <div
+                    class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <img *ngIf="avatarPreview || user.avatarUrl" [src]="avatarPreview || user.avatarUrl"
+                        alt="Profile picture" class="w-full h-full object-cover">
+                    <i *ngIf="!avatarPreview && !user.avatarUrl" data-lucide="user"
+                        class="w-12 h-12 text-gray-400 dark:text-gray-500"></i>
+                </div>
+            </div>
+            <div class="flex-1">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" #fileInput>
+                <button type="button" (click)="fileInput.click()"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <i data-lucide="camera" class="w-4 h-4 mr-2"></i>
+                    Change Photo
+                </button>
+                <button *ngIf="selectedFile" type="button" (click)="uploadAvatar()"
+                    class="ml-3 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
+                    Upload
+                </button>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">JPG, GIF or PNG. 1MB max.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Personal Information</h3>
+            <button type="button" (click)="toggleProfileEdit()"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <i [attr.data-lucide]="isEditingProfile ? 'x' : 'edit-2'" class="w-4 h-4 mr-1"></i>
+                {{ isEditingProfile ? 'Cancel' : 'Edit' }}
+            </button>
+        </div>
+
+        <form *ngIf="isEditingProfile" [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                    <input type="text" formControlName="name"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                    <input type="email" formControlName="email"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
+                    <input type="tel" formControlName="phone"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date of Birth</label>
+                    <input type="date" formControlName="dateOfBirth"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" (click)="toggleProfileEdit()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="!profileForm.valid"
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+
+        <div *ngIf="!isEditingProfile" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ user.name }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ user.email }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Phone</label>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ user.phone }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ user.dateOfBirth }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Information -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Address</h3>
+            <button type="button" (click)="toggleAddressEdit()"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <i [attr.data-lucide]="isEditingAddress ? 'x' : 'edit-2'" class="w-4 h-4 mr-1"></i>
+                {{ isEditingAddress ? 'Cancel' : 'Edit' }}
+            </button>
+        </div>
+
+        <form *ngIf="isEditingAddress" [formGroup]="addressForm" (ngSubmit)="saveAddress()">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                <textarea formControlName="address" rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"></textarea>
+            </div>
+            <div class="mt-4 flex justify-end space-x-3">
+                <button type="button" (click)="toggleAddressEdit()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="!addressForm.valid"
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Save Address
+                </button>
+            </div>
+        </form>
+
+        <div *ngIf="!isEditingAddress">
+            <p class="text-sm text-gray-900 dark:text-white">{{ user.address }}</p>
+        </div>
+    </div>
+
+    <!-- Account Statistics -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Statistics</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ user.totalParcels }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Total Parcels</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ user.successfulDeliveries }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Successful Deliveries</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ user.memberSince }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Member Since</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 dark:border-red-800 p-6">
+        <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">Danger Zone</h3>
+        <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div>
+                <h4 class="text-sm font-medium text-red-900 dark:text-red-300">Delete Account</h4>
+                <p class="text-sm text-red-700 dark:text-red-400">Once you delete your account, there is no going back.
+                    Please be certain.</p>
+            </div>
+            <button type="button" (click)="deleteAccount()"
+                class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                Delete Account
+            </button>
+        </div>
+    </div>
+</div>

@@ -17,6 +17,11 @@ import { PickupPointModule } from './dashboard/admin/pickup-points/pickup-point.
 import { MyParcelsComponent } from './dashboard/user/parcels/my-parcels/my-parcels.component';
 import { TrackParcelComponent } from './dashboard/user/tracking/track-parcel.component';
 import { ProfilePageComponent } from './dashboard/shared-features/profile/profile-page.component';
+import { SettingsComponent } from './dashboard/shared-features/settings/settings.component';
+import { AccountSettingsComponent } from './dashboard/shared-features/profile/components/account-settings/account-settings.component';
+import { NotificationPreferencesComponent } from './dashboard/shared-features/settings/components/notification-preferences/notification-preferences.component';
+import { PreferencesComponent } from './dashboard/shared-features/settings/components/preferences/preferences.component';
+import { SecuritySettingsComponent } from './dashboard/shared-features/settings/components/security-settings/security-settings.component';
 
 export const routes: Routes = [
   // Public landing page
@@ -95,6 +100,26 @@ export const routes: Routes = [
         path: 'profile',
         component: ProfilePageComponent,
       },
+      {
+        path: 'track-parcel',
+        component: TrackParcelComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        children: [
+          { path: '', redirectTo: 'account', pathMatch: 'full' },
+          { path: 'account', component: AccountSettingsComponent },
+          {
+            path: 'notifications',
+            component: NotificationPreferencesComponent,
+          },
+          // { path: 'privacy', component: PrivacySettingsComponent },
+          { path: 'security', component: SecuritySettingsComponent },
+          // { path: 'billing', component: BillingSettingsComponent },
+          { path: 'preferences', component: PreferencesComponent },
+        ],
+      },
     ],
   },
   {
@@ -122,6 +147,22 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: ProfilePageComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        children: [
+          { path: '', redirectTo: 'account', pathMatch: 'full' },
+          { path: 'account', component: AccountSettingsComponent },
+          {
+            path: 'notifications',
+            component: NotificationPreferencesComponent,
+          },
+          // { path: 'privacy', component: PrivacySettingsComponent },
+          { path: 'security', component: SecuritySettingsComponent },
+          // { path: 'billing', component: BillingSettingsComponent },
+          { path: 'preferences', component: PreferencesComponent },
+        ],
       },
     ],
   },

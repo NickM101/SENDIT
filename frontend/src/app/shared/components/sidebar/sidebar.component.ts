@@ -62,7 +62,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Track Parcel',
       icon: 'search',
-      link: '/dashboard/user/track-parcel',
+      link: this.generateDynamicLink('/dashboard', 'track-parcel'),
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
     {
@@ -126,8 +126,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Delivery Points',
       icon: 'map-pin',
-      link: '/dashboard/user/pickup-point',
-      roles: [UserRole.ADMIN],
+      link: this.generateDynamicLink('/dashboard', 'pickup-point'),
+      roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
     {
       title: 'Payments',
@@ -144,7 +144,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       title: 'Settings',
       icon: 'settings',
-      link: '/settings',
+      link: this.generateDynamicLink('/dashboard', 'settings'),
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
     {
@@ -331,6 +331,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.navigation.forEach((item) => {
       if (item.title === 'Profile') {
         item.link = this.generateDynamicLink('/dashboard', 'profile');
+      }
+      if (item.title === 'Settings') {
+        item.link = this.generateDynamicLink('/dashboard', 'settings');
+      }
+      if (item.title === 'Track Parcel') {
+        item.link = this.generateDynamicLink('/dashboard', 'track-parcel');
+      }
+      if (item.title === 'Delivery Points') {
+        item.link = this.generateDynamicLink('/dashboard', 'pickup-point');
       }
     });
   }
