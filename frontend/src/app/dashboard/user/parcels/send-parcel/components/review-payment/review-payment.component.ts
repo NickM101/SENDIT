@@ -260,7 +260,6 @@ export class ReviewPaymentComponent implements OnInit, OnDestroy {
       this.reviewForm.get('billingAddress')?.patchValue({
         street: this.senderData.pickupAddress.street,
         city: this.senderData.pickupAddress.city,
-        state: this.senderData.pickupAddress?.state,
         zipCode: this.senderData.pickupAddress?.zipCode,
         country: this.senderData.pickupAddress.country,
       });

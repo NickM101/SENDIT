@@ -10,3 +10,5 @@ import { PrismaModule } from '@app/prisma/prisma.module';
   exports: [PickupPointService],
 })
 export class PickupPointModule {}
+
+

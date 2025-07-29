@@ -1,125 +1,291 @@
-<div class="space-y-4">
-    <!-- Search Input -->
-    <div class="relative">
-        <div class="relative">
-            <input type="text" [formControl]="searchControl" placeholder="Search for an address in Kenya..."
-                class="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors" />
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+<!-- src/app/dashboard/user/parcels/send-parcel/components/sender-details/map-address-picker/map-address-picker.component.html -->
+
+<div class="space-y-6">
+    <!-- Search Section -->
+    <div class="space-y-4">
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <lucide-icon name="search" class="w-4 h-4 text-blue-600 dark:text-blue-400"></lucide-icon>
             </div>
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Find Address in Kenya</h4>
         </div>
 
-        <!-- Search Results Dropdown -->
-        <div *ngIf="searchResults.length > 0"
-            class="absolute z-[10000] w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            <button *ngFor="let result of searchResults; trackBy: trackByResult" (click)="selectSearchResult(result)"
-                class="block w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors">
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {{ getResultTitle(result) }}
+        <!-- Search Input -->
+        <div class="relative">
+            <div class="relative">
+                <input type="text" [formControl]="searchControl"
+                    placeholder="Search for street, area, or landmark in Kenya..."
+                    class="block w-full pl-12 pr-12 py-4 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-200">
+
+                <!-- Search Icon -->
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <lucide-icon name="search" class="h-5 w-5 text-gray-400"></lucide-icon>
                 </div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {{ result.display_name }}
+
+                <!-- Loading Spinner -->
+                @if (isSearching()) {
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <lucide-icon name="loader-2" class="h-5 w-5 text-blue-500 animate-spin"></lucide-icon>
                 </div>
+                }
+
+                <!-- Clear Button -->
+                @if (searchControl.value && !isSearching()) {
+                <button type="button" (click)="searchControl.setValue('')"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
+                </button>
+                }
+            </div>
+
+            <!-- Search Results Dropdown -->
+            @if (showSearchDropdown()) {
+            <div
+                class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-xl max-h-80 overflow-y-auto">
+
+                <!-- Results Header -->
+                <div class="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-xl">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        Found {{ searchResults().length }} location{{ searchResults().length !== 1 ? 's' : '' }} in
+                        Kenya
+                    </p>
+                </div>
+
+                <!-- Results List -->
+                @for (result of searchResults(); track trackByResult($index, result)) {
+                <button type="button" (click)="selectSearchResult(result)"
+                    class="block w-full px-4 py-4 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group">
+
+                    <div class="flex items-start space-x-3">
+                        <div
+                            class="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-800/60 transition-colors">
+                            <lucide-icon name="map-pin" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <p
+                                        class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        {{ getResultTitle(result) }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ getResultSubtitle(result) }}
+                                    </p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                        {{ formatCoordinates(+result.lat, +result.lon) }}
+                                    </p>
+                                </div>
+
+                                <div class="ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <lucide-icon name="arrow-right" class="w-4 h-4 text-blue-500"></lucide-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                }
+            </div>
+            }
+
+            <!-- No Results Message -->
+            @if (noResultsFound()) {
+            <div
+                class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-xl p-6">
+                <div class="text-center">
+                    <lucide-icon name="map-pin-off" class="w-12 h-12 text-gray-400 mx-auto mb-3"></lucide-icon>
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No locations found in Kenya</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Try searching for a different area, street, or landmark
+                    </p>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Quick Location Actions -->
+        <div class="flex flex-col sm:flex-row gap-3">
+            <!-- Current Location Button -->
+            <button type="button" (click)="getCurrentLocation()" [disabled]="isGettingLocation()"
+                class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+                @if (isGettingLocation()) {
+                <lucide-icon name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                Getting location...
+                } @else {
+                <lucide-icon name="crosshair" class="w-4 h-4 mr-2"></lucide-icon>
+                Use Current Location
+                }
             </button>
-        </div>
 
-        <!-- Loading indicator -->
-        <div *ngIf="isSearching" class="absolute right-3 top-3">
-            <svg class="animate-spin h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-            </svg>
+            <!-- Clear Selection Button -->
+            @if (selectedAddress()) {
+            <button type="button" (click)="clearSelection()"
+                class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200">
+                <lucide-icon name="trash-2" class="w-4 h-4 mr-2"></lucide-icon>
+                Clear Selection
+            </button>
+            }
         </div>
     </div>
 
-    <!-- Current Location Button -->
-    <div class="flex justify-center">
-        <button type="button" (click)="getCurrentLocation()" [disabled]="isGettingLocation"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-            <svg *ngIf="!isGettingLocation" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <svg *ngIf="isGettingLocation" class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-            </svg>
-            {{ isGettingLocation ? 'Getting location...' : 'Use Current Location' }}
-        </button>
-    </div>
-
-    <!-- Map Container - Fixed dimensions and styling -->
+    <!-- Map Container -->
     <div class="relative">
         <div #mapContainer
-            class="w-full h-96 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-700"
+            class="w-full h-96 lg:h-[500px] rounded-xl border border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-700 shadow-lg"
             style="min-height: 400px;">
-            <!-- Loading indicator for map -->
-            <div *ngIf="!mapInitialized" class="flex items-center justify-center h-full">
+
+            <!-- Map Loading Indicator -->
+            @if (!mapInitialized()) {
+            <div
+                class="flex items-center justify-center h-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                 <div class="text-center">
-                    <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Loading map...</p>
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center">
+                        <lucide-icon name="loader-2" class="w-8 h-8 text-blue-500 animate-spin"></lucide-icon>
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Loading Kenya Map...</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Please wait while we load the interactive
+                        map</p>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Map Instructions Overlay -->
+        <div
+            class="absolute top-4 left-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10 max-w-xs">
+            <div class="flex items-start space-x-2">
+                <lucide-icon name="info"
+                    class="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></lucide-icon>
+                <div>
+                    <p class="text-xs font-medium text-gray-700 dark:text-gray-300">
+                        📍 Click anywhere on the map
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Select your pickup location in Kenya
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Map Instructions -->
-        <div
-            class="absolute top-2 left-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
-            <p class="text-xs text-gray-600 dark:text-gray-400">
-                📍 Click on the map to select pickup location
-            </p>
+        <!-- Map Controls -->
+        @if (mapInitialized()) {
+        <div class="absolute bottom-4 right-4 flex flex-col space-y-2 z-10">
+            <!-- Zoom to Kenya Button -->
+            <button type="button" (click)="map.setView([-1.2921, 36.8219], 7)"
+                class="w-10 h-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <lucide-icon name="home" class="w-4 h-4 text-gray-600 dark:text-gray-400"></lucide-icon>
+            </button>
+
+            <!-- Full Screen Button -->
+            <button type="button"
+                class="w-10 h-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <lucide-icon name="maximize" class="w-4 h-4 text-gray-600 dark:text-gray-400"></lucide-icon>
+            </button>
         </div>
+        }
     </div>
 
     <!-- Selected Address Display -->
-    <div *ngIf="selectedAddress"
-        class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-        <div class="flex items-start space-x-3">
-            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <div class="flex-1">
-                <p class="text-sm font-medium text-green-800 dark:text-green-200">
-                    Selected Address:
-                </p>
-                <p class="text-sm text-green-700 dark:text-green-300">
-                    {{ selectedAddress.formattedAddress }}
-                </p>
-                <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                    {{ selectedAddress.latitude | number : '1.4-4' }},
-                    {{ selectedAddress.longitude | number : '1.4-4' }}
-                </p>
+    @if (selectedAddress()) {
+    <div
+        class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 shadow-sm">
+        <div class="flex items-start space-x-4">
+            <div
+                class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <lucide-icon name="check-circle" class="w-6 h-6 text-white"></lucide-icon>
+            </div>
+
+            <div class="flex-1 min-w-0">
+                <h4 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
+                    Selected Pickup Location
+                </h4>
+
+                <!-- Address Details -->
+                <div class="space-y-2">
+                    <div class="flex items-center space-x-2">
+                        <lucide-icon name="map-pin" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+                        <p class="text-sm font-medium text-green-700 dark:text-green-300">
+                            {{ selectedAddress()?.formattedAddress }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <lucide-icon name="crosshair" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+                        <p class="text-xs text-green-600 dark:text-green-400">
+                            {{ formatCoordinates(selectedAddress()?.latitude ?? 0, selectedAddress()?.longitude ?? 0) }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <lucide-icon name="target" class="w-4 h-4 text-green-600 dark:text-green-400"></lucide-icon>
+                        <p class="text-xs text-green-600 dark:text-green-400">
+                            {{ getLocationAccuracy() }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Address Breakdown -->
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div
+                        class="bg-white/60 dark:bg-gray-800/60 rounded-lg p-3 border border-green-100 dark:border-green-700/50">
+                        <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Street
+                        </p>
+                        <p class="text-sm text-green-800 dark:text-green-200">{{ selectedAddress()?.street }}</p>
+                    </div>
+
+                    <div
+                        class="bg-white/60 dark:bg-gray-800/60 rounded-lg p-3 border border-green-100 dark:border-green-700/50">
+                        <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Area
+                        </p>
+                        <p class="text-sm text-green-800 dark:text-green-200">{{ selectedAddress()?.area }}</p>
+                    </div>
+
+                    <div
+                        class="bg-white/60 dark:bg-gray-800/60 rounded-lg p-3 border border-green-100 dark:border-green-700/50">
+                        <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">City
+                        </p>
+                        <p class="text-sm text-green-800 dark:text-green-200">{{ selectedAddress()?.city }}</p>
+                    </div>
+
+                    <div
+                        class="bg-white/60 dark:bg-gray-800/60 rounded-lg p-3 border border-green-100 dark:border-green-700/50">
+                        <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">County
+                        </p>
+                        <p class="text-sm text-green-800 dark:text-green-200">{{ selectedAddress()?.county?.replace('_', ' ') }}</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="mt-3 flex justify-end space-x-2">
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 mt-6">
             <button type="button" (click)="confirmAddress()"
-                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-green-600 dark:bg-green-700 rounded-md hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
-                ✓ Confirm Address
+                class="flex-1 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg transition-all duration-200">
+                <lucide-icon name="check" class="w-4 h-4 mr-2"></lucide-icon>
+                Confirm This Location
             </button>
+
             <button type="button" (click)="clearSelection()"
-                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                Clear
+                class="flex-1 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+                <lucide-icon name="edit-3" class="w-4 h-4 mr-2"></lucide-icon>
+                Choose Different Location
             </button>
+        </div>
+    </div>
+    }
+
+    <!-- Kenya Coverage Info -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <lucide-icon name="map" class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div>
+                <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Kenya Coverage</h4>
+                <p class="text-xs text-blue-700 dark:text-blue-300">
+                    Our delivery service covers all 47 counties in Kenya. Select any location within the country borders
+                    for pickup and delivery.
+                </p>
+            </div>
         </div>
     </div>
 </div>

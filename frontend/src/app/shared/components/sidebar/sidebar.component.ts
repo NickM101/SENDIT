@@ -106,15 +106,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
         {
           title: 'Users',
           icon: 'users',
-          link: '/admin/users',
+          link: '/dashboard/admin/users',
           roles: [UserRole.ADMIN],
         },
-        {
-          title: 'Couriers',
-          icon: 'truck',
-          link: '/admin/couriers',
-          roles: [UserRole.ADMIN],
-        },
+        // {
+        //   title: 'Couriers',
+        //   icon: 'truck',
+        //   link: '/admin/couriers',
+        //   roles: [UserRole.ADMIN],
+        // },
         {
           title: 'Reports',
           icon: 'bar-chart-3',

@@ -1,4 +1,5 @@
 // src/app/dashboard/user/parcels/send-parcel/components/sender-details/map-address-picker/map-address-picker.component.ts
+
 import {
   Component,
   Input,
@@ -9,8 +10,10 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
+  signal,
+  computed,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -20,10 +23,9 @@ import {
 import { of, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 import * as L from 'leaflet';
-import { GeocodingService } from '../../../../../../../core/services/geocoding.service';
-import { LeafletConfigService } from '../../../../../../../core/services/leaflet-config.service';
+import { KenyanCounty } from '../../../../../../../core/models/pickup-point.model';
 
 interface NominatimAddress {
   road?: string;
@@ -45,76 +47,82 @@ interface NominatimResult {
   lon: string;
   display_name: string;
   address?: NominatimAddress;
+  importance?: number;
 }
 
-interface AddressData {
+export interface AddressData {
   street: string;
   area: string;
   city: string;
-  county: string;
+  county: KenyanCounty;
   country: string;
   latitude: number;
   longitude: number;
   formattedAddress: string;
-  state: string;
   zipCode: string;
+  postalCode: string; // Optional for backward compatibility 
 }
 
 @Component({
   selector: 'app-map-address-picker',
-  templateUrl: './map-address-picker.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
+  templateUrl: './map-address-picker.component.html',
+  styleUrls: ['./map-address-picker.component.css'],
 })
 export class MapAddressPickerComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
   @Input() currentAddress: AddressData | null = null;
   @Output() addressSelected = new EventEmitter<AddressData>();
-
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
 
-  private map!: L.Map;
-  private marker: L.Marker | null = null;
-  private destroy$ = new Subject<void>();
+   map!: L.Map;
+   marker: L.Marker | null = null;
+   destroy$ = new Subject<void>();
+
+  // Signals for reactive state
+  searchResults = signal<NominatimResult[]>([]);
+  selectedAddress = signal<AddressData | null>(null);
+  isSearching = signal<boolean>(false);
+  isGettingLocation = signal<boolean>(false);
+  mapInitialized = signal<boolean>(false);
+  searchQuery = signal<string>('');
 
   searchControl = new FormControl('');
-  searchResults: NominatimResult[] = [];
-  selectedAddress: AddressData | null = null;
-  isSearching = false;
-  isGettingLocation = false;
-  mapInitialized = false;
 
   // Kenya bounds for map focus
-  private kenyaBounds: L.LatLngBounds = L.latLngBounds(
+  private readonly kenyaBounds: L.LatLngBounds = L.latLngBounds(
     [-4.89, 33.89], // Southwest
     [5.89, 41.89] // Northeast
   );
 
   // Default center (Nairobi)
-  private defaultCenter: L.LatLng = L.latLng(-1.2921, 36.8219);
+  private readonly defaultCenter: L.LatLng = L.latLng(-1.2921, 36.8219);
 
-  constructor(
-    private http: HttpClient,
-    private leafletConfig: LeafletConfigService,
-    private geocoding: GeocodingService
-  ) {}
+  // Computed values
+  showSearchDropdown = computed(
+    () => this.searchResults().length > 0 && this.searchQuery().length > 0
+  );
+
+  noResultsFound = computed(
+    () =>
+      this.searchResults().length === 0 &&
+      this.searchQuery().length > 2 &&
+      !this.isSearching()
+  );
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.setupSearchAutoComplete();
-    this.selectedAddress = this.currentAddress;
-
-    // Fix Leaflet default icon paths issue
+    this.selectedAddress.set(this.currentAddress);
     this.fixLeafletIconPaths();
   }
 
   ngAfterViewInit() {
-    console.log('MapAddressPickerComponent: ngAfterViewInit called');
-    // Initialize map after view is ready with a longer delay to ensure DOM is ready
-    setTimeout(() => {
-      console.log('MapAddressPickerComponent: Initializing map');
-      this.initializeMap();
-    }, 250);
+    console.log('🗺️ MapAddressPickerComponent: Initializing map');
+    setTimeout(() => this.initializeMap(), 250);
   }
 
   ngOnDestroy() {
@@ -127,9 +135,13 @@ export class MapAddressPickerComponent
 
   private fixLeafletIconPaths() {
     // Fix for Leaflet default markers in Angular/Webpack environment
-    const iconRetinaUrl = 'assets/marker-icon-2x.png';
-    const iconUrl = 'assets/marker-icon.png';
-    const shadowUrl = 'assets/marker-shadow.png';
+    const iconRetinaUrl =
+      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png';
+    const iconUrl =
+      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png';
+    const shadowUrl =
+      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png';
+
     const iconDefault = L.icon({
       iconRetinaUrl,
       iconUrl,
@@ -140,41 +152,38 @@ export class MapAddressPickerComponent
       tooltipAnchor: [16, -28],
       shadowSize: [41, 41],
     });
+
     L.Marker.prototype.options.icon = iconDefault;
   }
 
-  initializeMap() {
-    console.log('MapAddressPickerComponent: initializeMap called');
+  private initializeMap() {
     if (!this.mapContainer?.nativeElement) {
-      console.error('MapAddressPickerComponent: mapContainer is not available');
+      console.error('🗺️ Map container not available');
       return;
     }
 
     if (this.map) {
-      console.warn('MapAddressPickerComponent: Map is already initialized');
+      console.warn('🗺️ Map already initialized');
       return;
     }
 
     try {
-      console.log('MapAddressPickerComponent: Creating Leaflet map');
+      console.log('🗺️ Creating Leaflet map');
 
-      // Create map with proper configuration
+      // Create map with Kenya-focused configuration
       this.map = L.map(this.mapContainer.nativeElement, {
         center: this.currentAddress
           ? [this.currentAddress.latitude, this.currentAddress.longitude]
-          : [-1.2921, 36.8219], // Nairobi center
+          : this.defaultCenter,
         zoom: this.currentAddress ? 15 : 7,
-        maxBounds: [
-          [-4.89, 33.89], // Southwest Kenya
-          [5.89, 41.89], // Northeast Kenya
-        ],
+        maxBounds: this.kenyaBounds,
         maxBoundsViscosity: 0.8,
         zoomControl: true,
         attributionControl: true,
-        preferCanvas: false, // This helps with tile loading
+        preferCanvas: false,
       });
 
-      // Add tile layer with proper error handling
+      // Add OpenStreetMap tile layer
       const tileLayer = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
@@ -189,30 +198,27 @@ export class MapAddressPickerComponent
 
       tileLayer.addTo(this.map);
 
-      // Wait for tiles to load
+      // Handle tile loading events
       tileLayer.on('load', () => {
-        console.log('MapAddressPickerComponent: Tiles loaded successfully');
-        this.mapInitialized = true;
+        console.log('🗺️ Map tiles loaded successfully');
+        this.mapInitialized.set(true);
       });
 
       tileLayer.on('tileerror', (error) => {
-        console.error('MapAddressPickerComponent: Tile loading error', error);
+        console.error('🗺️ Tile loading error:', error);
       });
 
-      // Force map to invalidate size after initialization
+      // Force map size invalidation
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
-          console.log('MapAddressPickerComponent: Map size invalidated');
+          console.log('🗺️ Map size invalidated');
         }
       }, 100);
 
       // Add existing marker if current address exists
       if (this.currentAddress) {
-        console.log(
-          'MapAddressPickerComponent: Adding marker for current address',
-          this.currentAddress
-        );
+        console.log('🗺️ Adding marker for current address');
         this.addMarker(
           this.currentAddress.latitude,
           this.currentAddress.longitude
@@ -221,18 +227,16 @@ export class MapAddressPickerComponent
 
       // Add click event listener
       this.map.on('click', (e: L.LeafletMouseEvent) => {
-        console.log('MapAddressPickerComponent: Map clicked at', e.latlng);
+        console.log('🗺️ Map clicked at:', e.latlng);
         this.handleMapClick(e.latlng.lat, e.latlng.lng);
       });
 
-      // Set map as initialized after a short delay
-      setTimeout(() => {
-        this.mapInitialized = true;
-      }, 500);
+      // Set map as initialized
+      setTimeout(() => this.mapInitialized.set(true), 500);
 
-      console.log('MapAddressPickerComponent: Map initialization completed');
+      console.log('🗺️ Map initialization completed');
     } catch (error) {
-      console.error('MapAddressPickerComponent: Error initializing map', error);
+      console.error('🗺️ Error initializing map:', error);
     }
   }
 
@@ -242,33 +246,36 @@ export class MapAddressPickerComponent
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((query) => {
+          this.searchQuery.set(query || '');
+
           if (!query || query.length < 3) {
-            this.searchResults = [];
+            this.searchResults.set([]);
             return of([]);
           }
 
-          this.isSearching = true;
+          this.isSearching.set(true);
           return this.searchAddress(query);
         }),
         catchError((error) => {
-          console.error('Search error:', error);
-          this.isSearching = false;
+          console.error('🔍 Search error:', error);
+          this.isSearching.set(false);
           return of([]);
         })
       )
       .subscribe((results) => {
-        this.searchResults = results;
-        this.isSearching = false;
+        this.searchResults.set(results);
+        this.isSearching.set(false);
       });
   }
 
   private searchAddress(query: string) {
     const params = {
       format: 'json',
-      q: query,
-      countrycodes: 'ke', // Restrict to Kenya
+      q: `${query}, Kenya`, // Always append Kenya to search
+      countrycodes: 'ke',
       limit: '5',
       addressdetails: '1',
+      'accept-language': 'en',
     };
 
     const url = 'https://nominatim.openstreetmap.org/search';
@@ -281,8 +288,9 @@ export class MapAddressPickerComponent
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
 
-    this.searchResults = [];
+    this.searchResults.set([]);
     this.searchControl.setValue('', { emitEvent: false });
+    this.searchQuery.set('');
 
     if (this.map) {
       this.map.setView([lat, lng], 15);
@@ -292,44 +300,48 @@ export class MapAddressPickerComponent
   }
 
   private handleMapClick(lat: number, lng: number) {
-    console.log('MapAddressPickerComponent: handleMapClick called with', {
-      lat,
-      lng,
-    });
+    console.log('🗺️ Map click handler:', { lat, lng });
+
+    // Verify coordinates are within Kenya bounds
+    if (!this.isWithinKenya(lat, lng)) {
+      console.warn('🗺️ Location outside Kenya bounds');
+      // You could show a toast/alert here
+      return;
+    }
+
     this.addMarker(lat, lng);
     this.reverseGeocode(lat, lng);
   }
 
+  private isWithinKenya(lat: number, lng: number): boolean {
+    return lat >= -4.89 && lat <= 5.89 && lng >= 33.89 && lng <= 41.89;
+  }
+
   private addMarker(lat: number, lng: number) {
-    console.log('MapAddressPickerComponent: addMarker called with', {
-      lat,
-      lng,
-    });
+    console.log('🗺️ Adding marker at:', { lat, lng });
 
     if (this.marker) {
-      console.log('MapAddressPickerComponent: Removing existing marker');
       this.map.removeLayer(this.marker);
     }
 
-    // Create a custom icon using DivIcon for better control
+    // Create custom marker with Kenyan styling
     const customIcon = L.divIcon({
       html: `
         <div style="
-          background-color: #3B82F6;
+          background: linear-gradient(135deg, #10b981, #059669);
           border: 3px solid white;
           border-radius: 50%;
           width: 24px;
           height: 24px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: relative;
         ">
           <div style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             color: white;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
           ">📍</div>
         </div>
@@ -345,31 +357,34 @@ export class MapAddressPickerComponent
         draggable: false,
       }).addTo(this.map);
 
-      console.log('MapAddressPickerComponent: Marker added successfully');
+      console.log('🗺️ Marker added successfully');
     } catch (error) {
-      console.error('MapAddressPickerComponent: Error adding marker', error);
+      console.error('🗺️ Error adding marker:', error);
     }
   }
 
   private reverseGeocode(lat: number, lng: number) {
     console.log('🔄 Starting reverse geocoding for:', { lat, lng });
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=en`;
 
     this.http.get<NominatimResult>(url).subscribe({
       next: (result) => {
         console.log('✅ Reverse geocoding successful:', result);
-        this.selectedAddress = this.parseAddressFromResult(result, lat, lng);
-        console.log('📍 Selected address updated:', this.selectedAddress);
+        const addressData = this.parseAddressFromResult(result, lat, lng);
+        this.selectedAddress.set(addressData);
+        console.log('📍 Selected address updated:', addressData);
       },
       error: (error) => {
         console.error('❌ Reverse geocoding failed:', error);
-        this.selectedAddress = {
+        // Fallback address
+        const fallbackAddress: AddressData = {
           street: `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
           area: 'Unknown Area',
           city: 'Unknown City',
-          county: 'Unknown County',
+          county: KenyanCounty.NAIROBI, // Default to Nairobi
           country: 'Kenya',
-          state: 'Unknown State',
+          postalCode: '00000',
           zipCode: '00000',
           latitude: lat,
           longitude: lng,
@@ -377,7 +392,8 @@ export class MapAddressPickerComponent
             4
           )}, Kenya`,
         };
-        console.log('🔄 Fallback address created:', this.selectedAddress);
+        this.selectedAddress.set(fallbackAddress);
+        console.log('🔄 Fallback address created:', fallbackAddress);
       },
     });
   }
@@ -391,20 +407,38 @@ export class MapAddressPickerComponent
 
     console.log('🔍 Parsing address from result:', { result, lat, lng });
 
-    const parsedAddress = {
+    // Map county names to enum values
+    const countyMapping: { [key: string]: KenyanCounty } = {
+      nairobi: KenyanCounty.NAIROBI,
+      mombasa: KenyanCounty.MOMBASA,
+      kisumu: KenyanCounty.KISUMU,
+      nakuru: KenyanCounty.NAKURU,
+      uasin_gishu: KenyanCounty.UASIN_GISHU,
+      kiambu: KenyanCounty.KIAMBU,
+      machakos: KenyanCounty.MACHAKOS,
+      kajiado: KenyanCounty.KAJIADO,
+      muranga: KenyanCounty.MURANGA,
+      nyeri: KenyanCounty.NYERI,
+      // Add more mappings as needed
+    };
+
+    const countyName = (addr.county || addr.state || '').toLowerCase();
+    const mappedCounty = countyMapping[countyName] || KenyanCounty.NAIROBI;
+
+    const parsedAddress: AddressData = {
       street:
         addr.road || addr.house_number
           ? `${addr.house_number || ''} ${addr.road || ''}`.trim()
           : `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
       area: addr.suburb || addr.neighbourhood || addr.quarter || 'Unknown Area',
       city: addr.city || addr.town || addr.village || 'Unknown City',
-      county: addr.county || addr.state || 'Unknown County',
+      county: mappedCounty,
       country: 'Kenya',
       latitude: lat,
       longitude: lng,
       formattedAddress: result.display_name,
-      state: addr.county || addr.state || 'Unknown State',
       zipCode: addr.postcode || '00000',
+      postalCode: addr.postcode || '00000',
     };
 
     console.log('📍 Parsed address data:', parsedAddress);
@@ -413,11 +447,12 @@ export class MapAddressPickerComponent
 
   getCurrentLocation() {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
+      console.warn('🌍 Geolocation not supported');
+      // You could show a toast here
       return;
     }
 
-    this.isGettingLocation = true;
+    this.isGettingLocation.set(true);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -425,26 +460,23 @@ export class MapAddressPickerComponent
         const lng = position.coords.longitude;
 
         // Check if location is within Kenya bounds
-        if (this.kenyaBounds.contains([lat, lng])) {
+        if (this.isWithinKenya(lat, lng)) {
           if (this.map) {
             this.map.setView([lat, lng], 15);
             this.addMarker(lat, lng);
             this.reverseGeocode(lat, lng);
           }
         } else {
-          alert(
-            'Your current location appears to be outside Kenya. Please select a location within Kenya.'
-          );
+          console.warn('🌍 Current location outside Kenya');
+          // You could show a toast here
         }
 
-        this.isGettingLocation = false;
+        this.isGettingLocation.set(false);
       },
       (error) => {
-        console.error('Error getting location:', error);
-        alert(
-          'Unable to get your current location. Please select manually on the map.'
-        );
-        this.isGettingLocation = false;
+        console.error('🌍 Error getting location:', error);
+        this.isGettingLocation.set(false);
+        // You could show a toast here
       },
       {
         enableHighAccuracy: true,
@@ -455,11 +487,10 @@ export class MapAddressPickerComponent
   }
 
   confirmAddress() {
-    if (this.selectedAddress) {
-      console.log('✅ Confirming address selection:', this.selectedAddress);
-      this.addressSelected.emit(this.selectedAddress);
-
-      // Show success feedback
+    const address = this.selectedAddress();
+    if (address) {
+      console.log('✅ Confirming address selection:', address);
+      this.addressSelected.emit(address);
       console.log('📤 Address emitted to parent component');
     } else {
       console.warn('⚠️ No address selected to confirm');
@@ -467,11 +498,14 @@ export class MapAddressPickerComponent
   }
 
   clearSelection() {
-    this.selectedAddress = null;
+    this.selectedAddress.set(null);
     if (this.marker && this.map) {
       this.map.removeLayer(this.marker);
       this.marker = null;
     }
+    this.searchControl.setValue('');
+    this.searchQuery.set('');
+    this.searchResults.set([]);
   }
 
   getResultTitle(result: NominatimResult): string {
@@ -482,7 +516,42 @@ export class MapAddressPickerComponent
     return result.display_name.split(',')[0];
   }
 
+  getResultSubtitle(result: NominatimResult): string {
+    const addr = result.address;
+    const parts = [];
+
+    if (addr?.city || addr?.town) {
+      parts.push(addr.city || addr.town);
+    }
+    if (addr?.county) {
+      parts.push(addr.county);
+    }
+
+    return parts.join(', ') || 'Kenya';
+  }
+
   trackByResult(index: number, result: NominatimResult): string {
     return result.display_name;
+  }
+
+  // Format coordinates for display
+  formatCoordinates(lat: number, lng: number): string {
+    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  }
+
+  // Get location accuracy indicator
+  getLocationAccuracy(): string {
+    const address = this.selectedAddress();
+    if (!address) return '';
+
+    if (
+      address.street !==
+      `Location at ${address.latitude.toFixed(4)}, ${address.longitude.toFixed(
+        4
+      )}`
+    ) {
+      return 'High accuracy';
+    }
+    return 'Approximate location';
   }
 }

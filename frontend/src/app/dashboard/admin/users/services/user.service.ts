@@ -21,7 +21,7 @@ export class UserService {
    * Get all users with optional filtering and pagination
    */
   getUsers(params?: UserQueryParams): Observable<PaginatedResponse<User>> {
-    return this.apiService.getPaginated<User>('/users/admin', 'data', params);
+    return this.apiService.getPaginated<User>('/users/admin', 'items', params);
   }
 
   /**

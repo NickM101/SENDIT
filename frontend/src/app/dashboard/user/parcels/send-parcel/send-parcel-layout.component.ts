@@ -2,15 +2,28 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { SenderData, SenderDetailsComponent } from './components/sender-details/sender-details.component';
+import {
+  SenderData,
+  SenderDetailsComponent,
+} from './components/sender-details/sender-details.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { StepProgressComponent } from "./components/step-progress/step-progress.component";
-import { RecipientDetailsComponent } from "./components/recipient-details/recipient-details.component";
-
+import { StepProgressComponent } from './components/step-progress/step-progress.component';
+import { RecipientDetailsComponent } from './components/recipient-details/recipient-details.component';
 import { RecipientData } from './components/recipient-details/recipient-details.component';
-import { ParcelData, ParcelDetailsComponent } from './components/parcel-details/parcel-details.component';
-import { DeliveryData, DeliveryOptionsComponent } from './components/delivery-options/delivery-options.component';
-import { ReviewPaymentData, ReviewPaymentComponent } from './components/review-payment/review-payment.component';
+import {
+  ParcelData,
+  ParcelDetailsComponent,
+} from './components/parcel-details/parcel-details.component';
+import {
+  DeliveryData,
+  DeliveryOptionsComponent,
+} from './components/delivery-options/delivery-options.component';
+import {
+  ReviewPaymentData,
+  ReviewPaymentComponent,
+} from './components/review-payment/review-payment.component';
+import { Router } from '@angular/router';
+import { ToastService } from '../../../../core/services/toast.service';
 
 export interface Step {
   id: number;
@@ -20,9 +33,22 @@ export interface Step {
   disabled?: boolean;
 }
 
+export interface CompleteOrderData {
+  trackingNumber: string;
+  senderData: SenderData;
+  recipientData: RecipientData;
+  parcelData: ParcelData;
+  deliveryData: DeliveryData;
+  paymentData: ReviewPaymentData;
+  pricing: any;
+  orderDate: Date;
+  status: string;
+}
+
 @Component({
   selector: 'app-send-parcel-layout',
   templateUrl: './send-parcel-layout.component.html',
+  standalone: true,
   imports: [
     SharedModule,
     StepProgressComponent,
@@ -46,6 +72,7 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
   reviewPaymentData: ReviewPaymentData | null = null;
   orderCompleted = false;
   generatedTrackingNumber: string | null = null;
+  completeOrderData: CompleteOrderData | null = null;
 
   steps: Step[] = [
     { id: 1, label: 'Sender Details', icon: 'user', completed: false },
@@ -58,7 +85,11 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
   // Main form
   mainForm!: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private toastService: ToastService
+  ) {
     this.initializeMainForm();
   }
 
@@ -82,8 +113,45 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
   }
 
   onStepChange(stepNumber: number) {
-    console.log('Navigating to step:', stepNumber);
-    this.currentStep$.next(stepNumber);
+    if (this.canNavigateToStep(stepNumber)) {
+      console.log('Navigating to step:', stepNumber);
+      this.saveCurrentStepData();
+
+      this.currentStep$.next(stepNumber);
+    }
+  }
+
+  private saveCurrentStepData() {
+    const currentStep = this.currentStep$.value;
+
+    // The data is already being saved through the dataChange event handlers,
+    // but we can add additional validation here if needed
+    switch (currentStep) {
+      case 1:
+        // Ensure sender data is saved
+        if (!this.senderData) {
+          console.warn('No sender data to save');
+        }
+        break;
+      case 2:
+        // Ensure recipient data is saved
+        if (!this.recipientData) {
+          console.warn('No recipient data to save');
+        }
+        break;
+      // Add similar checks for other steps if needed
+    }
+  }
+
+  private canNavigateToStep(stepNumber: number): boolean {
+    // Allow navigation to previous completed steps or next logical step
+    const currentStep = this.currentStep$.value;
+
+    if (stepNumber <= currentStep) return true;
+    if (stepNumber === currentStep + 1 && this.canProceedFromStep(currentStep))
+      return true;
+
+    return false;
   }
 
   nextStep() {
@@ -103,8 +171,11 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
 
   private canProceedFromCurrentStep(): boolean {
     const current = this.currentStep$.value;
+    return this.canProceedFromStep(current);
+  }
 
-    switch (current) {
+  private canProceedFromStep(stepNumber: number): boolean {
+    switch (stepNumber) {
       case 1:
         return !!this.senderData;
       case 2:
@@ -114,7 +185,7 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
       case 4:
         return !!this.deliveryData;
       case 5:
-        return !!this.reviewPaymentData || this.orderCompleted; // Add this validation
+        return !!this.reviewPaymentData || this.orderCompleted;
       default:
         return true;
     }
@@ -129,109 +200,98 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
 
   // Step 1 event handlers
   onSenderStepComplete(senderData: SenderData) {
-    console.log('Sender step completed:', senderData);
+    console.log('✅ Sender step completed:', senderData);
     this.senderData = senderData;
     this.markStepComplete(1);
-    // Auto-advance to next step
     this.nextStep();
   }
 
   onSenderDataChange(senderData: SenderData) {
-    console.log('Sender data changed:', senderData);
+    console.log('📝 Sender data changed:', senderData);
     this.senderData = senderData;
   }
 
   // Step 2 event handlers
   onRecipientStepComplete(recipientData: RecipientData) {
-    console.log('Recipient step completed:', recipientData);
+    console.log('✅ Recipient step completed:', recipientData);
     this.recipientData = recipientData;
     this.markStepComplete(2);
-    // Auto-advance to next step
     this.nextStep();
   }
 
   onRecipientDataChange(recipientData: RecipientData) {
-    console.log('Recipient data changed:', recipientData);
+    console.log('📝 Recipient data changed:', recipientData);
     this.recipientData = recipientData;
   }
 
   // Step 3 event handlers
   onParcelStepComplete(parcelData: ParcelData) {
-    console.log('Parcel step completed:', parcelData);
+    console.log('✅ Parcel step completed:', parcelData);
     this.parcelData = parcelData;
     this.markStepComplete(3);
-    // Auto-advance to next step
     this.nextStep();
   }
 
   onParcelDataChange(parcelData: ParcelData) {
-    console.log('Parcel data changed:', parcelData);
+    console.log('📝 Parcel data changed:', parcelData);
     this.parcelData = parcelData;
   }
 
   // Step 4 event handlers
   onDeliveryStepComplete(deliveryData: DeliveryData) {
-    console.log('Delivery step completed:', deliveryData);
+    console.log('✅ Delivery step completed:', deliveryData);
     this.deliveryData = deliveryData;
     this.markStepComplete(4);
-    // Auto-advance to next step
     this.nextStep();
   }
 
   onDeliveryDataChange(deliveryData: DeliveryData) {
-    console.log('Delivery data changed:', deliveryData);
+    console.log('📝 Delivery data changed:', deliveryData);
     this.deliveryData = deliveryData;
   }
 
   // Step 5 event handlers
   onReviewPaymentStepComplete(reviewPaymentData: any) {
-    console.log('Order completed:', reviewPaymentData);
+    console.log('🎉 Order completed:', reviewPaymentData);
     this.reviewPaymentData = reviewPaymentData;
     this.orderCompleted = true;
     this.generatedTrackingNumber = reviewPaymentData.trackingNumber;
     this.markStepComplete(5);
 
-    // Show success message or redirect to confirmation page
+    // Create complete order data for API
+    this.completeOrderData = {
+      trackingNumber: this.generatedTrackingNumber!,
+      senderData: this.senderData!,
+      recipientData: this.recipientData!,
+      parcelData: this.parcelData!,
+      deliveryData: this.deliveryData!,
+      paymentData: reviewPaymentData,
+      pricing: reviewPaymentData.pricing,
+      orderDate: new Date(),
+      status: 'PROCESSING',
+    };
+
     this.showOrderConfirmation();
   }
 
   onReviewPaymentDataChange(reviewPaymentData: ReviewPaymentData) {
-    console.log('Payment data changed:', reviewPaymentData);
+    console.log('📝 Payment data changed:', reviewPaymentData);
     this.reviewPaymentData = reviewPaymentData;
   }
 
   private showOrderConfirmation() {
-    // You can implement order confirmation logic here
-    console.log('Order completed successfully!');
-    console.log('Tracking Number:', this.generatedTrackingNumber);
-
-    // Option 1: Show success modal
-    // this.showSuccessModal();
-
-    // Option 2: Navigate to confirmation page
-    // this.router.navigate(['/dashboard/user/parcels/confirmation'], {
-    //   queryParams: { trackingNumber: this.generatedTrackingNumber }
-    // });
-
-    // Option 3: Reset form for new order
-    // this.resetFormAfterDelay();
-  }
-
-  private resetFormAfterDelay() {
-    // Reset form after showing success for a few seconds
-    setTimeout(() => {
-      this.resetToFirstStep();
-    }, 3000);
+    this.toastService.success('Order completed successfully!');
+    console.log('🚀 Final API Data:', this.completeOrderData);
   }
 
   // Price calculation methods for sidebar
-  getWeightSurcharge(): string {
-    if (!this.parcelData?.weight) return '0.00';
+  getWeightSurcharge(): number {
+    if (!this.parcelData?.weight) return 0;
     const weight = this.parcelData.weight;
-    if (weight <= 1) return '0.00';
-    if (weight <= 5) return '10.00';
-    if (weight <= 20) return '30.00';
-    return '60.00';
+    if (weight <= 1) return 0;
+    if (weight <= 5) return 250; // KES 250
+    if (weight <= 20) return 750; // KES 750
+    return 1500; // KES 1500
   }
 
   getDeliverySpeedSurcharge(): number {
@@ -244,24 +304,24 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
     return surcharges[this.deliveryData.deliveryType] || 0;
   }
 
-  getInsuranceCost(): string {
-    if (!this.parcelData?.insuranceCoverage) return '0.00';
+  getInsuranceCost(): number {
+    if (!this.parcelData?.insuranceCoverage) return 0;
     const costs: { [key: string]: number } = {
-      BASIC_COVERAGE: 2.5,
-      PREMIUM_COVERAGE: 7.5,
+      BASIC_COVERAGE: 125, // KES 125
+      PREMIUM_COVERAGE: 375, // KES 375
       CUSTOM_COVERAGE: Math.max(
-        5,
+        250,
         (this.parcelData.estimatedValue || 0) * 0.02
       ),
     };
-    return (costs[this.parcelData.insuranceCoverage] || 0).toFixed(2);
+    return costs[this.parcelData.insuranceCoverage] || 0;
   }
 
-  getTotalEstimate(): string {
-    let total = 15.0; // Base rate
+  getTotalEstimate(): number {
+    let total = 750; // Base rate KES 750
 
     if (this.parcelData?.weight) {
-      total += parseFloat(this.getWeightSurcharge());
+      total += this.getWeightSurcharge();
     }
 
     if (
@@ -275,10 +335,19 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
       this.parcelData?.insuranceCoverage &&
       this.parcelData.insuranceCoverage !== 'NO_INSURANCE'
     ) {
-      total += parseFloat(this.getInsuranceCost());
+      total += this.getInsuranceCost();
     }
 
-    return total.toFixed(2);
+    return Math.round(total);
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-KE', {
+      style: 'currency',
+      currency: 'KES',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   }
 
   resetToFirstStep() {
@@ -290,6 +359,7 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
     this.reviewPaymentData = null;
     this.orderCompleted = false;
     this.generatedTrackingNumber = null;
+    this.completeOrderData = null;
 
     // Reset steps
     this.steps.forEach((step) => (step.completed = false));
@@ -337,6 +407,26 @@ export class SendParcelLayoutComponent implements OnInit, OnDestroy {
       recipient: this.recipientData,
       parcel: this.parcelData,
       delivery: this.deliveryData,
+      payment: this.reviewPaymentData,
     };
+  }
+
+  // Navigation methods
+  navigateToTrackParcel() {
+    if (this.generatedTrackingNumber) {
+      this.router.navigate(['/dashboard/user/track-parcel'], {
+        queryParams: { tracking: this.generatedTrackingNumber },
+      });
+    }
+  }
+
+  navigateToMyParcels() {
+    this.router.navigate(['/dashboard/user/my-parcels']);
+  }
+
+  downloadReceipt() {
+    // Implementation for downloading receipt
+    console.log('Downloading receipt for:', this.generatedTrackingNumber);
+    this.toastService.success('Receipt download started');
   }
 }

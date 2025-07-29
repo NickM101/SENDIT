@@ -1,9 +1,14 @@
+import { QueryParams } from "../../shared/models/api.model";
+
 export enum PickupPointType {
   SENDIT_CENTER = 'SENDIT_CENTER',
   PARTNER_LOCATION = 'PARTNER_LOCATION',
   MALL_LOCKER = 'MALL_LOCKER',
   POST_OFFICE = 'POST_OFFICE',
   RETAIL_STORE = 'RETAIL_STORE',
+  WAREHOUSE = 'WAREHOUSE',
+  LOCKER = 'LOCKER',
+  KIOSK = 'KIOSK',
 }
 
 export enum KenyanCounty {
@@ -80,3 +85,42 @@ export interface PickupPoint {
   createdAt: string;
   updatedAt: string;
 }
+
+
+export interface PickupPointQueryDto extends QueryParams {
+  // Filters
+  type?: PickupPointType;
+  county?: KenyanCounty;
+  city?: string;
+  isActive?: boolean;
+  search?: string;
+
+  // Pagination
+  page?: number;
+  limit?: number;
+
+  // Sorting
+  sortBy?: 'name' | 'city' | 'county' | 'rating' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
+
+export interface CreatePickupPointDto extends QueryParams {
+  name: string;
+  type: PickupPointType;
+  address: string;
+  city: string;
+  county: KenyanCounty;
+  latitude: number;
+  longitude: number;
+  hours: string;
+  phone?: string;
+  email?: string;
+  services: string[];
+  rating?: number;
+  isActive?: boolean;
+}
+
+
+export interface UpdatePickupPointDto extends Partial<CreatePickupPointDto> {}
+

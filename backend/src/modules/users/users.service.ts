@@ -21,9 +21,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      if (createUserDto.dateOfBirth) {
-        createUserDto.dateOfBirth = new Date(createUserDto.dateOfBirth);
-      }
+    if (createUserDto.dateOfBirth) {
+      createUserDto.dateOfBirth = new Date(createUserDto.dateOfBirth);
+    }
     return this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -33,23 +33,23 @@ export class UsersService {
   }
 
   async findAll(query: UserQueryDto) {
-    const { search, page = 1, limit = 10, role, isActive } = query; // Added default values
+    const { search, page = 1, limit = 10, role, isActive } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
       ...(search && {
         OR: [
-          { email: { contains: search, mode: Prisma.QueryMode.insensitive } }, // Used Prisma.QueryMode.insensitive
+          { email: { contains: search, mode: Prisma.QueryMode.insensitive } },
           { name: { contains: search, mode: Prisma.QueryMode.insensitive } },
           { phone: { contains: search, mode: Prisma.QueryMode.insensitive } },
         ],
       }),
-      ...(Array.isArray(role) &&
-        role.filter(Boolean).length > 0 && {
-          role: { in: role.filter(Boolean) },
+      ...(role &&
+        role.length > 0 && {
+          role: { in: role },
         }),
-      ...(isActive !== undefined && { isActive }),
+      ...(typeof isActive === 'boolean' && { isActive }),
     };
 
     const [users, total] = await this.prisma.$transaction([
@@ -61,11 +61,29 @@ export class UsersService {
       this.prisma.user.count({ where }),
     ]);
 
+    const totalUsers = await this.prisma.user.count({
+      where: { deletedAt: null },
+    });
+
+    const lastPage = Math.ceil(totalUsers / limit);
+
+    const userWithoutPassword = users.map((user) => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+
     return {
-      data: users,
-      total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      data: {
+        items: userWithoutPassword,
+        pagination: {
+          total,
+          page,
+          limit,
+          lastPage,
+        },
+      },
+      message: 'List of users retrieved successfully.',
+      status: 'success',
     };
   }
 
@@ -188,9 +206,7 @@ export class UsersService {
     }
 
     if (updateProfileDto.dateOfBirth) {
-      updateProfileDto.dateOfBirth = new Date(
-        updateProfileDto.dateOfBirth,
-      );
+      updateProfileDto.dateOfBirth = new Date(updateProfileDto.dateOfBirth);
     }
 
     return this.prisma.user.update({
@@ -268,7 +284,7 @@ export class UsersService {
       activeUsers,
       inactiveUsers,
       adminUsers,
-      courierUsers
+      courierUsers,
     };
   }
 }

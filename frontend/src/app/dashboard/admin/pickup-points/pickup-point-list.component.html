@@ -1,87 +1,493 @@
-<div class="space-y-6">
-    <h2 class="text-2xl font-semibold">Delivery Pickup Points</h2>
+<!-- src/app/admin/pickup-points/pickup-point-list/pickup-point-list.component.html -->
+<div class="space-y-6 p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Header Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Delivery Pickup Points</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Manage pickup locations for your delivery network
+                </p>
+            </div>
 
-    <!-- Filters -->
-    <form [formGroup]="filtersForm" (ngSubmit)="onFilterSubmit()"
-        class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        <div>
-            <label class="block text-sm font-medium text-gray-700">City</label>
-            <input type="text" formControlName="city" class="preline-input" placeholder="Search by city" />
+            <div class="flex items-center space-x-3">
+                <!-- View Toggle -->
+                <div
+                    class="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
+                    <button (click)="viewMode = 'table'"
+                        [class]="'px-3 py-1.5 rounded-md text-sm font-medium transition-colors ' + 
+            (viewMode === 'table' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300')">
+                        <lucide-icon name="table" class="h-4 w-4"></lucide-icon>
+                    </button>
+                    <button (click)="viewMode = 'grid'"
+                        [class]="'px-3 py-1.5 rounded-md text-sm font-medium transition-colors ' + 
+            (viewMode === 'grid' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300')">
+                        <lucide-icon name="grid-3x3" class="h-4 w-4"></lucide-icon>
+                    </button>
+                </div>
+
+                <!-- Action Buttons -->
+                <button (click)="exportData()"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="download" class="h-4 w-4 mr-2"></lucide-icon>
+                    Export
+                </button>
+
+                <button (click)="createPickupPoint()"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="plus" class="h-4 w-4 mr-2"></lucide-icon>
+                    Add Pickup Point
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <!-- Search Bar -->
+        <form [formGroup]="searchForm" class="mb-4">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <lucide-icon name="search" class="h-5 w-5 text-gray-400"></lucide-icon>
+                </div>
+                <input type="text" formControlName="query"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Search pickup points by name, city, address, or county..." />
+            </div>
+        </form>
+
+        <!-- Filter Toggle and Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div class="flex items-center space-x-4">
+                <button (click)="showFilters = !showFilters"
+                    class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="filter" class="h-4 w-4 mr-2"></lucide-icon>
+                    Filters
+                    <lucide-icon [name]="showFilters ? 'chevron-up' : 'chevron-down'"
+                        class="h-4 w-4 ml-2"></lucide-icon>
+                </button>
+
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Showing {{ (pagination.page - 1) * pagination.limit + 1 }} -
+                    {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of
+                    {{ pagination.total }} results
+                </div>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="flex items-center space-x-2" *ngIf="selectedPoints.size > 0">
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ selectedPoints.size }} selected
+                </span>
+                <button (click)="bulkDelete()"
+                    class="inline-flex items-center px-3 py-2 border border-red-300 dark:border-red-600 rounded-md shadow-sm text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <lucide-icon name="trash-2" class="h-4 w-4 mr-2"></lucide-icon>
+                    Delete Selected
+                </button>
+            </div>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700">County</label>
-            <select formControlName="county" class="preline-select">
-                <option value="">All Counties</option>
-                <option *ngFor="let county of kenyanCounties" [value]="county">
-                    {{ county }}
-                </option>
-            </select>
-        </div>
+        <!-- Advanced Filters -->
+        <form [formGroup]="filtersForm" (ngSubmit)="onFilterSubmit()"
+            class="mt-4 transition-all duration-200 ease-in-out" [class.hidden]="!showFilters">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                    <input type="text" formControlName="city"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Enter city name" />
+                </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Type</label>
-            <select formControlName="type" class="preline-select">
-                <option value="">All Types</option>
-                <option *ngFor="let type of pickupPointTypes" [value]="type">
-                    {{ type }}
-                </option>
-            </select>
-        </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">County</label>
+                    <select formControlName="county"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Counties</option>
+                        <option *ngFor="let county of kenyanCounties" [value]="county">
+                            {{ county }}
+                        </option>
+                    </select>
+                </div>
 
-        <div class="md:col-span-3">
-            <button type="submit" class="preline-btn-primary">Filter</button>
-        </div>
-    </form>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                    <select formControlName="type"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Types</option>
+                        <option *ngFor="let type of pickupPointTypes" [value]="type">
+                            {{ type }}
+                        </option>
+                    </select>
+                </div>
 
-    <!-- Table -->
-    <div class="overflow-x-auto">
-        <table class="preline-table w-full">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>City</th>
-                    <th>County</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let point of pickupPoints">
-                    <td>{{ point.name }}</td>
-                    <td>{{ point.type }}</td>
-                    <td>{{ point.city }}</td>
-                    <td>{{ point.county }}</td>
-                    <td>
-                        <span
-                            [class]="'inline-flex px-2 py-1 rounded text-xs font-medium ' + (point.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
-                            {{ point.isActive ? 'Active' : 'Inactive' }}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select formControlName="isActive"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option *ngFor="let status of statusOptions" [value]="status.value">
+                            {{ status.label }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div
+                class="flex items-center justify-end space-x-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button type="button" (click)="clearFilters()"
+                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Clear Filters
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span class="ml-3 text-gray-600 dark:text-gray-400">Loading pickup points...</span>
+        </div>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="!isLoading && viewMode === 'table'"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <input type="checkbox"
+                                [checked]="selectedPoints.size === filteredPoints.length && filteredPoints.length > 0"
+                                [indeterminate]="selectedPoints.size > 0 && selectedPoints.size < filteredPoints.length"
+                                (change)="selectAllPoints()"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <button (click)="onSortChange('name')"
+                                class="group inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300">
+                                Name
+                                <lucide-icon
+                                    [name]="sortBy === 'name' && sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                                    class="ml-2 h-4 w-4" [class.opacity-100]="sortBy === 'name'"
+                                    [class.opacity-0]="sortBy !== 'name'"></lucide-icon>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <button (click)="onSortChange('createdAt')"
+                                class="group inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300">
+                                Type
+                                <lucide-icon
+                                    [name]="sortBy === 'createdAt' && sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                                    class="ml-2 h-4 w-4" [class.opacity-100]="sortBy === 'createdAt'"
+                                    [class.opacity-0]="sortBy !== 'createdAt'"></lucide-icon>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <button (click)="onSortChange('city')"
+                                class="group inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300">
+                                Location
+                                <lucide-icon
+                                    [name]="sortBy === 'city' && sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                                    class="ml-2 h-4 w-4" [class.opacity-100]="sortBy === 'city'"
+                                    [class.opacity-0]="sortBy !== 'city'"></lucide-icon>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <button (click)="onSortChange('rating')"
+                                class="group inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300">
+                                Rating
+                                <lucide-icon
+                                    [name]="sortBy === 'rating' && sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                                    class="ml-2 h-4 w-4" [class.opacity-100]="sortBy === 'rating'"
+                                    [class.opacity-0]="sortBy !== 'rating'"></lucide-icon>
+                            </button>
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Services
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let point of filteredPoints; trackBy: trackByPointId"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" [checked]="selectedPoints.has(point.id)"
+                                (change)="togglePointSelection(point.id)"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div
+                                        class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                                        <lucide-icon name="map-pin" class="h-5 w-5 text-white"></lucide-icon>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ point.name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ point.address }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                {{ point.type }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">{{ point.city }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ point.county }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center" *ngIf="point.rating">
+                                <div class="flex items-center">
+                                    <lucide-icon *ngFor="let star of getRatingStars(point.rating)"
+                                        [name]="star === 'full' ? 'star' : star === 'half' ? 'star-half' : 'star'"
+                                        [class]="'h-4 w-4 ' + (star === 'full' ? 'text-yellow-400 fill-current' : star === 'half' ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600')">
+                                    </lucide-icon>
+                                </div>
+                                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ point.rating }}</span>
+                            </div>
+                            <span *ngIf="!point.rating" class="text-sm text-gray-400 dark:text-gray-500">No
+                                rating</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button (click)="toggleStatus(point)"
+                                [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ' + 
+                (point.isActive 
+                  ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800' 
+                  : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800')">
+                                <lucide-icon [name]="point.isActive ? 'check-circle' : 'x-circle'" class="h-3 w-3 mr-1">
+                                </lucide-icon>
+                                {{ point.isActive ? 'Active' : 'Inactive' }}
+                            </button>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                <span *ngFor="let service of point.services"
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    {{ service }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button (click)="viewPickupPoint(point.id)"
+                                    class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 p-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                                    title="View Details">
+                                    <lucide-icon name="eye" class="h-4 w-4"></lucide-icon>
+                                </button>
+                                <button (click)="editPickupPoint(point.id)"
+                                    class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300 p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    title="Edit">
+                                    <lucide-icon name="edit" class="h-4 w-4"></lucide-icon>
+                                </button>
+                                <button (click)="deletePickupPoint(point)"
+                                    class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    title="Delete">
+                                    <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Grid View -->
+    <div *ngIf="!isLoading && viewMode === 'grid'"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div *ngFor="let point of filteredPoints; trackBy: trackByPointId"
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <!-- Card Header -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" [checked]="selectedPoints.has(point.id)"
+                            (change)="togglePointSelection(point.id)"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                        <div
+                            class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                            <lucide-icon name="map-pin" class="h-5 w-5 text-white"></lucide-icon>
+                        </div>
+                    </div>
+                    <button (click)="toggleStatus(point)" [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-colors ' + 
+            (point.isActive 
+              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
+              : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200')">
+                        <lucide-icon [name]="point.isActive ? 'check-circle' : 'x-circle'" class="h-3 w-3 mr-1">
+                        </lucide-icon>
+                        {{ point.isActive ? 'Active' : 'Inactive' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card Content -->
+            <div class="p-4 space-y-3">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate" [title]="point.name">
+                        {{ point.name }}
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 truncate" [title]="point.address">
+                        {{ point.address }}
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                        {{ point.type }}
+                    </span>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ point.city }}, {{ point.county }}
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="flex items-center justify-between" *ngIf="point.rating">
+                    <div class="flex items-center">
+                        <lucide-icon *ngFor="let star of getRatingStars(point.rating)"
+                            [name]="star === 'full' ? 'star' : star === 'half' ? 'star-half' : 'star'"
+                            [class]="'h-4 w-4 ' + (star === 'full' ? 'text-yellow-400 fill-current' : star === 'half' ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600')">
+                        </lucide-icon>
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ point.rating }}</span>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <div class="flex flex-wrap gap-1">
+                        <span *ngFor="let service of point.services.slice(0, 2)"
+                            class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            {{ service }}
                         </span>
-                    </td>
-                    <td>
-                        <button class="preline-btn-sm preline-btn-outline-primary">Edit</button>
-                        <button class="preline-btn-sm preline-btn-outline-danger ml-2">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <span *ngIf="point.services.length > 2"
+                            class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            +{{ point.services.length - 2 }} more
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Operating Hours -->
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <lucide-icon name="clock" class="h-4 w-4 mr-2"></lucide-icon>
+                    {{ point.hours }}
+                </div>
+
+                <!-- Contact Info -->
+                <div class="space-y-1" *ngIf="point.phone || point.email">
+                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-400" *ngIf="point.phone">
+                        <lucide-icon name="phone" class="h-4 w-4 mr-2"></lucide-icon>
+                        {{ point.phone }}
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-400" *ngIf="point.email">
+                        <lucide-icon name="mail" class="h-4 w-4 mr-2"></lucide-icon>
+                        <span class="truncate">{{ point.email }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <button (click)="viewPickupPoint(point.id)"
+                            class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <lucide-icon name="eye" class="h-3 w-3 mr-1"></lucide-icon>
+                            View
+                        </button>
+                        <button (click)="editPickupPoint(point.id)"
+                            class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <lucide-icon name="edit" class="h-3 w-3 mr-1"></lucide-icon>
+                            Edit
+                        </button>
+                    </div>
+                    <button (click)="deletePickupPoint(point)"
+                        class="inline-flex items-center px-3 py-1.5 border border-red-300 dark:border-red-600 shadow-sm text-xs font-medium rounded text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <lucide-icon name="trash-2" class="h-3 w-3 mr-1"></lucide-icon>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredPoints.length === 0"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div class="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500 mb-4">
+            <lucide-icon name="map-pin-off" class="h-24 w-24"></lucide-icon>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No pickup points found</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+            {{ pickupPoints.length === 0 ? 'Get started by creating your first pickup point.' : 'Try adjusting your
+            search or filter criteria.' }}
+        </p>
+        <button (click)="createPickupPoint()"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <lucide-icon name="plus" class="h-4 w-4 mr-2"></lucide-icon>
+            Add Pickup Point
+        </button>
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-between items-center mt-4">
-        <p class="text-sm text-gray-500">
-            Showing {{ pagination.page }} of {{ pagination.totalPages }} pages ({{ pagination.total }} total)
-        </p>
-        <div class="flex items-center space-x-2">
-            <button class="preline-btn-sm preline-btn-outline" [disabled]="pagination.page === 1"
-                (click)="changePage(pagination.page - 1)">
-                Prev
-            </button>
-            <button class="preline-btn-sm preline-btn-outline" [disabled]="pagination.page === pagination.totalPages"
-                (click)="changePage(pagination.page + 1)">
-                Next
-            </button>
+    <div *ngIf="!isLoading && filteredPoints.length > 0"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 px-6 py-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <div class="text-sm text-gray-700 dark:text-gray-300">
+                Showing
+                <span class="font-medium">{{ (pagination.page - 1) * pagination.limit + 1 }}</span>
+                to
+                <span class="font-medium">{{ Math.min(pagination.page * pagination.limit, pagination.total) }}</span>
+                of
+                <span class="font-medium">{{ pagination.total }}</span>
+                results
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button (click)="changePage(pagination.page - 1)" [disabled]="pagination.page === 1"
+                    class="relative inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <lucide-icon name="chevron-left" class="h-4 w-4 mr-1"></lucide-icon>
+                    Previous
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="hidden sm:flex space-x-1">
+                    <button *ngFor="let page of getPageNumbers()" (click)="changePage(page)"
+                        [class]="'relative inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ' + 
+            (page === pagination.page 
+              ? 'bg-blue-600 border-blue-600 text-white' 
+              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700')">
+                        {{ page }}
+                    </button>
+                </div>
+
+                <button (click)="changePage(pagination.page + 1)" [disabled]="pagination.page === pagination.totalPages"
+                    class="relative inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Next
+                    <lucide-icon name="chevron-right" class="h-4 w-4 ml-1"></lucide-icon>
+                </button>
+            </div>
         </div>
     </div>
 </div>

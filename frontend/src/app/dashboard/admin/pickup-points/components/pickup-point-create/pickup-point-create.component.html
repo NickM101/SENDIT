@@ -1,0 +1,343 @@
+<!-- src/app/admin/pickup-points/pickup-point-create/pickup-point-create.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-4 mb-4">
+                <button (click)="onCancel()"
+                    class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="arrow-left" class="h-5 w-5"></lucide-icon>
+                </button>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        {{ isEditMode ? 'Edit Pickup Point' : 'Create New Pickup Point' }}
+                    </h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        {{ isEditMode ? 'Update pickup point information' : 'Add a new delivery pickup location to your network' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading"
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-3 text-gray-600 dark:text-gray-400">Loading pickup point details...</span>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form *ngIf="!isLoading" [formGroup]="pickupPointForm" (ngSubmit)="onSubmit()" class="space-y-8">
+            <!-- Basic Information -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                        <lucide-icon name="info" class="h-5 w-5 mr-2 text-blue-600"></lucide-icon>
+                        Basic Information
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Provide the essential details for the pickup point
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Name -->
+                    <div class="md:col-span-2">
+                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Pickup Point Name *
+                        </label>
+                        <input id="name" type="text" formControlName="name" [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('name') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')"
+                            placeholder="Enter pickup point name (e.g., SendIT Nairobi Center)" />
+                        <p *ngIf="isFieldInvalid('name')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('name') }}
+                        </p>
+                    </div>
+
+                    <!-- Type -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Type *
+                        </label>
+                        <select id="type" formControlName="type"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('type') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')">
+                            <option value="">Select pickup point type</option>
+                            <option *ngFor="let type of pickupPointTypes" [value]="type">
+                                {{ type }}
+                            </option>
+                        </select>
+                        <p *ngIf="isFieldInvalid('type')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('type') }}
+                        </p>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Status
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" formControlName="isActive" [value]="true"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600" />
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" formControlName="isActive" [value]="false"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600" />
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Inactive</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                        <lucide-icon name="map-pin" class="h-5 w-5 mr-2 text-blue-600"></lucide-icon>
+                        Location Information
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Specify the exact location of the pickup point
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Address -->
+                    <div class="md:col-span-2">
+                        <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Street Address *
+                        </label>
+                        <textarea id="address" formControlName="address" (blur)="onAddressChange()" rows="3"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('address') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')"
+                            placeholder="Enter full street address (e.g., Moi Avenue, Building 123, Ground Floor)"></textarea>
+                        <p *ngIf="isFieldInvalid('address')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('address') }}
+                        </p>
+                    </div>
+
+                    <!-- City -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            City *
+                        </label>
+                        <input id="city" type="text" formControlName="city" (blur)="onAddressChange()" [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('city') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')"
+                            placeholder="Enter city name" />
+                        <p *ngIf="isFieldInvalid('city')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('city') }}
+                        </p>
+                    </div>
+
+                    <!-- County -->
+                    <div>
+                        <label for="county" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            County *
+                        </label>
+                        <select id="county" formControlName="county"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('county') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')">
+                            <option value="">Select county</option>
+                            <option *ngFor="let county of kenyanCounties" [value]="county">
+                                {{ county }}
+                            </option>
+                        </select>
+                        <p *ngIf="isFieldInvalid('county')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('county') }}
+                        </p>
+                    </div>
+
+                    <!-- Coordinates -->
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Latitude *
+                        </label>
+                        <div class="relative">
+                            <input id="latitude" type="number" step="any" formControlName="latitude"
+                                [class]="'block w-full px-3 py-2 pr-12 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+                (isFieldInvalid('latitude') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')" placeholder="-1.2921" />
+                            <button type="button" (click)="getCurrentLocation()"
+                                class="absolute inset-y-0 right-0 px-3 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                title="Get current location">
+                                <lucide-icon name="crosshair" class="h-4 w-4"></lucide-icon>
+                            </button>
+                        </div>
+                        <p *ngIf="isFieldInvalid('latitude')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('latitude') }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Longitude *
+                        </label>
+                        <input id="longitude" type="number" step="any" formControlName="longitude"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('longitude') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')" placeholder="36.8219" />
+                        <p *ngIf="isFieldInvalid('longitude')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('longitude') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Map Preview -->
+                <div class="mt-6" *ngIf="selectedLocation">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location Preview</h3>
+                    <div
+                        class="h-48 bg-gray-100 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                        <div class="text-center">
+                            <lucide-icon name="map"
+                                class="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-2"></lucide-icon>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Lat: {{ selectedLocation.lat }}, Lng: {{ selectedLocation.lng }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                Map integration can be added here
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact & Operating Information -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                        <lucide-icon name="phone" class="h-5 w-5 mr-2 text-blue-600"></lucide-icon>
+                        Contact & Operating Information
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Add contact details and operating hours
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Operating Hours -->
+                    <div class="md:col-span-2">
+                        <label for="hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Operating Hours *
+                        </label>
+                        <input id="hours" type="text" formControlName="hours"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('hours') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')"
+                            placeholder="e.g., Mon-Fri 8:00AM-6:00PM, Sat 9:00AM-4:00PM" />
+                        <p *ngIf="isFieldInvalid('hours')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('hours') }}
+                        </p>
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Phone Number
+                        </label>
+                        <input id="phone" type="tel" formControlName="phone"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('phone') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')" placeholder="+254712345678" />
+                        <p *ngIf="isFieldInvalid('phone')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('phone') }}
+                        </p>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Email Address
+                        </label>
+                        <input id="email" type="email" formControlName="email"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('email') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')" placeholder="pickup@example.com" />
+                        <p *ngIf="isFieldInvalid('email')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('email') }}
+                        </p>
+                    </div>
+
+                    <!-- Rating -->
+                    <div>
+                        <label for="rating" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Initial Rating
+                        </label>
+                        <input id="rating" type="number" step="0.1" min="0" max="5" formControlName="rating"
+                            [class]="'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + 
+              (isFieldInvalid('rating') ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600')" placeholder="4.5" />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Optional: Set an initial rating (0-5)
+                        </p>
+                        <p *ngIf="isFieldInvalid('rating')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            {{ getFieldError('rating') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                        <lucide-icon name="cog" class="h-5 w-5 mr-2 text-blue-600"></lucide-icon>
+                        Available Services
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Select the services offered at this pickup point
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div *ngFor="let service of availableServices; let i = index; trackBy: trackByIndex"
+                        class="relative flex items-start">
+                        <div class="flex items-center h-5">
+                            <input [id]="'service-' + i" type="checkbox" [checked]="servicesFormArray.at(i).value"
+                                (change)="onServiceChange(i, $event)"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label [for]="'service-' + i"
+                                class="font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                                {{ service }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4" *ngIf="servicesFormArray.invalid && servicesFormArray.touched">
+                    <p class="text-sm text-red-600 dark:text-red-400">
+                        Please select at least one service
+                    </p>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <span class="text-red-600 dark:text-red-400">*</span> Required fields
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <button type="button" (click)="onCancel()" [disabled]="isSubmitting"
+                            class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Cancel
+                        </button>
+
+                        <button type="submit" [disabled]="pickupPointForm.invalid || isSubmitting"
+                            class="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <div *ngIf="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white">
+                                <lucide-icon name="loader" class="h-4 w-4"></lucide-icon>
+                            </div>
+                            <lucide-icon *ngIf="!isSubmitting" [name]="isEditMode ? 'save' : 'plus'"
+                                class="h-4 w-4 mr-2"></lucide-icon>
+                            {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Update Pickup Point' : 'Create Pickup Point')
+                            }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

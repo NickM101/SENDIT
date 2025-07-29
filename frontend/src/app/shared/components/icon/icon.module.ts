@@ -106,7 +106,7 @@ import {
  TrendingUp,
  RefreshCw,
  List,
- Grid3X3,
+ Grid3x3,
  History,
  QrCode,
  Maximize,
@@ -117,7 +117,25 @@ import {
   Lock,
   RotateCcw,
   Key,
-  Monitor  
+  Monitor,
+  Building,
+  UserCheck,
+  Crosshair,
+  Target,
+  Edit3,
+  AlertTriangle,
+  UserPlus,
+  Table,
+  ChevronUp,
+  StarHalf,
+  MapPinOff,
+  Pause,
+  BarChart,
+  PhoneCall,
+  Play,
+  Loader,
+  Cog
+
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -225,7 +243,7 @@ const lucideIcons = {
   TrendingUp,
   RefreshCw,
   List,
-  Grid3X3,
+  Grid3x3,
   History,
   QrCode,
   Maximize,
@@ -236,7 +254,24 @@ const lucideIcons = {
   Lock,
   RotateCcw,
   Key,
-  Monitor  
+  Monitor,
+  Building,
+  UserCheck,
+  Crosshair,
+  Target,
+  Edit3,
+  AlertTriangle,
+  UserPlus,
+  Table,
+  ChevronUp,
+  StarHalf,
+  MapPinOff,
+  Pause,
+  BarChart,
+  PhoneCall,
+  Play,
+  Loader,
+  Cog
 };
 
 @NgModule({

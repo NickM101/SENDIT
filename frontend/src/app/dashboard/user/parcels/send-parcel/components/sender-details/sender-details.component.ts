@@ -1,3 +1,4 @@
+// src/app/dashboard/user/parcels/send-parcel/components/sender-details/sender-details.component.ts
 import {
   Component,
   Input,
@@ -11,22 +12,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { SharedModule } from '../../../../../../shared/shared.module';
-import { MapAddressPickerComponent } from './map-address-picker/map-address-picker.component';
+import { AddressData, MapAddressPickerComponent } from './map-address-picker/map-address-picker.component';
 import { AuthService } from '../../../../../../auth/services/auth.service';
-import { SendParcelService } from '../../services/send-parcel.service';
+import { KenyanCounty } from '../../../../../../core/models/pickup-point.model';
 
-export interface AddressData {
-  state: string;
-  zipCode: string;
-  street: string;
-  area: string;
-  city: string;
-  county: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  formattedAddress: string;
-}
 
 export interface SenderData {
   fullName: string;
@@ -42,10 +31,12 @@ export interface SenderData {
 @Component({
   selector: 'app-sender-details',
   templateUrl: './sender-details.component.html',
+  standalone: true,
   imports: [SharedModule, MapAddressPickerComponent],
 })
 export class SenderDetailsComponent implements OnInit, OnDestroy {
   @Input() parentForm?: FormGroup;
+  @Input() initialData?: SenderData;
   @Output() stepComplete = new EventEmitter<SenderData>();
   @Output() dataChange = new EventEmitter<SenderData>();
   @ViewChild('mapAddressPicker') mapAddressPicker!: MapAddressPickerComponent;
@@ -53,38 +44,37 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   senderForm!: FormGroup;
-  showAddressMap = false;
+  currentUser: any = null;
+  hasUserProfileAddress = false;
+  kenyanCounties = KenyanCounty;
 
-  userProfile = {
-    fullName: '',
-    email: '',
-    phone: '',
-    address: {
-      street: '',
-      area: '',
-      city: '',
-      county: '',
-      country: 'Kenya',
-      state: '',
-      zipCode: '',
-      latitude: null,
-      longitude: null,
-      formattedAddress: '',
-    },
-  };
-
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private sendParcelService: SendParcelService
-  ) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.initializeForm();
   }
 
   ngOnInit() {
-    this.loadDraft();
+    this.loadCurrentUser();
     this.setupFormWatchers();
-    this.prefillUserData();
+
+    if (this.initialData) {
+      this.patchFormWithData(this.initialData);
+    }
+  }
+
+  private patchFormWithData(data: SenderData) {
+    this.senderForm.patchValue(
+      {
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        company: data.company || '',
+        pickupAddress: data.pickupAddress,
+        pickupInstructions: data.pickupInstructions || '',
+        useProfileAddress: data.useProfileAddress,
+        useProfileDetails: data.useProfileDetails,
+      },
+      { emitEvent: false }
+    );
   }
 
   ngOnDestroy() {
@@ -98,7 +88,7 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       phone: [
         '',
-        [Validators.required, Validators.pattern(/^\+254[17]\d{8}$/)],
+        [Validators.required, Validators.pattern(/^(\+254|0)[17]\d{8}$/)],
       ],
       company: [''],
       pickupAddress: this.fb.group({
@@ -107,91 +97,116 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
         city: ['', Validators.required],
         county: ['', Validators.required],
         country: ['Kenya', Validators.required],
-        state: ['', Validators.required],
-        zipCode: ['', Validators.required],
+        postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
         latitude: [
           null,
-          [Validators.required, Validators.min(-90), Validators.max(90)],
+          [Validators.required, Validators.min(-4.89), Validators.max(5.89)],
         ],
         longitude: [
           null,
-          [Validators.required, Validators.min(-180), Validators.max(180)],
+          [Validators.required, Validators.min(33.89), Validators.max(41.89)],
         ],
         formattedAddress: ['', Validators.required],
       }),
       pickupInstructions: [''],
-      useProfileAddress: [true],
+      useProfileAddress: [false],
       useProfileDetails: [true],
     });
   }
 
-  private loadDraft() {
-    this.sendParcelService
-      .getCurrentDraft()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (draft) => {
-          if (draft && draft.stepData?.step1) {
-            this.senderForm.patchValue(draft.stepData.step1);
-          }
-        },
-        error: () => {
-          // Silent fail is fine for drafts.
-        },
-      });
-  }
-
-  private prefillUserData() {
+  private loadCurrentUser() {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((profile) => {
-        if (this.senderForm.get('useProfileAddress')?.value) {
+      .subscribe((user) => {
+        this.currentUser = user;
+
+        // Check if user has a complete address
+        const userAddress = user?.address as Partial<AddressData> | undefined;
+        this.hasUserProfileAddress = !!(
+          userAddress &&
+          typeof userAddress === 'object' &&
+          'street' in userAddress &&
+          userAddress.street &&
+          'latitude' in userAddress &&
+          typeof userAddress.latitude === 'number' &&
+          userAddress.latitude !== null &&
+          'longitude' in userAddress &&
+          typeof userAddress.longitude === 'number' &&
+          userAddress.longitude !== null &&
+          'city' in userAddress &&
+          userAddress.city &&
+          'county' in userAddress &&
+          userAddress.county
+        );
+
+        // Set initial values based on user profile
+        if (user) {
+          if (this.senderForm.get('useProfileDetails')?.value) {
+            this.senderForm.patchValue({
+              fullName: user.name || '',
+              email: user.email || '',
+              phone: user.phone || '',
+            });
+          }
+
           this.senderForm.patchValue({
-            fullName: profile?.name || '',
-            email: profile?.email || '',
-            phone: profile?.phone || '',
-            pickupAddress: {
-              ...this.senderForm.get('pickupAddress')?.value,
-              ...((typeof profile?.address === 'object' && profile?.address !== null) ? profile.address : {}),
-            },
+            useProfileAddress: this.hasUserProfileAddress,
           });
+
+          if (
+            this.hasUserProfileAddress &&
+            this.senderForm.get('useProfileAddress')?.value
+          ) {
+            this.setProfileAddress();
+          }
         }
       });
   }
 
   private setupFormWatchers() {
+    // Watch useProfileAddress changes
     this.senderForm
       .get('useProfileAddress')
       ?.valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((useProfile) => {
-        if (useProfile) {
-          this.prefillUserData();
+        if (useProfile && this.hasUserProfileAddress) {
+          this.setProfileAddress();
         } else {
           this.clearAddressFields();
         }
       });
+
+    // Watch useProfileDetails changes
+    this.senderForm
+      .get('useProfileDetails')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((useProfile) => {
+        if (useProfile && this.currentUser) {
+          this.senderForm.patchValue({
+            fullName: this.currentUser.name || '',
+            email: this.currentUser.email || '',
+            phone: this.currentUser.phone || '',
+          });
+        }
+      });
+
+    // Watch form changes and emit data
+    this.senderForm.valueChanges
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((formData) => {
+        this.dataChange.emit(formData);
+      });
   }
 
-  saveDraft() {
-    if (this.senderForm.valid) {
-      const draftData = {
-        stepData: {
-          step1: this.senderForm.value,
-        },
-      };
-      this.sendParcelService
-        .saveDraft(draftData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            console.log('Draft saved successfully');
-          },
-          error: (error) => {
-            console.error('Error saving draft:', error);
-          },
-        });
-    } else {
-      this.markFormGroupTouched();
+  private setProfileAddress() {
+    if (
+      this.currentUser?.address &&
+      typeof this.currentUser.address === 'object'
+    ) {
+      this.senderForm.get('pickupAddress')?.patchValue({
+        ...this.currentUser.address,
+        country: 'Kenya',
+      });
     }
   }
 
@@ -202,21 +217,11 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       city: '',
       county: '',
       country: 'Kenya',
-      state: '',
-      zipCode: '',
+      postalCode: '',
       latitude: null,
       longitude: null,
       formattedAddress: '',
     });
-  }
-
-  onAddressMapToggle() {
-    this.showAddressMap = !this.showAddressMap;
-    if (this.showAddressMap && this.mapAddressPicker) {
-      setTimeout(() => {
-        this.mapAddressPicker.initializeMap();
-      }, 100);
-    }
   }
 
   onAddressSelected(addressData: AddressData) {
@@ -224,7 +229,6 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     this.senderForm
       .get('useProfileAddress')
       ?.setValue(false, { emitEvent: false });
-    this.showAddressMap = false;
   }
 
   onValidateForm() {
@@ -237,7 +241,7 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     });
 
     if (this.senderForm.valid) {
-      console.log('📤 Submitting form data:', this.senderForm.value);
+      console.log('📤 Submitting sender data:', this.senderForm.value);
       this.stepComplete.emit(this.senderForm.value);
     } else {
       this.markFormGroupTouched();
@@ -267,14 +271,19 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     const field = nestedField
       ? this.senderForm.get(fieldName)?.get(nestedField)
       : this.senderForm.get(fieldName);
+
     if (field?.errors) {
       if (field.errors['required'])
         return `${this.getFieldLabel(fieldName, nestedField)} is required`;
       if (field.errors['email']) return 'Please enter a valid email address';
       if (field.errors['pattern'] && fieldName === 'phone')
-        return 'Please enter a valid Kenyan phone number (+254...)';
+        return 'Please enter a valid Kenyan phone number (+254... or 07...)';
+      if (field.errors['pattern'] && nestedField === 'postalCode')
+        return 'Please enter a valid 5-digit postal code';
       if (field.errors['minlength'])
         return `${this.getFieldLabel(fieldName, nestedField)} is too short`;
+      if (field.errors['min'] || field.errors['max'])
+        return 'Location must be within Kenya';
     }
     return '';
   }
@@ -290,8 +299,7 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
       city: 'City',
       county: 'County',
       country: 'Country',
-      state: 'State',
-      zipCode: 'Zip Code',
+      postalCode: 'Postal code',
       latitude: 'Latitude',
       longitude: 'Longitude',
       formattedAddress: 'Address',
@@ -308,5 +316,29 @@ export class SenderDetailsComponent implements OnInit, OnDestroy {
     const hasCoordinates =
       address?.latitude != null && address?.longitude != null;
     return hasCoordinates ? address : null;
+  }
+
+  get shouldShowMap(): boolean {
+    const useProfileAddress = this.senderForm.get('useProfileAddress')?.value;
+    const hasValidAddress = this.currentAddress !== null;
+
+    return (
+      !useProfileAddress || !this.hasUserProfileAddress || !hasValidAddress
+    );
+  }
+
+  get showProfileAddressToggle(): boolean {
+    return this.hasUserProfileAddress;
+  }
+
+  formatPhoneNumber(phone: string): string {
+    if (!phone) return '';
+    // Format Kenyan phone numbers
+    if (phone.startsWith('+254')) {
+      return phone.replace(/(\+254)(\d{1})(\d{4})(\d{4})/, '$1 $2 $3 $4');
+    } else if (phone.startsWith('0')) {
+      return phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+    }
+    return phone;
   }
 }

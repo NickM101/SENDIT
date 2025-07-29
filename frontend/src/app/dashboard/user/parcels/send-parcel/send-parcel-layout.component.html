@@ -1,24 +1,35 @@
 <!-- src/app/dashboard/user/parcels/send-parcel/send-parcel-layout/send-parcel-layout.component.html -->
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
     <div class="mb-8">
-
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a routerLink="/dashboard/user"
+                        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition-colors">
+                        <lucide-icon name="home" class="w-4 h-4 mr-2"></lucide-icon>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <lucide-icon name="chevron-right" class="w-4 h-4 text-gray-400 mx-1"></lucide-icon>
+                        <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400">Send Parcel</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
 
         <!-- Page Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Send a Parcel</h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-2">Complete the steps below to send your package safely
-                    and securely</p>
+                    across Kenya</p>
             </div>
 
             <div class="flex items-center space-x-3">
-                <button type="button"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <lucide-icon name="save" class="w-4 h-4 mr-2"></lucide-icon>
-                    Save Draft
-                </button>
-
                 <button type="button"
                     class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <lucide-icon name="help-circle" class="w-4 h-4 mr-2"></lucide-icon>
@@ -122,22 +133,43 @@
                                     <lucide-icon name="check-circle"
                                         class="w-10 h-10 text-green-600 dark:text-green-400"></lucide-icon>
                                 </div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Order Completed
-                                    Successfully!</h3>
-                                <p class="text-gray-600 dark:text-gray-400 mb-4">Your package has been scheduled for
-                                    pickup.</p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                                    Order Completed Successfully! 🎉
+                                </h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                    Your package has been scheduled for pickup and is now being processed.
+                                </p>
 
                                 <div
-                                    class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto mb-6">
-                                    <p class="text-sm text-green-800 dark:text-green-200 mb-2">Tracking Number:</p>
-                                    <p class="text-lg font-mono font-bold text-green-900 dark:text-green-100">{{
-                                        generatedTrackingNumber }}</p>
-                                    <p class="text-xs text-green-600 dark:text-green-400 mt-2">Save this number to track
-                                        your package</p>
+                                    class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 max-w-md mx-auto mb-8">
+                                    <div class="flex items-center justify-center space-x-2 mb-3">
+                                        <lucide-icon name="package"
+                                            class="w-5 h-5 text-green-600 dark:text-green-400"></lucide-icon>
+                                        <p class="text-sm font-medium text-green-800 dark:text-green-200">Tracking
+                                            Number</p>
+                                    </div>
+                                    <p class="text-2xl font-mono font-bold text-green-900 dark:text-green-100 mb-2">
+                                        {{ generatedTrackingNumber }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">
+                                        Save this number to track your package anywhere, anytime
+                                    </p>
+                                </div>
+
+                                <!-- API Data Preview -->
+                                <div
+                                    class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 max-w-2xl mx-auto mb-8">
+                                    <h4
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                        <lucide-icon name="code" class="w-4 h-4 mr-2"></lucide-icon>
+                                        API Data Preview
+                                    </h4>
+                                    <pre
+                                        class="text-xs text-gray-600 dark:text-gray-400 overflow-x-auto">{{ completeOrderData | json }}</pre>
                                 </div>
 
                                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                                    <button type="button"
+                                    <button type="button" (click)="navigateToTrackParcel()"
                                         class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
                                         <lucide-icon name="search" class="w-4 h-4 mr-2"></lucide-icon>
                                         Track Package
@@ -147,7 +179,7 @@
                                         <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
                                         Send Another Package
                                     </button>
-                                    <button type="button"
+                                    <button type="button" (click)="downloadReceipt()"
                                         class="inline-flex items-center px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                         <lucide-icon name="download" class="w-4 h-4 mr-2"></lucide-icon>
                                         Download Receipt
@@ -220,41 +252,54 @@
                 </div>
 
                 <div class="space-y-3">
+                    <!-- Base Rate -->
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Base Rate:</span>
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">$15.00</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ formatCurrency(750)
+                            }}</span>
                     </div>
 
-                    <div class="flex justify-between items-center" *ngIf="parcelData?.weight">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Weight ({{ parcelData?.weight }} {{
-                            parcelData?.weightUnit }}):</span>
+                    <!-- Weight Surcharge -->
+                    <div class="flex justify-between items-center" [class.opacity-50]="!parcelData?.weight">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            Weight <span *ngIf="parcelData?.weight">({{ parcelData?.weight }} {{ parcelData?.weightUnit
+                                }})</span>:
+                        </span>
                         <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            +${{ getWeightSurcharge() }}
+                            {{ parcelData?.weight ? formatCurrency(getWeightSurcharge()) : formatCurrency(0) }}
                         </span>
                     </div>
 
+                    <!-- Delivery Speed Surcharge -->
                     <div class="flex justify-between items-center"
-                        *ngIf="deliveryData?.deliveryType && deliveryData?.deliveryType !== 'STANDARD'">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ deliveryData?.deliveryType | titlecase
-                            }} Service:</span>
+                        [class.opacity-50]="!deliveryData?.deliveryType || deliveryData?.deliveryType === 'STANDARD'">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            Service <span
+                                *ngIf="deliveryData?.deliveryType && deliveryData?.deliveryType !== 'STANDARD'">({{
+                                deliveryData?.deliveryType | titlecase }})</span>:
+                        </span>
                         <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            +{{ getDeliverySpeedSurcharge() }}%
+                            {{ getDeliverySpeedSurcharge() > 0 ? '+' + getDeliverySpeedSurcharge() + '%' :
+                            formatCurrency(0) }}
                         </span>
                     </div>
 
+                    <!-- Insurance -->
                     <div class="flex justify-between items-center"
-                        *ngIf="parcelData?.insuranceCoverage && parcelData?.insuranceCoverage !== 'NO_INSURANCE'">
+                        [class.opacity-50]="!parcelData?.insuranceCoverage || parcelData?.insuranceCoverage === 'NO_INSURANCE'">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Insurance:</span>
                         <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            +${{ getInsuranceCost() }}
+                            {{ parcelData?.insuranceCoverage && parcelData?.insuranceCoverage !== 'NO_INSURANCE' ?
+                            formatCurrency(getInsuranceCost()) : formatCurrency(0) }}
                         </span>
                     </div>
 
+                    <!-- Total -->
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Estimated Total:</span>
                             <span class="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                ${{ getTotalEstimate() }}
+                                {{ formatCurrency(getTotalEstimate()) }}
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -262,6 +307,48 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Kenyan Currency Note -->
+                <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                    <div class="flex items-start">
+                        <lucide-icon name="info"
+                            class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2 mt-0.5 flex-shrink-0"></lucide-icon>
+                        <div class="text-xs text-blue-700 dark:text-blue-300">
+                            <p class="font-medium mb-1">Pricing in Kenyan Shillings</p>
+                            <p>All prices are in KES and include applicable taxes. Delivery within Kenya only.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Help -->
+            <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-4">
+                <div class="flex items-center space-x-2 mb-3">
+                    <lucide-icon name="lightbulb" class="w-5 h-5 text-amber-600 dark:text-amber-400"></lucide-icon>
+                    <h4 class="text-sm font-medium text-amber-800 dark:text-amber-200">Quick Tips</h4>
+                </div>
+                <ul class="text-xs text-amber-700 dark:text-amber-300 space-y-1">
+                    <li>• Ensure accurate package weight and dimensions</li>
+                    <li>• Provide complete Kenyan addresses</li>
+                    <li>• Consider insurance for valuable items</li>
+                    <li>• Express delivery available for major cities</li>
+                </ul>
+            </div>
+
+            <!-- Support Contact -->
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex items-center space-x-2 mb-3">
+                    <lucide-icon name="headphones" class="w-5 h-5 text-gray-600 dark:text-gray-400"></lucide-icon>
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">Need Help?</h4>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                    Our customer support team is here to assist you with your shipment.
+                </p>
+                <button type="button"
+                    class="w-full inline-flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+                    <lucide-icon name="message-circle" class="w-4 h-4 mr-2"></lucide-icon>
+                    Contact Support
+                </button>
             </div>
         </div>
     </div>

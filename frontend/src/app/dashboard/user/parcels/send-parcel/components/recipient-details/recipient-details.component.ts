@@ -9,24 +9,24 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import {
+  takeUntil,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+} from 'rxjs/operators';
 import { SharedModule } from '../../../../../../shared/shared.module';
-import { MapAddressPickerComponent } from '../sender-details/map-address-picker/map-address-picker.component';
+import { AddressData, MapAddressPickerComponent } from '../sender-details/map-address-picker/map-address-picker.component';
+import { KenyanCounty } from '../../../../../../core/models/pickup-point.model';
 
-export interface AddressData {
-  state: string;
-  zipCode: string;
-  street: string;
-  area: string;
-  city: string;
-  county: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  formattedAddress: string;
-}
 
 export interface RecipientData {
   fullName: string;
@@ -49,56 +49,6 @@ export interface SavedRecipient {
   lastUsed: Date;
 }
 
-// Kenyan Counties data (reusing from sender component)
-const KENYAN_COUNTIES = [
-  'Baringo',
-  'Bomet',
-  'Bungoma',
-  'Busia',
-  'Elgeyo-Marakwet',
-  'Embu',
-  'Garissa',
-  'Homa Bay',
-  'Isiolo',
-  'Kajiado',
-  'Kakamega',
-  'Kericho',
-  'Kiambu',
-  'Kilifi',
-  'Kirinyaga',
-  'Kisii',
-  'Kisumu',
-  'Kitui',
-  'Kwale',
-  'Laikipia',
-  'Lamu',
-  'Machakos',
-  'Makueni',
-  'Mandera',
-  'Marsabit',
-  'Meru',
-  'Migori',
-  'Mombasa',
-  'Muranga',
-  'Nairobi',
-  'Nakuru',
-  'Nandi',
-  'Narok',
-  'Nyamira',
-  'Nyandarua',
-  'Nyeri',
-  'Samburu',
-  'Siaya',
-  'Taita-Taveta',
-  'Tana River',
-  'Tharaka-Nithi',
-  'Trans Nzoia',
-  'Turkana',
-  'Uasin Gishu',
-  'Vihiga',
-  'Wajir',
-  'West Pokot',
-];
 
 @Component({
   selector: 'app-recipient-details',
@@ -114,13 +64,17 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   recipientForm!: FormGroup;
+  recipientSearchControl = new FormControl('');
   isLoading = false;
-  showAddressMap = false;
-  showSavedRecipients = false;
   selectedRecipientId: string | null = null;
-  kenyanCounties = KENYAN_COUNTIES;
+  kenyanCounties = KenyanCounty;
 
-  // Mock saved recipients data (updated for Kenya)
+  // Search and filter
+  filteredRecipients: SavedRecipient[] = [];
+  showRecipientDropdown = false;
+  isNewRecipient = true;
+
+  // Mock saved recipients data
   savedRecipients: SavedRecipient[] = [
     {
       id: '1',
@@ -132,9 +86,9 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
         street: 'Moi Avenue',
         area: 'CBD',
         city: 'Nairobi',
-        county: 'Nairobi',
-        state: 'Nairobi',
+        county: KenyanCounty.NAIROBI,
         zipCode: '00100',
+        postalCode: '00100',
         country: 'Kenya',
         latitude: -1.2864,
         longitude: 36.8172,
@@ -152,8 +106,8 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
         street: 'Tom Mboya Street',
         area: 'City Center',
         city: 'Nairobi',
-        county: 'Nairobi',
-        state: 'Nairobi',
+        county: KenyanCounty.NAIROBI,
+        postalCode: '00200',
         zipCode: '00200',
         country: 'Kenya',
         latitude: -1.2833,
@@ -171,15 +125,35 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
         street: 'Kenyatta Avenue',
         area: 'Westlands',
         city: 'Nairobi',
-        county: 'Nairobi',
-        state: 'Nairobi',
-        zipCode: '00600',
+        county: KenyanCounty.NAIROBI,
+        postalCode: '00600',
+        zipCode: '00200',
         country: 'Kenya',
         latitude: -1.263,
         longitude: 36.8063,
         formattedAddress: 'Kenyatta Avenue, Westlands, Nairobi, Kenya',
       },
       lastUsed: new Date('2025-07-10'),
+    },
+    {
+      id: '4',
+      name: 'David Wilson',
+      email: 'david.wilson@email.com',
+      phone: '+254755111222',
+      company: 'Wilson Industries',
+      address: {
+        street: 'Uhuru Highway',
+        area: 'Kilimani',
+        city: 'Nairobi',
+        county: KenyanCounty.NAIROBI,
+        postalCode: '00800',
+        zipCode: '00800',
+        country: 'Kenya',
+        latitude: -1.303,
+        longitude: 36.807,
+        formattedAddress: 'Uhuru Highway, Kilimani, Nairobi, Kenya',
+      },
+      lastUsed: new Date('2025-07-05'),
     },
   ];
 
@@ -189,6 +163,7 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupFormWatchers();
+    this.setupRecipientSearch();
   }
 
   ngOnDestroy() {
@@ -202,7 +177,7 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       phone: [
         '',
-        [Validators.required, Validators.pattern(/^\+254[17]\d{8}$/)], // Kenyan phone format
+        [Validators.required, Validators.pattern(/^\+254[17]\d{8}$/)],
       ],
       company: [''],
       deliveryAddress: this.fb.group({
@@ -212,6 +187,7 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
         county: ['', Validators.required],
         state: ['', Validators.required],
         zipCode: ['', Validators.required],
+        postalCode: ['', Validators.required],
         country: ['Kenya', Validators.required],
         latitude: [
           null,
@@ -230,147 +206,57 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
   }
 
   private setupFormWatchers() {
-    // Watch for form changes and emit data
     this.recipientForm.valueChanges
       .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe((formData) => {
-        console.log('📝 Recipient form data changed:', formData);
         this.dataChange.emit(formData);
       });
   }
 
-  onAddressMapToggle() {
-    this.showAddressMap = !this.showAddressMap;
-    console.log(
-      '🗺️ Recipient map toggle:',
-      this.showAddressMap ? 'Opening' : 'Closing'
-    );
+  private setupRecipientSearch() {
+    this.recipientSearchControl.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((searchTerm) => {
+        this.filterRecipients(searchTerm || '');
+        this.showRecipientDropdown = !!(searchTerm && searchTerm.length > 0);
 
-    if (this.showAddressMap && this.mapAddressPicker) {
-      // Initialize map after view is rendered
-      setTimeout(() => {
-        this.mapAddressPicker.initializeMap();
-      }, 100);
-    }
-  }
-
-  onAddressSelected(addressData: AddressData) {
-    console.log('📍 Delivery address selected from map:', addressData);
-
-    // Update the form with the selected address
-    this.recipientForm.get('deliveryAddress')?.patchValue({
-      street: addressData.street,
-      area: addressData.area,
-      city: addressData.city,
-      county: addressData.county,
-      state: addressData.state,
-      zipCode: addressData.zipCode,
-      country: addressData.country,
-      latitude: addressData.latitude,
-      longitude: addressData.longitude,
-      formattedAddress: addressData.formattedAddress,
-    });
-
-    // Optionally close the map after selection
-    this.showAddressMap = false;
-
-    console.log('✅ Recipient form updated with selected address');
-    console.log(
-      '📋 Current delivery address form value:',
-      this.recipientForm.get('deliveryAddress')?.value
-    );
-  }
-
-  onValidateForm() {
-    console.log('🔍 Validating recipient form...');
-    console.log('📊 Form valid:', this.recipientForm.valid);
-    console.log('📄 Complete recipient form data:', this.recipientForm.value);
-    console.log('❌ Form errors:', this.getFormErrors());
-
-    if (this.recipientForm.valid) {
-      console.log('✅ Recipient form is valid! Emitting step complete event');
-      console.log('📤 Recipient data being emitted:', this.recipientForm.value);
-      this.stepComplete.emit(this.recipientForm.value);
-    } else {
-      console.log(
-        '❌ Recipient form is invalid. Marking all fields as touched'
-      );
-      this.markFormGroupTouched();
-      console.log('🔍 Detailed recipient validation errors:');
-      this.logDetailedErrors();
-    }
-  }
-
-  private getFormErrors(): any {
-    let formErrors: any = {};
-
-    Object.keys(this.recipientForm.controls).forEach((key) => {
-      const control = this.recipientForm.get(key);
-      if (control && !control.valid && control.touched) {
-        formErrors[key] = control.errors;
-      }
-
-      // Check nested form group (deliveryAddress)
-      if (control instanceof FormGroup) {
-        Object.keys(control.controls).forEach((nestedKey) => {
-          const nestedControl = control.get(nestedKey);
-          if (nestedControl && !nestedControl.valid && nestedControl.touched) {
-            if (!formErrors[key]) formErrors[key] = {};
-            formErrors[key][nestedKey] = nestedControl.errors;
-          }
-        });
-      }
-    });
-
-    return formErrors;
-  }
-
-  private logDetailedErrors() {
-    Object.keys(this.recipientForm.controls).forEach((key) => {
-      const control = this.recipientForm.get(key);
-      if (control && !control.valid) {
-        console.log(`❌ ${key}:`, {
-          value: control.value,
-          errors: control.errors,
-          touched: control.touched,
-          dirty: control.dirty,
-        });
-
-        // Log nested form errors (deliveryAddress)
-        if (control instanceof FormGroup) {
-          Object.keys(control.controls).forEach((nestedKey) => {
-            const nestedControl = control.get(nestedKey);
-            if (nestedControl && !nestedControl.valid) {
-              console.log(`  ❌ ${key}.${nestedKey}:`, {
-                value: nestedControl.value,
-                errors: nestedControl.errors,
-                touched: nestedControl.touched,
-                dirty: nestedControl.dirty,
-              });
-            }
-          });
+        // If search is cleared, reset to new recipient mode
+        if (!searchTerm) {
+          this.clearRecipientForm();
         }
-      }
-    });
+      });
   }
 
-  private markFormGroupTouched() {
-    Object.keys(this.recipientForm.controls).forEach((key) => {
-      const control = this.recipientForm.get(key);
-      control?.markAsTouched();
+  private filterRecipients(searchTerm: string) {
+    if (!searchTerm.trim()) {
+      this.filteredRecipients = [];
+      return;
+    }
 
-      if (control instanceof FormGroup) {
-        Object.keys(control.controls).forEach((nestedKey) => {
-          control.get(nestedKey)?.markAsTouched();
-        });
-      }
-    });
+    const term = searchTerm.toLowerCase();
+    this.filteredRecipients = this.savedRecipients.filter(
+      (recipient) =>
+        recipient.name.toLowerCase().includes(term) ||
+        recipient.email.toLowerCase().includes(term) ||
+        recipient.phone.includes(term) ||
+        (recipient.company && recipient.company.toLowerCase().includes(term))
+    );
   }
 
-  // Saved recipients functionality
-  onUseSavedRecipient(recipient: SavedRecipient) {
-    console.log('👤 Using saved recipient:', recipient);
+  onRecipientSelected(recipient: SavedRecipient) {
     this.selectedRecipientId = recipient.id;
+    this.isNewRecipient = false;
+    this.showRecipientDropdown = false;
+
+    // Set the search control value to the selected recipient's name
+    this.recipientSearchControl.setValue(recipient.name, { emitEvent: false });
+
+    // Fill the form with recipient data
     this.recipientForm.patchValue({
       fullName: recipient.name,
       email: recipient.email,
@@ -378,21 +264,13 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
       company: recipient.company || '',
       deliveryAddress: recipient.address,
     });
-    this.showSavedRecipients = false;
-    console.log('✅ Recipient form updated with saved recipient data');
-  }
-
-  toggleSavedRecipients() {
-    this.showSavedRecipients = !this.showSavedRecipients;
-    console.log(
-      '📚 Saved recipients toggle:',
-      this.showSavedRecipients ? 'Showing' : 'Hiding'
-    );
   }
 
   clearRecipientForm() {
-    console.log('🧹 Clearing recipient form');
     this.selectedRecipientId = null;
+    this.isNewRecipient = true;
+    this.showRecipientDropdown = false;
+
     this.recipientForm.reset({
       fullName: '',
       email: '',
@@ -416,12 +294,41 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  onNewRecipient() {
+    this.clearRecipientForm();
+    this.recipientSearchControl.setValue('', { emitEvent: false });
+  }
+
+  onAddressSelected(addressData: AddressData) {
+    this.recipientForm.get('deliveryAddress')?.patchValue(addressData);
+  }
+
+  onValidateForm() {
+    if (this.recipientForm.valid) {
+      this.stepComplete.emit(this.recipientForm.value);
+    } else {
+      this.markFormGroupTouched();
+    }
+  }
+
+  private markFormGroupTouched() {
+    Object.keys(this.recipientForm.controls).forEach((key) => {
+      const control = this.recipientForm.get(key);
+      control?.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        Object.keys(control.controls).forEach((nestedKey) => {
+          control.get(nestedKey)?.markAsTouched();
+        });
+      }
+    });
+  }
+
   // Helper methods for template
   isFieldInvalid(fieldName: string, nestedField?: string): boolean {
     const field = nestedField
       ? this.recipientForm.get(fieldName)?.get(nestedField)
       : this.recipientForm.get(fieldName);
-
     return !!(field?.invalid && field?.touched);
   }
 
@@ -437,13 +344,9 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
       if (field.errors['pattern']) {
         if (fieldName === 'phone')
           return 'Please enter a valid Kenyan phone number (+254...)';
-        if (nestedField === 'zipCode')
-          return 'Please enter a valid postal code';
       }
       if (field.errors['minlength'])
         return `${this.getFieldLabel(fieldName, nestedField)} is too short`;
-      if (field.errors['min'] || field.errors['max'])
-        return `Invalid ${this.getFieldLabel(fieldName, nestedField)} value`;
     }
     return '';
   }
@@ -465,30 +368,22 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
       longitude: 'Longitude',
       formattedAddress: 'Address',
     };
-
     return labels[nestedField || fieldName] || fieldName;
   }
 
   get isFormValid(): boolean {
-    const isValid = this.recipientForm.valid;
-    console.log('🎯 Recipient form validity check:', isValid);
-    return isValid;
+    return this.recipientForm.valid;
   }
 
   get currentDeliveryAddress(): AddressData | null {
     const address = this.recipientForm.get('deliveryAddress')?.value;
-    const hasCoordinates = address?.latitude && address?.longitude;
-    console.log('🏠 Current delivery address check:', {
-      address,
-      hasCoordinates,
-    });
+    const hasCoordinates =
+      address?.latitude != null && address?.longitude != null;
     return hasCoordinates ? address : null;
   }
 
-  get recentRecipients(): SavedRecipient[] {
-    return this.savedRecipients
-      .sort((a, b) => b.lastUsed.getTime() - a.lastUsed.getTime())
-      .slice(0, 3);
+  get shouldShowMap(): boolean {
+    return !this.currentDeliveryAddress || this.isNewRecipient;
   }
 
   formatLastUsed(date: Date): string {
@@ -502,5 +397,9 @@ export class RecipientDetailsComponent implements OnInit, OnDestroy {
     if (diffInDays < 7) return `${diffInDays} days ago`;
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
     return date.toLocaleDateString();
+  }
+
+  trackByRecipient(index: number, recipient: SavedRecipient): string {
+    return recipient.id;
   }
 }
