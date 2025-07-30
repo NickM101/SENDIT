@@ -193,11 +193,13 @@ export class AuthService {
   public navigateByRole(role: UserRole): void {
     switch (role) {
       case UserRole.ADMIN:
-        this.router.navigate(['/dashboard/admin']);
+        this.router.navigate(['/dashboard/admin/users']);
         break;
       case UserRole.USER:
+        this.router.navigate(['/dashboard/user/my-parcels']);
+        break;
       case UserRole.COURIER:
-        this.router.navigate(['/dashboard/user']);
+        this.router.navigate(['/dashboard/courier/track-parcel']);
         break;
       default:
         this.router.navigate(['/landing-page']);

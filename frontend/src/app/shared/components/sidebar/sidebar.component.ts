@@ -115,12 +115,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
         //   link: '/admin/couriers',
         //   roles: [UserRole.ADMIN],
         // },
-        {
-          title: 'Reports',
-          icon: 'bar-chart-3',
-          link: '/admin/reports',
-          roles: [UserRole.ADMIN],
-        },
+        // {
+        //   title: 'Reports',
+        //   icon: 'bar-chart-3',
+        //   link: '/admin/reports',
+        //   roles: [UserRole.ADMIN],
+        // },
       ],
     },
     {
@@ -129,12 +129,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       link: this.generateDynamicLink('/dashboard', 'pickup-point'),
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
-    {
-      title: 'Payments',
-      icon: 'credit-card',
-      link: '/payments',
-      roles: [UserRole.ADMIN, UserRole.USER],
-    },
+    // {
+    //   title: 'Payments',
+    //   icon: 'credit-card',
+    //   link: '/payments',
+    //   roles: [UserRole.ADMIN, UserRole.USER],
+    // },
     {
       title: 'Profile',
       icon: 'user',
@@ -147,12 +147,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       link: this.generateDynamicLink('/dashboard', 'settings'),
       roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
     },
-    {
-      title: 'Help & Support',
-      icon: 'help-circle',
-      link: '/help',
-      roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
-    },
+    // {
+    //   title: 'Help & Support',
+    //   icon: 'help-circle',
+    //   link: '/help',
+    //   roles: [UserRole.ADMIN, UserRole.USER, UserRole.COURIER],
+    // },
   ];
 
   constructor(private authService: AuthService, private router: Router) {

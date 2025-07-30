@@ -57,7 +57,7 @@
                 <!-- Auth Section -->
                 <div class="hidden md:flex items-center space-x-4">
                     <!-- Unauthenticated State -->
-                    <div *ngIf="!isAuthenticated$" class="flex items-center space-x-4">
+                    <div *ngIf="!(isAuthenticated$ | async)" class="flex items-center space-x-4">
                         <button (click)="signIn()"
                             class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center space-x-1">
                             <lucide-icon name="log-in" class="w-4 h-4"></lucide-icon>
@@ -70,7 +70,7 @@
                         </button>
                     </div>
                     <!-- Authenticated State -->
-                    <div *ngIf="isAuthenticated$" class="relative">
+                    <div *ngIf="isAuthenticated$ | async" class="relative">
                         <button (click)="toggleDropdown()"
                             class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <img [src]="user?.avatarUrl" [alt]="user?.name"
