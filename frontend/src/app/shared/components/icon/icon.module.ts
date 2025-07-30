@@ -182,7 +182,9 @@ import {
   FlipHorizontal,
   FlipVertical,
   PackageMinus,
-  Route
+  Route,
+  Minus,
+  LogIn,
 } from 'lucide-angular';
 
 const lucideIcons = {
@@ -366,7 +368,9 @@ const lucideIcons = {
   FlipHorizontal,
   FlipVertical,
   PackageMinus,
-  Route
+  Route,
+  Minus,
+  LogIn,
 };
 
 @NgModule({

@@ -39,7 +39,7 @@ export class AuthService {
       const parsedUser = JSON.parse(user);
       this.currentUserSubject.next(parsedUser);
     }
-    this.isAuthenticated$ = this.token$.pipe(map(token => !!token));
+    this.isAuthenticated$ = this.token$.pipe(map((token) => !!token));
   }
 
   public get currentUserValue(): User | null {
@@ -159,7 +159,7 @@ export class AuthService {
     localStorage.removeItem('current_user');
     this.tokenSubject.next(null);
     this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/']);
   }
 
   refreshToken(): Observable<{ token: string }> {

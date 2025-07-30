@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
+import { Observable, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 // Define interfaces for type safety
 interface PricingTier {
@@ -21,7 +23,7 @@ interface Feature {
 interface User {
   name: string;
   email: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
   role: string;
 }
 
@@ -69,19 +71,20 @@ interface Service {
 })
 export class LandingPageComponent implements OnInit {
   // Authentication state
-  isAuthenticated = false;
   isDropdownOpen = false;
   isMobileMenuOpen = false;
   isDarkMode = false;
 
-  // User data
-  user: User = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-    role: 'Premium User',
-  };
+  user: User | null = null;
+
+  public get isAuthenticated$(): Observable<boolean> {
+    return this.authService.isAuthenticated$;
+  }
+
+  public get currentUser$(): Observable<User | null> {
+    // Use the User type from auth.models if imported
+    return this.authService.currentUser$;
+  }
 
   // Quote form data
   quoteForm: QuoteForm = {
@@ -104,28 +107,28 @@ export class LandingPageComponent implements OnInit {
     {
       name: 'Light',
       weight: '< 1kg',
-      price: 15,
+      price: 150,
       description: 'Perfect for documents and small items',
       color: 'from-blue-500 to-blue-600',
     },
     {
       name: 'Medium',
       weight: '1-5kg',
-      price: 25,
+      price: 250,
       description: 'Great for books, electronics, and gifts',
       color: 'from-indigo-500 to-indigo-600',
     },
     {
       name: 'Heavy',
       weight: '5-20kg',
-      price: 45,
+      price: 450,
       description: 'Ideal for larger packages and multiple items',
       color: 'from-purple-500 to-purple-600',
     },
     {
       name: 'Extra Heavy',
       weight: '20kg+',
-      price: 75,
+      price: 750,
       description: 'For bulk shipments and heavy goods',
       color: 'from-pink-500 to-pink-600',
     },
@@ -191,28 +194,56 @@ export class LandingPageComponent implements OnInit {
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face',
     },
   ];
+  private authSubscription: Subscription = new Subscription(); // Subscription for auth observables
 
-  constructor() {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
-    // Initialize component
-    this.checkAuthenticationStatus();
+    this.subscribeToAuthState();
     this.loadUserPreferences();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscriptions to avoid memory leaks
+    this.authSubscription.unsubscribe();
+  }
+
+  // Subscribe to authentication state changes from AuthService
+  private subscribeToAuthState(): void {
+    // Subscribe to isAuthenticated$ to update UI based on login status
+    this.authSubscription.add(
+      this.authService.isAuthenticated$.subscribe((isAuthenticated) => {
+        // The component's isAuthenticated logic is now handled by the observable
+        // You can add any UI specific logic here if needed, but typically the template uses the async pipe
+        // console.log('Auth Status Changed:', isAuthenticated);
+      })
+    );
+
+    // Subscribe to currentUser$ to get user details
+    this.authSubscription.add(
+      this.authService.currentUser$.subscribe((user) => {
+        this.user = user; // Update the local user reference
+        // console.log('Current User Updated:', user);
+        // You can update other parts of the component state based on the user if necessary
+      })
+    );
   }
 
   // Authentication methods
   signIn(): void {
-    this.isAuthenticated = true;
-    this.isDropdownOpen = false;
-    // In a real app, this would handle actual authentication
-    console.log('User signed in');
+     console.log('Navigating to login page...');
+     this.router.navigate(['/auth/login']); 
+     this.isDropdownOpen = false;
   }
 
   signOut(): void {
-    this.isAuthenticated = false;
-    this.isDropdownOpen = false;
-    // In a real app, this would clear authentication tokens
-    console.log('User signed out');
+    this.authService.logout(); 
+    this.isDropdownOpen = false; 
+    console.log('User signed out via AuthService');
   }
 
   // UI toggle methods
@@ -350,8 +381,8 @@ export class LandingPageComponent implements OnInit {
   // Utility methods
   private checkAuthenticationStatus(): void {
     // In a real app, this would check localStorage or a service
-    const token = localStorage.getItem('auth_token');
-    this.isAuthenticated = !!token;
+    // No assignment needed; isAuthenticated$ is provided by AuthService
+    // Optionally, you could trigger a refresh or validation here if needed
   }
 
   private loadUserPreferences(): void {

@@ -1,0 +1,273 @@
+<!-- src/app/admin/pages/parcels/components/parcel-table/parcel-table.component.html -->
+<div class="bg-white dark:bg-gray-800">
+    <!-- Bulk Actions Bar -->
+    <div *ngIf="selectedParcels.size > 0"
+        class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 px-6 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">
+                    {{ selectedParcels.size }} parcel(s) selected
+                </span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <select #bulkSelect class="text-sm border-0 bg-transparent text-blue-700 dark:text-blue-300 focus:ring-0"
+                    (change)="onBulkAction(bulkSelect.value); bulkSelect.value = ''">
+                    <option value="">Bulk Actions</option>
+                    <option *ngFor="let action of bulkActions" [value]="action.value">
+                        {{ action.label }}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th scope="col" class="relative w-12 px-6 sm:w-16 sm:px-8">
+                        <input type="checkbox" [formControl]="selectAll" [attr.indeterminate]="isIndeterminate"
+                        (change)="toggleSelectAll()"
+                        class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 dark:border-gray-600
+                        text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Tracking Number
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Sender / Recipient
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Status
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Package Details
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Amount
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Created
+                    </th>
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">Actions</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <!-- Loading State -->
+                <tr *ngIf="loading">
+                    <td colspan="8" class="px-6 py-12 text-center">
+                        <div class="flex items-center justify-center">
+                            <lucide-icon name="loader-2" class="h-6 w-6 animate-spin text-gray-400 mr-2">
+                            </lucide-icon>
+                            <span class="text-gray-500 dark:text-gray-400">Loading parcels...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr *ngIf="!loading && parcels.length === 0">
+                    <td colspan="8" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center">
+                            <lucide-icon name="package-x" class="h-12 w-12 text-gray-400 mb-4">
+                            </lucide-icon>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">No parcels found</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Try adjusting your search or filter
+                                criteria.</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Parcel Rows -->
+                <!-- Ensure trackBy is passed correctly -->
+                <tr *ngFor="let parcel of parcels; trackBy: trackByParcelId" [class.bg-blue-50]="isSelected(parcel.id)"
+                    [class.dark:bg-blue-900]="isSelected(parcel.id)"
+                    class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <!-- Selection Checkbox -->
+                    <td class="relative w-12 px-6 sm:w-16 sm:px-8">
+                        <input type="checkbox" [checked]="isSelected(parcel.id)"
+                            (change)="toggleSelectParcel(parcel.id)"
+                            class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
+                    </td>
+
+                    <!-- Tracking Number -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ parcel.trackingNumber }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Sender / Recipient -->
+                    <td class="px-6 py-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center text-sm">
+                                <lucide-icon name="arrow-up" class="h-3 w-3 text-gray-400 mr-1"></lucide-icon>
+                                <span class="text-gray-900 dark:text-white font-medium">{{ parcel.sender.name }}</span>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <lucide-icon name="arrow-down" class="h-3 w-3 text-gray-400 mr-1"></lucide-icon>
+                                <span class="text-gray-600 dark:text-gray-300">{{ parcel.recipient.name }}</span>
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ parcel.recipient.address.city }}, {{ parcel.recipient.address.state }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col space-y-1">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                [class]="getStatusConfig(parcel.status).color">
+                                <lucide-icon [name]="getStatusConfig(parcel.status).icon" class="h-3 w-3 mr-1">
+                                </lucide-icon>
+                                {{ getStatusConfig(parcel.status).label }}
+                            </span>
+                            <div *ngIf="parcel.estimatedDelivery" class="text-xs text-gray-500 dark:text-gray-400">
+                                ETA: {{ formatDate(parcel.estimatedDelivery) }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Package Details -->
+                    <td class="px-6 py-4">
+                        <div class="space-y-1">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ parcel.packageType | titlecase }}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ parcel.weight }}{{ parcel.weightUnit }} • {{ parcel.deliveryType | titlecase }}
+                            </div>
+                            <div *ngIf="parcel.dimensions" class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ parcel.dimensions.length }}×{{ parcel.dimensions.width }}×{{ parcel.dimensions.height
+                                }} {{
+                                parcel.dimensions.unit }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Amount -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                            {{ formatCurrency(parcel.totalPrice, parcel.currency) }}
+                        </div>
+                    </td>
+
+                    <!-- Created Date -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900 dark:text-white">
+                            {{ formatDate(parcel.createdAt) }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ formatDateTime(parcel.createdAt) }}
+                        </div>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-2">
+                            <div class="relative inline-block text-left" data-hs-dropdown>
+                                <button type="button"
+                                    class="inline-flex items-center p-2 text-gray-400 bg-transparent rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
+                                    data-hs-dropdown-toggle>
+                                    <lucide-icon name="more-horizontal" class="h-4 w-4"></lucide-icon>
+                                </button>
+                                <div class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[200px] bg-white dark:bg-gray-800 shadow-md rounded-lg p-1 border border-gray-200 dark:border-gray-700"
+                                    data-hs-dropdown-menu>
+                                    <ng-container *ngFor="let action of getParcelActions(parcel)">
+                                        <button type="button" (click)="onParcelAction(parcel, action.action)"
+                                            class="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            [class.text-red-700]="action.color === 'danger'"
+                                            [class.dark:text-red-400]="action.color === 'danger'"
+                                            [class.text-blue-700]="action.color === 'primary'"
+                                            [class.dark:text-blue-400]="action.color === 'primary'">
+                                            <lucide-icon [name]="action.icon" class="h-4 w-4 mr-2">
+                                            </lucide-icon>
+                                            {{ action.label }}
+                                        </button>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div> <!-- End of overflow-x-auto -->
+
+    <!-- Pagination -->
+    <div
+        class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            <button type="button" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <button type="button" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div class="flex items-center space-x-4">
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    Showing
+                    <span class="font-medium">{{ startRecord }}</span>
+                    to
+                    <span class="font-medium">{{ endRecord }}</span>
+                    of
+                    <span class="font-medium">{{ totalRecords }}</span>
+                    results
+                </p>
+                <!-- <div class="flex items-center space-x-2">
+                    <label class="text-sm text-gray-700 dark:text-gray-300">Show:</label>
+                    <select [value]="pageSize" (change)="onPageSizeChange(+$event.target.value)"
+                        class="border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        <option *ngFor="let size of pageSizeOptions" [value]="size">
+                            {{ size }}
+                        </option>
+                    </select>
+                </div> -->
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <!-- Previous Button -->
+                    <button type="button" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                    </button>
+
+                    <!-- Page Numbers -->
+                    <ng-container *ngFor="let page of getPaginationPages()">
+                        <button type="button" (click)="onPageChange(page)" [class.bg-blue-50]="page === currentPage"
+                            [class.dark:bg-blue-900]="page === currentPage"
+                            [class.border-blue-500]="page === currentPage"
+                            [class.dark:border-blue-600]="page === currentPage"
+                            [class.text-blue-600]="page === currentPage"
+                            [class.dark:text-blue-400]="page === currentPage" [class.z-10]="page === currentPage"
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            {{ page }}
+                        </button>
+                    </ng-container>
+
+                    <!-- Next Button -->
+                    <button type="button" (click)="onPageChange(currentPage + 1)"
+                        [disabled]="currentPage === totalPages"
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </div> <!-- End of Pagination -->
+</div> <!-- End of main container -->

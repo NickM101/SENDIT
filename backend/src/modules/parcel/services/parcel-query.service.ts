@@ -94,11 +94,14 @@ export class ParcelQueryService {
     status?: string;
     startDate?: string;
     endDate?: string;
-  }) {
+  }): Promise<{ data: Parcel[]; pagination: any }> {
+    // Specify return type
     try {
       const page = query.page || 1;
       const limit = query.limit || 10;
       const skip = (page - 1) * limit;
+
+      // --- Build Prisma Where Clause ---
       const where: Prisma.ParcelWhereInput = {
         deletedAt: null,
         status: {
@@ -107,6 +110,7 @@ export class ParcelQueryService {
             : [ParcelStatus.PAYMENT_CONFIRMED, ParcelStatus.PROCESSING],
         },
       };
+
       // Add date filters if provided
       if (query.startDate || query.endDate) {
         where.createdAt = {};
@@ -117,60 +121,92 @@ export class ParcelQueryService {
           where.createdAt.lte = new Date(query.endDate);
         }
       }
+      // --- End Build Where Clause ---
+
+      // --- Prisma Query with Required Includes ---
       const [parcels, total] = await Promise.all([
         this.prisma.parcel.findMany({
           where,
           skip,
           take: limit,
+          // Include all necessary relations and fields for the Parcel interface
           include: {
-            sender: {
-              select: { id: true, name: true, email: true, phone: true },
-            },
+            // Full recipient details (id, name, email, phone)
             recipient: {
               select: { id: true, name: true, email: true, phone: true },
             },
-            senderAddress: {
-              select: {
-                street: true,
-                area: true,
-                city: true,
-                county: true,
-                latitude: true,
-                longitude: true,
-              },
+            sender: {
+              select: { id: true, name: true, email: true, phone: true },
             },
-            recipientAddress: {
-              select: {
-                street: true,
-                area: true,
-                city: true,
-                county: true,
-                latitude: true,
-                longitude: true,
-              },
-            },
+            recipientAddress: true,
+            senderAddress: true,
             dimensions: true,
           },
           orderBy: { createdAt: 'desc' },
         }),
         this.prisma.parcel.count({ where }),
       ]);
-      // Transform data for frontend
-      const transformedParcels = parcels.map((parcel) => ({
-        id: parcel.id,
-        trackingNumber: parcel.trackingNumber,
-        senderName: parcel.sender.name,
-        recipientName: parcel.recipient?.name,
-        weight: parcel.weight,
-        weightUnit: parcel.weightUnit,
-        status: parcel.status,
-        createdAt: parcel.createdAt,
-        pickupAddress: parcel.senderAddress,
-        deliveryAddress: parcel.recipientAddress,
-        estimatedDelivery: parcel.estimatedDelivery,
-        packageType: parcel.packageType,
-        totalPrice: parcel.totalPrice,
-      }));
+      // --- End Prisma Query ---
+
+      // --- Transform Prisma Result to Match Parcel Interface ---
+      const transformedParcels: any[] = parcels.map((parcel) => {
+        const recipientData = parcel.recipient ?? {
+          id: '',
+          name: 'Unknown',
+          email: '',
+          phone: '',
+        };
+
+        return {
+          id: parcel.id,
+          trackingNumber: parcel.trackingNumber,
+          description: parcel.description ?? '', // Provide default if null/undefined
+          status: parcel.status,
+          totalPrice: parcel.totalPrice,
+          currency: parcel.currency,
+          weight: parcel.weight ?? undefined, // Map null to undefined if preferred
+          weightUnit: parcel.weightUnit ?? undefined,
+          createdAt: parcel.createdAt,
+          estimatedDelivery: parcel.estimatedDelivery ?? undefined,
+          actualDelivery: parcel.actualDelivery ?? undefined,
+          // --- Recipient Object ---
+          recipient: {
+            id: recipientData.id,
+            name: recipientData.name,
+            email: recipientData.email,
+            phone: recipientData.phone,
+            // --- Recipient Address Object ---
+            address: {
+              street: parcel.recipientAddress?.street ?? '',
+              city: parcel.recipientAddress?.city ?? '',
+              state: parcel.recipientAddress?.state ?? '', // Assuming 'state' exists in Address model
+              country: parcel.recipientAddress?.country ?? 'Kenya', // Default from schema
+              // Note: The interface asks for 'state' and 'country', but Prisma schema has 'county' and 'country'.
+              // Using 'state' as it's in the interface. If 'county' is needed, adjust accordingly.
+            },
+          },
+          // --- Sender Object ---
+          sender: {
+            id: parcel.sender.id,
+            name: parcel.sender.name,
+            email: parcel.sender.email,
+            phone: parcel.sender.phone,
+          },
+          packageType: parcel.packageType,
+          deliveryType: parcel.deliveryType,
+          // --- Dimensions Object ---
+          dimensions: parcel.dimensions
+            ? {
+                length: parcel.dimensions.length,
+                width: parcel.dimensions.width,
+                height: parcel.dimensions.height,
+                unit: parcel.dimensions.unit,
+              }
+            : undefined, // Map null to undefined if dimensions don't exist
+        };
+      });
+      // --- End Transformation ---
+
       return {
         data: transformedParcels,
         pagination: {
@@ -181,13 +217,12 @@ export class ParcelQueryService {
         },
       };
     } catch (error) {
-      this.logger.error('Failed to get parcels for assignment', error);
+      this.logger.error('Failed to get parcels for assignment', error.stack); // Log stack trace
       throw new BadRequestException(
         'Failed to retrieve parcels for assignment',
       );
     }
   }
-
 
   async getParcelStats(userId: string): Promise<ParcelStatsDto> {
     try {
@@ -223,7 +258,10 @@ export class ParcelQueryService {
       let monthlyGrowth = 0;
       if (totalSentLastMonth > 0) {
         monthlyGrowth = parseFloat(
-          (((totalSent - totalSentLastMonth) / totalSentLastMonth) * 100).toFixed(2)
+          (
+            ((totalSent - totalSentLastMonth) / totalSentLastMonth) *
+            100
+          ).toFixed(2),
         );
       } else if (totalSent > 0 && totalSentLastMonth === 0) {
         // If user sent parcels this month but none last month, growth is effectively 100% or more
@@ -256,7 +294,7 @@ export class ParcelQueryService {
 
       const pending = await this.prisma.parcel.count({
         where: {
-         OR: [
+          OR: [
             // Parcels sent by the user that are pending
             {
               senderId: userId,
@@ -264,12 +302,12 @@ export class ParcelQueryService {
               deletedAt: null,
             },
             // Parcels received by the user that are pending (e.g., OUT_FOR_DELIVERY)
-             {
+            {
               recipientId: userId,
               status: { in: pendingStatuses },
               deletedAt: null,
-            }
-          ]
+            },
+          ],
         },
       });
 
@@ -310,7 +348,10 @@ export class ParcelQueryService {
         monthlyGrowth,
       };
     } catch (error) {
-      this.logger.error(`Failed to get parcel stats for user ${userId}`, error.stack);
+      this.logger.error(
+        `Failed to get parcel stats for user ${userId}`,
+        error.stack,
+      );
       // Depending on your error handling strategy, you might throw a specific exception
       // or return default stats. Throwing is generally better for APIs.
       throw error; // Or throw new InternalServerErrorException('Failed to retrieve stats');

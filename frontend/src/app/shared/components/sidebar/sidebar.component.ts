@@ -100,7 +100,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         {
           title: 'All Parcels',
           icon: 'package',
-          link: '/admin/parcels',
+          link: '/dashboard/admin/parcels',
           roles: [UserRole.ADMIN],
         },
         {

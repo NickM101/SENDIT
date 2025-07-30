@@ -1,0 +1,67 @@
+<!-- src/app/admin/pages/parcels/parcels.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    Parcel Management
+                </h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Manage and monitor all parcels in the system
+                </p>
+            </div>
+
+            <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+                <!-- Refresh Button -->
+                <button type="button" (click)="onRefresh()"
+                    class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    [disabled]="loading">
+                    <lucide-icon name="refresh-cw" [class.animate-spin]="loading" class="h-4 w-4 mr-2">
+                    </lucide-icon>
+                    Refresh
+                </button>
+
+                <!-- Export Button -->
+                <button type="button"
+                    class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="download" class="h-4 w-4 mr-2"></lucide-icon>
+                    Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <app-parcel-stats [stats]="stats" class="mb-8">
+    </app-parcel-stats>
+
+    <!-- Main Content -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <!-- Filters -->
+        <div class="border-b border-gray-200 dark:border-gray-700 p-6">
+            <app-parcel-filters [filters]="filters" [searchForm]="searchForm" (filtersChange)="onFiltersChange($event)"
+                (clearFilters)="onClearFilters()">
+            </app-parcel-filters>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-hidden">
+            <app-parcel-table [parcels]="parcels" [loading]="loading" [totalRecords]="totalRecords"
+                [currentPage]="currentPage" [pageSize]="pageSize" (pageChange)="onPageChange($event)"
+                (pageSizeChange)="onPageSizeChange($event)" (viewParcel)="onViewParcel($event)"
+                (assignCourier)="onAssignCourier($event)" (updateStatus)="onUpdateStatus($event.parcel, $event.status)"
+                (deleteParcel)="onDeleteParcel($event)" (bulkAction)="onBulkAction($event.action, $event.selectedIds)">
+            </app-parcel-table>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <app-assign-courier-modal *ngIf="showAssignCourierModal && selectedParcel" [parcel]="selectedParcel"
+        [show]="showAssignCourierModal" (success)="onAssignCourierSuccess()" (close)="onCloseModal()">
+    </app-assign-courier-modal>
+
+    <app-parcel-details-modal *ngIf="showParcelDetailsModal && selectedParcel" [parcel]="selectedParcel"
+        [show]="showParcelDetailsModal" (close)="onCloseModal()">
+    </app-parcel-details-modal>
+</div>

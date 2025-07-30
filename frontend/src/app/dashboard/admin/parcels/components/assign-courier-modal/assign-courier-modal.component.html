@@ -1,0 +1,248 @@
+<!-- src/app/admin/pages/parcels/components/assign-courier-modal/assign-courier-modal.component.html -->
+<div *ngIf="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+
+    <!-- Background overlay -->
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity"
+            (click)="onCancel()">
+        </div>
+
+        <!-- Modal positioning -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div
+            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">
+                        Assign Courier
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Assign a courier to parcel {{ parcel?.trackingNumber }}
+                    </p>
+                </div>
+                <button type="button" (click)="onCancel()"
+                    class="bg-white dark:bg-gray-800 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+                </button>
+            </div>
+
+            <!-- Parcel Info -->
+            <div *ngIf="parcel" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Pickup Address
+                        </label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                            {{ parcel.sender.name }}<br>
+                            {{ parcel.sender.phone }}<br>
+                            <!-- Assuming sender address is available -->
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Delivery Address
+                        </label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                            {{ parcel.recipient.name }}<br>
+                            {{ parcel.recipient.phone }}<br>
+                            {{ parcel.recipient.address.street }}, {{ parcel.recipient.address.city }}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Package Details
+                        </label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                            {{ parcel.packageType | titlecase }}<br>
+                            {{ parcel.weight }}{{ parcel.weightUnit }}<br>
+                            {{ parcel.deliveryType | titlecase }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form [formGroup]="assignForm" (ngSubmit)="onSubmit()">
+                <div class="space-y-6">
+
+                    <!-- Available Couriers -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            Available Couriers
+                        </label>
+
+                        <!-- Loading State -->
+                        <div *ngIf="loading" class="flex items-center justify-center py-8">
+                            <lucide-icon name="loader-2" class="h-6 w-6 animate-spin text-gray-400 mr-2">
+                            </lucide-icon>
+                            <span class="text-gray-500 dark:text-gray-400">Loading available couriers...</span>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div *ngIf="!loading && couriers.length === 0" class="text-center py-8">
+                            <lucide-icon name="users-x" class="h-12 w-12 text-gray-400 mx-auto mb-4">
+                            </lucide-icon>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">No available couriers
+                            </h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                There are no couriers available in this area at the moment.
+                            </p>
+                        </div>
+
+                        <!-- Courier List -->
+                        <div *ngIf="!loading && couriers.length > 0" class="space-y-3 max-h-96 overflow-y-auto">
+                            <div *ngFor="let courier of couriers" (click)="onCourierSelect(courier)"
+                                [class.ring-2]="selectedCourier?.id === courier.id"
+                                [class.ring-blue-500]="selectedCourier?.id === courier.id"
+                                [class.bg-blue-50]="selectedCourier?.id === courier.id"
+                                [class.dark:bg-blue-900]="selectedCourier?.id === courier.id"
+                                class="relative p-4 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="flex-shrink-0">
+                                                <div
+                                                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                                    <lucide-icon name="user"
+                                                        class="h-5 w-5 text-blue-600 dark:text-blue-400">
+                                                    </lucide-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ courier.name }}
+                                                </h4>
+                                                <div class="flex items-center space-x-2 mt-1">
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                                                        [class]="getCourierStatusColor(courier.status)">
+                                                        <lucide-icon [name]="getCourierStatusIcon(courier.status)"
+                                                            class="h-3 w-3 mr-1">
+                                                        </lucide-icon>
+                                                        {{ courier.status | titlecase }}
+                                                    </span>
+                                                    <div class="flex items-center">
+                                                        <ng-container
+                                                            *ngFor="let star of getRatingStars(courier.rating)">
+                                                            <lucide-icon name="star"
+                                                                [class.text-yellow-400]="star === 'star-full'"
+                                                                [class.text-gray-300]="star === 'star-empty'"
+                                                                class="h-3 w-3">
+                                                            </lucide-icon>
+                                                        </ng-container>
+                                                        <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                                                            {{ courier.rating.toFixed(1) }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-4 mt-2">
+                                                    <div
+                                                        class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                        <lucide-icon name="phone" class="h-3 w-3 mr-1"></lucide-icon>
+                                                        {{ courier.phone }}
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                        <lucide-icon name="mail" class="h-3 w-3 mr-1"></lucide-icon>
+                                                        {{ courier.email }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Workload Indicator -->
+                                    <div class="flex-shrink-0 ml-4">
+                                        <div class="text-right">
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                                Workload
+                                            </div>
+                                            <div class="w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                                                <div class="h-2 rounded-full transition-all duration-300"
+                                                    [class]="getWorkloadColor(getWorkloadPercentage(courier))"
+                                                    [style.width.%]="getWorkloadPercentage(courier)">
+                                                </div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                {{ courier.currentWorkload }}/{{ courier.maxCapacity }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Selection Indicator -->
+                                <div *ngIf="selectedCourier?.id === courier.id" class="absolute top-2 right-2">
+                                    <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                                        <lucide-icon name="check" class="h-4 w-4 text-white">
+                                        </lucide-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Details -->
+                    <div *ngIf="selectedCourier" class="space-y-4">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                            Assignment Details
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Priority
+                                </label>
+                                <select formControlName="priority"
+                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="LOW">Low</option>
+                                    <option value="NORMAL">Normal</option>
+                                    <option value="HIGH">High</option>
+                                    <option value="URGENT">Urgent</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Estimated Pickup Time
+                                </label>
+                                <input type="datetime-local" formControlName="estimatedPickupTime"
+                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Special Instructions
+                            </label>
+                            <textarea formControlName="instructions" rows="3"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                placeholder="Any special instructions for the courier...">
+              </textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-8 flex items-center justify-end space-x-3">
+                    <button type="button" (click)="onCancel()"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancel
+                    </button>
+                    <button type="submit" [disabled]="assignForm.invalid || submitting || !selectedCourier"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <lucide-icon *ngIf="submitting" name="loader-2" class="h-4 w-4 animate-spin mr-2">
+                        </lucide-icon>
+                        {{ submitting ? 'Assigning...' : 'Assign Courier' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

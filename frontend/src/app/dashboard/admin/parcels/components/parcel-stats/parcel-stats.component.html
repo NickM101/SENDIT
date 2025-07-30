@@ -1,0 +1,129 @@
+<!-- src/app/admin/pages/parcels/components/parcel-stats/parcel-stats.component.html -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Parcels -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="package" class="h-5 w-5 text-blue-600 dark:text-blue-400">
+                        </lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Total Parcels
+                        </dt>
+                        <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                            {{ formatNumber(stats.totalParcels) }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+            <div class="text-sm">
+                <div class="flex items-center" [class]="growthColorClass">
+                    <lucide-icon [name]="growthIcon" class="h-4 w-4 mr-1">
+                    </lucide-icon>
+                    <span class="font-medium">{{ stats.monthlyGrowth }}%</span>
+                    <span class="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Assignment -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="clock" class="h-5 w-5 text-yellow-600 dark:text-yellow-400">
+                        </lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Pending Assignment
+                        </dt>
+                        <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                            {{ formatNumber(stats.pendingAssignment) }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+            <div class="text-sm">
+                <span class="text-gray-600 dark:text-gray-400">
+                    Ready for courier assignment
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- In Transit -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="truck" class="h-5 w-5 text-purple-600 dark:text-purple-400">
+                        </lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            In Transit
+                        </dt>
+                        <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                            {{ formatNumber(stats.inTransit) }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+            <div class="text-sm">
+                <span class="text-gray-600 dark:text-gray-400">
+                    Currently being delivered
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivered -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-md flex items-center justify-center">
+                        <lucide-icon name="check-circle" class="h-5 w-5 text-green-600 dark:text-green-400">
+                        </lucide-icon>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Delivered Today
+                        </dt>
+                        <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                            {{ formatNumber(stats.delivered) }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+            <div class="text-sm">
+                <span class="text-gray-600 dark:text-gray-400">
+                    Successfully completed
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

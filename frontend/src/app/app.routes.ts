@@ -30,6 +30,7 @@ import { PickupPointViewComponent } from './dashboard/admin/pickup-points/compon
 import { DeliveryDetailsComponent } from './dashboard/courier/delivery-details/delivery-details.component';
 import { CourierDeliveriesComponent } from './dashboard/courier/deliveries/courier-deliveries.component';
 import { CourierEarningsComponent } from './dashboard/courier/earnings/courier-earnings.component';
+import { AdminParcelsComponent } from './dashboard/admin/parcels/parcels.component';
 
 export const routes: Routes = [
   // Public landing page
@@ -96,6 +97,10 @@ export const routes: Routes = [
     data: { roles: ['ADMIN'] },
     component: DashboardLayoutComponent,
     children: [
+      {
+        path: 'parcels',
+        component: AdminParcelsComponent
+      },
       {
         path: 'users',
         component: UserListComponent,
