@@ -73,20 +73,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
         {
           title: "Today's Route",
           icon: 'route',
-          link: '/courier/route',
+          link: '/dashboard/courier/my-deliveries',
           roles: [UserRole.COURIER],
         },
         {
           title: 'Pickup Tasks',
           icon: 'package-plus',
-          link: '/courier/pickups',
+          link: '/dashboard/courier/my-deliveries',
           roles: [UserRole.COURIER],
           badge: '5',
         },
         {
           title: 'Delivery Tasks',
           icon: 'package-minus',
-          link: '/courier/deliveries',
+          link: '/dashboard/courier/my-deliveries',
           roles: [UserRole.COURIER],
           badge: '12',
         },

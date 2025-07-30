@@ -56,8 +56,10 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           // Redirect based on role
           if (userRole === 'ADMIN') {
             return this.router.createUrlTree(['/dashboard/admin']);
-          } else if (userRole === 'USER' || userRole === 'COURIER') {
+          } else if (userRole === 'USER') {
             return this.router.createUrlTree(['/dashboard/user']);
+          } else if (userRole === 'COURIER') {
+            return this.router.createUrlTree(['/dashboard/courier']);
           } else {
             return this.router.createUrlTree(['/auth/login']);
           }

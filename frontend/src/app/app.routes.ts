@@ -27,6 +27,9 @@ import { UserEditComponent } from './dashboard/admin/users/components/user-edit/
 import { PickupPointListComponent } from './dashboard/admin/pickup-points/pickup-point-list.component';
 import { PickupPointCreateComponent } from './dashboard/admin/pickup-points/components/pickup-point-create/pickup-point-create.component';
 import { PickupPointViewComponent } from './dashboard/admin/pickup-points/components/pickup-point-view/pickup-point-view.component';
+import { DeliveryDetailsComponent } from './dashboard/courier/delivery-details/delivery-details.component';
+import { CourierDeliveriesComponent } from './dashboard/courier/deliveries/courier-deliveries.component';
+import { CourierEarningsComponent } from './dashboard/courier/earnings/courier-earnings.component';
 
 export const routes: Routes = [
   // Public landing page
@@ -192,6 +195,72 @@ export const routes: Routes = [
           { path: 'security', component: SecuritySettingsComponent },
           // { path: 'billing', component: BillingSettingsComponent },
           { path: 'preferences', component: PreferencesComponent },
+        ],
+      },
+    ],
+  },
+
+  // Courier Dashboard Routes - NEW SECTION
+  {
+    path: 'dashboard/courier',
+    canActivate: [AuthGuard],
+    data: { roles: ['COURIER'] },
+    component: DashboardLayoutComponent,
+    children: [
+      {
+        path: 'track-parcel',
+        component: TrackParcelComponent,
+      },
+      {
+        path: 'pickup-point',
+        component: PickupPointListComponent,
+      },
+      {
+        path: 'my-deliveries',
+        component: CourierDeliveriesComponent,
+      },
+      {
+        path: 'delivery/:id',
+        component: DeliveryDetailsComponent,
+      },
+      {
+        path: 'earnings',
+        component: CourierEarningsComponent,
+      },
+      {
+        path: 'profile',
+        component: ProfilePageComponent,
+      },
+      // Shared Settings Routes for Courier
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        data: {
+          title: 'Courier Settings - SendIT',
+          description: 'Account and notification settings',
+        },
+        children: [
+          { path: '', redirectTo: 'account', pathMatch: 'full' },
+          {
+            path: 'account',
+            component: AccountSettingsComponent,
+            data: { title: 'Account Settings - SendIT' },
+          },
+          {
+            path: 'notifications',
+            component: NotificationPreferencesComponent,
+            data: { title: 'Notification Preferences - SendIT' },
+          },
+          {
+            path: 'security',
+            component: SecuritySettingsComponent,
+            data: { title: 'Security Settings - SendIT' },
+          },
+          {
+            path: 'preferences',
+            component: PreferencesComponent,
+            data: { title: 'App Preferences - SendIT' },
+          },
         ],
       },
     ],

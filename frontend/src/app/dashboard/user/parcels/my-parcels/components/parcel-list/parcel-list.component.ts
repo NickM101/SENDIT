@@ -1,9 +1,14 @@
 // src/app/dashboard/user/parcels/my-parcels/components/parcel-list/parcel-list.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { DeliveryType, PackageType, Parcel, ParcelStatus } from '../../../../../../core/models/parcel.model';
+import {
+  DeliveryType,
+  PackageType,
+  Parcel,
+  ParcelStatus,
+} from '../../../../../../core/models/parcel.model';
 import { SharedModule } from '../../../../../../shared/shared.module';
-import { ParcelCardComponent } from "../parcel-card/parcel-card.component";
-import { ParcelActionsComponent } from "../parcel-actions/parcel-actions.component";
+import { ParcelCardComponent } from '../parcel-card/parcel-card.component';
+import { ParcelActionsComponent } from '../parcel-actions/parcel-actions.component';
 
 @Component({
   selector: 'app-parcel-list',
@@ -22,7 +27,7 @@ export class ParcelListComponent {
   @Output() refresh = new EventEmitter<void>();
 
   // View mode toggle
-  viewMode: 'list' | 'grid' = 'list';
+  viewMode: 'list' | 'grid' = 'grid';
 
   defaultParcel: Parcel = {
     id: '',
@@ -37,13 +42,13 @@ export class ParcelListComponent {
         state: '',
         country: '',
       },
-      id: ''
+      id: '',
     },
     sender: {
       name: '',
       email: '',
       phone: '',
-      id: ''
+      id: '',
     },
     description: '',
     weight: 0,

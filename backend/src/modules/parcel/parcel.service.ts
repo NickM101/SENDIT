@@ -7,7 +7,7 @@ import {
   Parcel,
   ParcelStatus,
 } from '@prisma/client';
-import { ParcelDraftDto, SenderDetailsDto, RecipientDetailsDto, ParcelDetailsDto, DeliveryOptionsDto, CreateParcelDto } from './dto/parcel.dto';
+import { ParcelDraftDto, SenderDetailsDto, RecipientDetailsDto, ParcelDetailsDto, DeliveryOptionsDto, CreateParcelDto, ParcelStatsDto } from './dto/parcel.dto';
 import { ParcelAssignmentService } from './services/parcel-assignment.service';
 import { ParcelCreationService } from './services/parcel-creation.service';
 import { ParcelQueryService } from './services/parcel-query.service';
@@ -92,6 +92,10 @@ export class ParcelService {
       startDate,
       endDate,
     );
+  }
+
+  async getParcelStats(userId: string): Promise<ParcelStatsDto> {
+    return this.parcelQueryService.getParcelStats(userId);
   }
 
   async getParcelsForAssignment(query: {

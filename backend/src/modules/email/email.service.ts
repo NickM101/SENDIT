@@ -42,4 +42,67 @@ export class EmailService {
       html,
     });
   }
+
+  /**
+   * Send status update email
+   */
+  async sendStatusUpdateEmail(
+    email: string,
+    name: string,
+    trackingNumber: string,
+    status: string,
+    trackingUrl: string,
+  ): Promise<void> {
+    const statusMessages = {
+      PROCESSING: 'Your parcel is being processed',
+      PICKED_UP: 'Your parcel has been picked up',
+      IN_TRANSIT: 'Your parcel is in transit',
+      OUT_FOR_DELIVERY: 'Your parcel is out for delivery',
+      DELIVERED: 'Your parcel has been delivered',
+      DELAYED: 'Your parcel delivery has been delayed',
+      RETURNED: 'Your parcel is being returned',
+    };
+
+    const message =
+      statusMessages[status] ||
+      `Your parcel status has been updated to ${status}`;
+
+    await this.sendMail(
+      email,
+      `Parcel ${trackingNumber} - Status Update`,
+      'status-update',
+      {
+        name,
+        trackingNumber,
+        status,
+        message,
+        trackingUrl,
+        supportUrl: `${process.env.FRONTEND_URL}/support`,
+      },
+    );
+  }
+
+  /**
+   * Send delivery confirmation email
+   */
+  async sendDeliveryConfirmationEmail(
+    email: string,
+    name: string,
+    trackingNumber: string,
+    deliveryDate: Date,
+  ): Promise<void> {
+    await this.sendMail(
+      email,
+      `Parcel ${trackingNumber} - Delivered Successfully`,
+      'delivery-confirmation',
+      {
+        name,
+        trackingNumber,
+        deliveryDate: deliveryDate.toLocaleDateString(),
+        deliveryTime: deliveryDate.toLocaleTimeString(),
+        trackingUrl: `${process.env.FRONTEND_URL}/track/${trackingNumber}`,
+        supportUrl: `${process.env.FRONTEND_URL}/support`,
+      },
+    );
+  }
 }

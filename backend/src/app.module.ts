@@ -13,6 +13,8 @@ import { ParcelModule } from './modules/parcel/parcel.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { PricingModule } from './modules/pricing/pricing.module';
 import { PickupPointModule } from './modules/pickup-point/pickup-point.module';
+import { CourierModule } from './modules/courier/courier.module';
+import { NotificationModule } from './modules/notifications/notification.module';
 
 @Module({
   imports: [
@@ -29,7 +31,8 @@ import { PickupPointModule } from './modules/pickup-point/pickup-point.module';
     PricingModule,
     PaymentModule,
     PickupPointModule,
-    
+    CourierModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService],

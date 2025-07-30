@@ -1,0 +1,82 @@
+<div class="photo-capture-container">
+    <!-- Camera View -->
+    <div *ngIf="!capturedPhoto && showCamera" class="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+        <video #videoElement class="w-full h-64 object-cover" [class.transform]="isFrontCamera"
+            [class.scale-x-[-1]]="isFrontCamera" autoplay playsinline></video>
+
+        <!-- Camera Controls -->
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+            <button (click)="capturePhoto()"
+                class="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+                <div class="w-12 h-12 bg-red-500 rounded-full"></div>
+            </button>
+
+            <button (click)="switchCamera()"
+                class="w-12 h-12 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center">
+                <lucide-icon name="rotate-cw" class="w-5 h-5"></lucide-icon>
+            </button>
+        </div>
+
+        <!-- Close Camera -->
+        <button (click)="stopCamera()"
+            class="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center">
+            <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
+        </button>
+    </div>
+
+    <!-- Photo Preview -->
+    <div *ngIf="capturedPhoto" class="relative">
+        <img [src]="photoPreview" alt="Captured photo" class="w-full h-64 object-cover rounded-lg" />
+
+        <!-- Photo Actions -->
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+            <button (click)="retakePhoto()"
+                class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                <lucide-icon name="rotate-ccw" class="w-4 h-4 mr-2"></lucide-icon>
+                Retake
+            </button>
+
+            <button (click)="confirmPhoto()"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <lucide-icon name="check" class="w-4 h-4 mr-2"></lucide-icon>
+                Use Photo
+            </button>
+        </div>
+    </div>
+
+    <!-- Camera Trigger -->
+    <div *ngIf="!capturedPhoto && !showCamera" class="space-y-4">
+        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8">
+            <div class="text-center">
+                <lucide-icon name="camera" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-icon>
+                <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    Take a photo as delivery proof
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    Capture a clear photo of the delivered package or recipient
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button (click)="startCamera()"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                        <lucide-icon name="camera" class="w-4 h-4 mr-2"></lucide-icon>
+                        Open Camera
+                    </button>
+
+                    <button (click)="selectFromGallery()"
+                        class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                        <lucide-icon name="image" class="w-4 h-4 mr-2"></lucide-icon>
+                        Choose from Gallery
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for gallery selection -->
+    <input #fileInput type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)"
+        class="hidden" />
+
+    <!-- Hidden canvas for photo processing -->
+    <canvas #canvasElement class="hidden"></canvas>
+</div>

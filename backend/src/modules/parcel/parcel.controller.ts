@@ -32,7 +32,7 @@ import { AddressService } from '../address/address.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { PricingService } from '../pricing/pricing.service';
-import { SenderDetailsDto, RecipientDetailsDto, ParcelDetailsDto, DeliveryOptionsDto, CreateParcelDto, PricingRequestDto, QuickPricingDto, PaginatedParcelResponseDto, ParcelQueryDto, ParcelDraftDto, UpdateParcelStatusDto } from './dto/parcel.dto';
+import { SenderDetailsDto, RecipientDetailsDto, ParcelDetailsDto, DeliveryOptionsDto, CreateParcelDto, PricingRequestDto, QuickPricingDto, PaginatedParcelResponseDto, ParcelQueryDto, ParcelDraftDto, UpdateParcelStatusDto, ParcelStatsDto } from './dto/parcel.dto';
 import { ParcelService } from './parcel.service';
 
 @ApiBearerAuth('access-token')
@@ -425,7 +425,14 @@ export class ParcelController {
   })
   async getMyParcels(@Request() req, @Query() queryDto: ParcelQueryDto) {
     try {
-      const { page = 1, limit = 10, status, trackingNumber, startDate, endDate } = queryDto;
+      const {
+        page = 1,
+        limit = 10,
+        status,
+        trackingNumber,
+        startDate,
+        endDate,
+      } = queryDto;
       const result = await this.parcelService.getParcelsByUser(
         req.user.sub,
         page,
@@ -443,6 +450,19 @@ export class ParcelController {
     } catch (error) {
       throw new BadRequestException('Failed to retrieve parcels');
     }
+  }
+
+  @Get('stats')
+  @ApiResponse({
+    status: 200,
+    description: 'Parcel statistics retrieved successfully.',
+    type: ParcelStatsDto,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  async getStats(@Request() req): Promise<ParcelStatsDto> {
+    // Assumes GetCurrentUser extracts the full User object from the JWT
+    return this.parcelService.getParcelStats(req.user.sub);
   }
 
   /**

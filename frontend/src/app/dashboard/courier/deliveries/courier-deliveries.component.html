@@ -1,0 +1,254 @@
+<!-- src/app/dashboard/courier/deliveries/courier-deliveries.component.html -->
+
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+        <div class="px-4 py-4">
+            <!-- Title and Stats -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                <h1 class="text-xl font-semibold text-gray-900 dark:text-white">My Deliveries</h1>
+
+                <!-- Quick Stats -->
+                <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <span class="font-medium text-gray-900 dark:text-white">{{ todayStats.completed }}</span>
+                        /{{ todayStats.total }} completed
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        KES <span class="font-medium text-green-600 dark:text-green-400">{{ todayStats.earnings |
+                            number:'1.0-0' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <lucide-icon name="search"
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+                    <input [formControl]="searchControl" type="text"
+                        placeholder="Search by tracking number or recipient..."
+                        class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                </div>
+
+                <div class="flex gap-2">
+                    <!-- Status Filter -->
+                    <select [formControl]="statusFilterControl"
+                        class="px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Status</option>
+                        <option value="PROCESSING">Processing</option>
+                        <option value="PICKED_UP">Picked Up</option>
+                        <option value="IN_TRANSIT">In Transit</option>
+                        <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="DELAYED">Delayed</option>
+                    </select>
+
+                    <!-- Type Filter -->
+                    <select [formControl]="typeFilterControl"
+                        class="px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Types</option>
+                        <option value="PICKUP">Pickup</option>
+                        <option value="DELIVERY">Delivery</option>
+                    </select>
+
+                    <!-- Refresh Button -->
+                    <button (click)="onRefresh()"
+                        class="px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        [disabled]="loading$ | async">
+                        <lucide-icon name="refresh-cw" class="w-4 h-4"
+                            [class.animate-spin]="loading$ | async"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading$ | async" class="flex items-center justify-center py-12">
+        <p class="text-gray-500 dark:text-gray-400">Loading deliveries...</p>
+        <lucide-icon name="loader" class="w-6 h-6 animate-spin text-blue-600 dark:text-blue-400 ml-2"></lucide-icon>    
+    </div>
+
+    <!-- Deliveries List -->
+    <div *ngIf="!(loading$ | async)" class="px-4 py-4">
+        <div class="space-y-4">
+            <!-- Delivery Card -->
+            <div *ngFor="let delivery of filteredDeliveries$ | async; trackBy: trackByDelivery"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
+                (click)="onDeliveryClick(delivery)">
+                <!-- Card Header -->
+                <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <!-- Delivery Type Icon -->
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                                    <lucide-icon [name]="getDeliveryTypeIcon(delivery.deliveryType)"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+                                </div>
+                            </div>
+
+                            <!-- Tracking Number and Priority -->
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ delivery.trackingNumber }}
+                                    </h3>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                                        [class]="getPriorityColor(delivery.priority)">
+                                        {{ delivery.priority }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ delivery.deliveryType | titlecase }} Delivery
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            [class]="getStatusColor(delivery.status)">
+                            {{ delivery.status | titlecase }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="px-4 py-3">
+                    <!-- Recipient Info -->
+                    <div class="flex items-start space-x-3 mb-3">
+                        <lucide-icon name="user" class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"></lucide-icon>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {{ delivery.recipient.name }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                {{ delivery.recipient.phone }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="flex items-start space-x-3 mb-3">
+                        <lucide-icon name="map-pin" class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"></lucide-icon>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm text-gray-900 dark:text-white">
+                                {{ delivery.recipientAddress.street }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ delivery.recipientAddress.area }}, {{ delivery.recipientAddress.city }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Package Info -->
+                    <div class="flex items-center space-x-3 mb-3">
+                        <lucide-icon name="package" class="w-4 h-4 text-gray-400 flex-shrink-0"></lucide-icon>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm text-gray-900 dark:text-white truncate">
+                                {{ delivery.description }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ delivery.weight }}{{ delivery.weightUnit }} •
+                                {{ delivery.packageType | titlecase }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Time and Earnings -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
+                            <lucide-icon name="clock" class="w-4 h-4"></lucide-icon>
+                            <span>
+                                {{ delivery.estimatedDelivery | date:'short' }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center space-x-1 text-green-600 dark:text-green-400">
+                            <lucide-icon name="dollar-sign" class="w-4 h-4"></lucide-icon>
+                            <span class="font-medium">
+                                {{ delivery.estimatedEarnings | number:'1.0-0' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Special Indicators -->
+                    <div *ngIf="delivery.fragile || delivery.perishable || delivery.highValue || delivery.signatureRequired"
+                        class="flex flex-wrap gap-2 mt-3">
+                        <span *ngIf="delivery.fragile"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                            <lucide-icon name="alert-triangle" class="w-3 h-3 mr-1"></lucide-icon>
+                            Fragile
+                        </span>
+                        <span *ngIf="delivery.perishable"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
+                            <lucide-icon name="clock" class="w-3 h-3 mr-1"></lucide-icon>
+                            Perishable
+                        </span>
+                        <span *ngIf="delivery.highValue"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+                            <lucide-icon name="shield" class="w-3 h-3 mr-1"></lucide-icon>
+                            High Value
+                        </span>
+                        <span *ngIf="delivery.signatureRequired"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                            <lucide-icon name="edit" class="w-3 h-3 mr-1"></lucide-icon>
+                            Signature Required
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Actions -->
+                <div
+                    class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Status Update Buttons -->
+                        <ng-container *ngFor="let statusOption of getNextStatusOptions(delivery)">
+                            <button (click)="onStatusUpdate(delivery, statusOption.value); $event.stopPropagation()"
+                                class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md transition-colors">
+                                <lucide-icon name="check-circle" class="w-3 h-3 mr-1"></lucide-icon>
+                                {{ statusOption.label }}
+                            </button>
+                        </ng-container>
+
+                        <!-- Quick Actions -->
+                        <button (click)="onCallRecipient(delivery); $event.stopPropagation()"
+                            class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition-colors">
+                            <lucide-icon name="phone" class="w-3 h-3 mr-1"></lucide-icon>
+                            Call
+                        </button>
+
+                        <button (click)="onNavigateToAddress(delivery); $event.stopPropagation()"
+                            class="inline-flex items-center px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-xs font-medium rounded-md transition-colors">
+                            <lucide-icon name="navigation" class="w-3 h-3 mr-1"></lucide-icon>
+                            Navigate
+                        </button>
+
+                        <!-- Distance info if available -->
+                        <span *ngIf="delivery.distance"
+                            class="inline-flex items-center px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+                            {{ delivery.distance | number:'1.1-1' }}km away
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="(filteredDeliveries$ | async)?.length === 0" class="py-12">
+            <p class="text-gray-500 dark:text-gray-400">No deliveries found</p>
+            <lucide-icon name="box" class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mt-4"></lucide-icon>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center mt-2">
+                Try adjusting your filters or search criteria.
+            </p>
+            <div class="mt-4 text-center">
+                <button (click)="onRefresh()"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    Refresh Deliveries
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

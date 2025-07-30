@@ -594,3 +594,11 @@ export class PaginatedParcelResponseDto {
   @ApiProperty({ type: PaginationMetaDto })
   meta: PaginationMetaDto;
 }
+
+export class ParcelStatsDto {
+  totalSent: number;
+  totalReceived: number;
+  pending: number; // Assuming this counts parcels with status like PROCESSING, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY
+  delivered: number; // Assuming this counts parcels with status DELIVERED *today*
+  monthlyGrowth: number; // Percentage growth for totalSent compared to last month
+}
